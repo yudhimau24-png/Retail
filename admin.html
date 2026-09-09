@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Portal - Retail</title>
+  <title>Admin Portal - Private Reserve Collection</title>
   <!-- Supabase & SheetJS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -96,7 +96,7 @@
   <div id="adminPage">
     <div class="hero">
       <button class="btn-logout" onclick="handleLogout()">🔒 Logout</button>
-      <h1>⚙️ Admin Dashboard - Retail</h1>
+      <h1>⚙️ Admin Dashboard - Private Reserve</h1>
       <p>Kelola data katalog minuman, stok, upload gambar ke Cloud Supabase, dan import file Excel/CSV.</p>
     </div>
 
@@ -132,45 +132,60 @@
           <div class="form-group">
             <label>Kategori (Type) *</label>
             <select id="wineType" required>
+              <option value="Local Traditional and Grain">Local Traditional and Grain</option>
+              
               <optgroup label="Vodka">
-                  <option value="Vodka - Import">Vodka - Import</option>
-                  <option value="Vodka - Lokal">Vodka - Lokal</option>
+                  <option value="Import Vodka">Import Vodka</option>
+                  <option value="Local Vodka">Local Vodka</option>
               </optgroup>
+              
               <optgroup label="Gin">
-                  <option value="Gin - Import">Gin - Import</option>
-                  <option value="Gin - Lokal">Gin - Lokal</option>
+                  <option value="Import Gin">Import Gin</option>
+                  <option value="Local Gin">Local Gin</option>
               </optgroup>
+              
               <optgroup label="Rum">
-                  <option value="Rum - Import">Rum - Import</option>
-                  <option value="Rum - Lokal">Rum - Lokal</option>
+                  <option value="Import Rum">Import Rum</option>
+                  <option value="Local Rum">Local Rum</option>
               </optgroup>
+              
               <optgroup label="Tequila">
-                  <option value="Tequila - Import">Tequila - Import</option>
-                  <option value="Tequila - Lokal">Tequila - Lokal</option>
+                  <option value="Import Tequila">Import Tequila</option>
+                  <option value="Local Tequila">Local Tequila</option>
               </optgroup>
+              
               <optgroup label="Liqueur">
-                  <option value="Liqueur - Import">Liqueur - Import</option>
-                  <option value="Liqueur - Lokal">Liqueur - Lokal</option>
+                  <option value="Import Liqueur">Import Liqueur</option>
+                  <option value="Local Liqueur">Local Liqueur</option>
               </optgroup>
-              <optgroup label="Whiskey">
-                  <option value="Whiskey - Import">Whiskey - Import</option>
-                  <option value="Whiskey - Lokal">Whiskey - Lokal</option>
+              
+              <optgroup label="Whisky">
+                  <option value="Import Whisky">Import Whisky</option>
+                  <option value="Local Whisky">Local Whisky</option>
               </optgroup>
+              
               <optgroup label="Cognac">
-                  <option value="Cognac - Import">Cognac - Import</option>
-                  <option value="Cognac - Lokal">Cognac - Lokal</option>
+                  <option value="Import Cognac">Import Cognac</option>
+                  <option value="Local Cognac">Local Cognac</option>
               </optgroup>
+
               <optgroup label="Wine & Asian Spirits">
-                  <option value="Wine - Import">Wine - Import</option>
-                  <option value="Wine - Lokal">Wine - Lokal</option>
-                  <option value="Soju - Import">Soju - Import</option>
-                  <option value="Soju - Lokal">Soju - Lokal</option>
-                  <option value="Sake - Import">Sake - Import</option>
-                  <option value="Sake - Lokal">Sake - Lokal</option>
+                  <option value="Import Wine">Import Wine</option>
+                  <option value="Local Wine">Local Wine</option>
+                  <option value="Import Soju">Import Soju</option>
+                  <option value="Local Soju">Local Soju</option>
+                  <option value="Import Sake">Import Sake</option>
+                  <option value="Local Sake">Local Sake</option>
+                  <option value="Import Baijiu">Import Baijiu</option>
               </optgroup>
+
+              <optgroup label="Alcopops">
+                  <option value="Local Alcopops">Local Alcopops</option>
+              </optgroup>
+
               <optgroup label="Others">
-                  <option value="Beer - Import">Beer - Import</option>
-                  <option value="Beer - Lokal">Beer - Lokal</option>
+                  <option value="Import Beer">Import Beer</option>
+                  <option value="Local Beer">Local Beer</option>
                   <option value="Syrup">Syrup</option>
               </optgroup>
             </select>
@@ -427,7 +442,7 @@
       document.getElementById('wineId').value = w.id;
       document.getElementById('wineName').value = w.name || '';
       document.getElementById('wineVintage').value = w.vintage || '';
-      document.getElementById('wineType').value = w.type || 'Wine - Import'; // Default fallback diperbarui
+      document.getElementById('wineType').value = w.type || 'Import Wine'; 
       document.getElementById('wineRegion').value = w.region || '';
       document.getElementById('wineVarietal').value = w.varietal || '';
       document.getElementById('wineAbv').value = w.abv || '';
@@ -527,7 +542,7 @@
           "FOTO": "",
           "NAMA MINUMAN": "MASET RIOJA TEMPRANILLO",
           "VINTAGE": "2022",
-          "KATEGORI": "Wine - Import",
+          "KATEGORI": "Import Wine",
           "WILAYAH": "Rioja DOCa, Spain",
           "VARIETAL": "Tempranillo",
           "ABV": "13%",
@@ -541,7 +556,7 @@
           "FOTO": "",
           "NAMA MINUMAN": "ABSOLUT VODKA",
           "VINTAGE": "NAS",
-          "KATEGORI": "Vodka - Import",
+          "KATEGORI": "Import Vodka",
           "WILAYAH": "Ahus, Sweden",
           "VARIETAL": "Winter Wheat",
           "ABV": "40%",
@@ -591,7 +606,7 @@
           imageUrl: row["FOTO"] || '', 
           name: row["NAMA MINUMAN"] || row.Name || row.name || '',
           vintage: row["VINTAGE"] || row.Vintage || row.vintage || 'NV',
-          type: row["KATEGORI"] || row.Type || row.type || 'Wine - Import',
+          type: row["KATEGORI"] || row.Type || row.type || 'Import Wine',
           region: row["WILAYAH"] || row.Region || row.region || '-',
           varietal: row["VARIETAL"] || row.Varietal || row.varietal || '-',
           abv: row["ABV"] || row.ABV || row.abv || '-',
