@@ -132,17 +132,47 @@
           <div class="form-group">
             <label>Kategori (Type) *</label>
             <select id="wineType" required>
-              <option value="Red Wine">Red Wine</option>
-              <option value="White Wine">White Wine</option>
-              <option value="Rosé Wine">Rosé Wine</option>
-              <option value="Sparkling Wine">Sparkling Wine</option>
-              <option value="Whisky / Whiskey">Whisky / Whiskey</option>
-              <option value="Vodka">Vodka</option>
-              <option value="Rum">Rum</option>
-              <option value="Gin">Gin</option>
-              <option value="Tequila / Mezcal">Tequila / Mezcal</option>
-              <option value="Brandy / Cognac">Brandy / Cognac</option>
-              <option value="Liqueur">Liqueur</option>
+              <optgroup label="Vodka">
+                  <option value="Vodka - Import">Vodka - Import</option>
+                  <option value="Vodka - Lokal">Vodka - Lokal</option>
+              </optgroup>
+              <optgroup label="Gin">
+                  <option value="Gin - Import">Gin - Import</option>
+                  <option value="Gin - Lokal">Gin - Lokal</option>
+              </optgroup>
+              <optgroup label="Rum">
+                  <option value="Rum - Import">Rum - Import</option>
+                  <option value="Rum - Lokal">Rum - Lokal</option>
+              </optgroup>
+              <optgroup label="Tequila">
+                  <option value="Tequila - Import">Tequila - Import</option>
+                  <option value="Tequila - Lokal">Tequila - Lokal</option>
+              </optgroup>
+              <optgroup label="Liqueur">
+                  <option value="Liqueur - Import">Liqueur - Import</option>
+                  <option value="Liqueur - Lokal">Liqueur - Lokal</option>
+              </optgroup>
+              <optgroup label="Whiskey">
+                  <option value="Whiskey - Import">Whiskey - Import</option>
+                  <option value="Whiskey - Lokal">Whiskey - Lokal</option>
+              </optgroup>
+              <optgroup label="Cognac">
+                  <option value="Cognac - Import">Cognac - Import</option>
+                  <option value="Cognac - Lokal">Cognac - Lokal</option>
+              </optgroup>
+              <optgroup label="Wine & Asian Spirits">
+                  <option value="Wine - Import">Wine - Import</option>
+                  <option value="Wine - Lokal">Wine - Lokal</option>
+                  <option value="Soju - Import">Soju - Import</option>
+                  <option value="Soju - Lokal">Soju - Lokal</option>
+                  <option value="Sake - Import">Sake - Import</option>
+                  <option value="Sake - Lokal">Sake - Lokal</option>
+              </optgroup>
+              <optgroup label="Others">
+                  <option value="Beer - Import">Beer - Import</option>
+                  <option value="Beer - Lokal">Beer - Lokal</option>
+                  <option value="Syrup">Syrup</option>
+              </optgroup>
             </select>
           </div>
           <div class="form-group">
@@ -397,7 +427,7 @@
       document.getElementById('wineId').value = w.id;
       document.getElementById('wineName').value = w.name || '';
       document.getElementById('wineVintage').value = w.vintage || '';
-      document.getElementById('wineType').value = w.type || 'Red Wine';
+      document.getElementById('wineType').value = w.type || 'Wine - Import'; // Default fallback diperbarui
       document.getElementById('wineRegion').value = w.region || '';
       document.getElementById('wineVarietal').value = w.varietal || '';
       document.getElementById('wineAbv').value = w.abv || '';
@@ -490,14 +520,14 @@
       }
     }
 
-    // FUNGSI BARU: Download Template Excel
+    // FUNGSI DIPERBARUI: Download Template Excel dengan referensi Kategori yang benar
     function downloadTemplate() {
       const templateData = [
         {
           "FOTO": "",
           "NAMA MINUMAN": "MASET RIOJA TEMPRANILLO",
           "VINTAGE": "2022",
-          "KATEGORI": "Red Wine",
+          "KATEGORI": "Wine - Import",
           "WILAYAH": "Rioja DOCa, Spain",
           "VARIETAL": "Tempranillo",
           "ABV": "13%",
@@ -511,7 +541,7 @@
           "FOTO": "",
           "NAMA MINUMAN": "ABSOLUT VODKA",
           "VINTAGE": "NAS",
-          "KATEGORI": "Vodka",
+          "KATEGORI": "Vodka - Import",
           "WILAYAH": "Ahus, Sweden",
           "VARIETAL": "Winter Wheat",
           "ABV": "40%",
@@ -561,7 +591,7 @@
           imageUrl: row["FOTO"] || '', 
           name: row["NAMA MINUMAN"] || row.Name || row.name || '',
           vintage: row["VINTAGE"] || row.Vintage || row.vintage || 'NV',
-          type: row["KATEGORI"] || row.Type || row.type || 'Red Wine',
+          type: row["KATEGORI"] || row.Type || row.type || 'Wine - Import',
           region: row["WILAYAH"] || row.Region || row.region || '-',
           varietal: row["VARIETAL"] || row.Varietal || row.varietal || '-',
           abv: row["ABV"] || row.ABV || row.abv || '-',
