@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Retail</title>
+  <title>Private Reserve Collection</title>
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -336,8 +336,8 @@
 
   <div id="catalogPage">
     <div class="hero">
-      <h1 id="heroTitle">🍷 Retail</h1>
-      <p id="heroSubtitle">Explore our curated collection of wines and spirits.</p>
+      <h1 id="heroTitle">🍷 Private Reserve Collection</h1>
+      <p id="heroSubtitle">Explore our curated collection of fine wines and premium spirits.</p>
     </div>
 
     <div class="controls">
@@ -345,54 +345,56 @@
       <select id="typeFilter" onchange="renderWines()">
         <option value="All">All Types</option>
         
+        <option value="Local Traditional and Grain">Local Traditional and Grain</option>
+        
         <optgroup label="Vodka">
-            <option value="Vodka - Import">Vodka - Import</option>
-            <option value="Vodka - Lokal">Vodka - Lokal</option>
+          <option value="Import Vodka">Import Vodka</option>
+          <option value="Local Vodka">Local Vodka</option>
         </optgroup>
         
         <optgroup label="Gin">
-            <option value="Gin - Import">Gin - Import</option>
-            <option value="Gin - Lokal">Gin - Lokal</option>
+          <option value="Import Gin">Import Gin</option>
+          <option value="Local Gin">Local Gin</option>
         </optgroup>
         
         <optgroup label="Rum">
-            <option value="Rum - Import">Rum - Import</option>
-            <option value="Rum - Lokal">Rum - Lokal</option>
+          <option value="Import Rum">Import Rum</option>
+          <option value="Local Rum">Local Rum</option>
         </optgroup>
         
         <optgroup label="Tequila">
-            <option value="Tequila - Import">Tequila - Import</option>
-            <option value="Tequila - Lokal">Tequila - Lokal</option>
+          <option value="Import Tequila">Import Tequila</option>
+          <option value="Local Tequila">Local Tequila</option>
         </optgroup>
         
         <optgroup label="Liqueur">
-            <option value="Liqueur - Import">Liqueur - Import</option>
-            <option value="Liqueur - Lokal">Liqueur - Lokal</option>
+          <option value="Import Liqueur">Import Liqueur</option>
+          <option value="Local Liqueur">Local Liqueur</option>
         </optgroup>
         
-        <optgroup label="Whiskey">
-            <option value="Whiskey - Import">Whiskey - Import</option>
-            <option value="Whiskey - Lokal">Whiskey - Lokal</option>
+        <optgroup label="Whisky">
+          <option value="Import Whisky">Import Whisky</option>
+          <option value="Local Whisky">Local Whisky</option>
         </optgroup>
         
         <optgroup label="Cognac">
-            <option value="Cognac - Import">Cognac - Import</option>
-            <option value="Cognac - Lokal">Cognac - Lokal</option>
+          <option value="Import Cognac">Import Cognac</option>
+          <option value="Local Cognac">Local Cognac</option>
         </optgroup>
 
         <optgroup label="Wine & Asian Spirits">
-            <option value="Wine - Import">Wine - Import</option>
-            <option value="Wine - Lokal">Wine - Lokal</option>
-            <option value="Soju - Import">Soju - Import</option>
-            <option value="Soju - Lokal">Soju - Lokal</option>
-            <option value="Sake - Import">Sake - Import</option>
-            <option value="Sake - Lokal">Sake - Lokal</option>
+          <option value="Import Wine">Import Wine</option>
+          <option value="Local Wine">Local Wine</option>
+          <option value="Import Soju">Import Soju</option>
+          <option value="Local Soju">Local Soju</option>
+          <option value="Import Sake">Import Sake</option>
+          <option value="Local Sake">Local Sake</option>
         </optgroup>
 
         <optgroup label="Others">
-            <option value="Beer - Import">Beer - Import</option>
-            <option value="Beer - Lokal">Beer - Lokal</option>
-            <option value="Syrup">Syrup</option>
+          <option value="Import Beer">Import Beer</option>
+          <option value="Local Beer">Local Beer</option>
+          <option value="Syrup">Syrup</option>
         </optgroup>
       </select>
     </div>
@@ -413,9 +415,9 @@
 
   <script>
     /* KONFIGURASI SUPABASE */
-    const SUPABASE_URL = "https://nuyowvjianxiobpzejnc.supabase.co";
+    const SUPABASE_URL = "https://gzozsdbtcmmwzogzyeyn.supabase.co";
     /* PASTE ANON KEY SUPABASE MILIKMU (panjang, diawali eyJhbGci...) DI BAWAH INI: */
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eW93dmppYW54aW9icHplam5jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODkyMjUyOCwiZXhwIjoyMTA0NDk4NTI4fQ.-aeTfpvoGy3ICP2LMxa0vGfYggXlldnj5vtouzRm7bg";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6b3pzZGJ0Y21td3pvZ3p5ZXluIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODUxMzE5OSwiZXhwIjoyMTA0MDg5MTk5fQ._cPAvNB04sAP0DvcSfn-DbKubcgGlGlznG8owCIk1X8";
     
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -491,7 +493,7 @@
 
     let localWines = [];
     let currentFilteredWines = [];
-    const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whiskey", "Cognac", "Soju", "Sake"];
+    const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whisky", "Cognac", "Soju", "Sake", "Traditional and Grain"];
 
     async function fetchWinesFromSupabase() {
       try {
@@ -543,7 +545,7 @@
       }
 
       grid.innerHTML = currentFilteredWines.map((wine, idx) => {
-        // Cek secara dinamis (mendukung - Lokal dan - Import)
+        // Cek secara dinamis
         const isSpirit = spiritTypes.some(spirit => wine.type && wine.type.includes(spirit));
         
         return `
@@ -584,7 +586,7 @@
       const wine = currentFilteredWines[index];
       if (!wine) return;
       
-      // Cek secara dinamis (mendukung - Lokal dan - Import)
+      // Cek secara dinamis
       const isSpirit = spiritTypes.some(spirit => wine.type && wine.type.includes(spirit));
 
       document.getElementById('detailContent').innerHTML = `
