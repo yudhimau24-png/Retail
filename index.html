@@ -344,20 +344,55 @@
       <input type="text" id="searchInput" class="search-input" placeholder="Search beverage name or region..." oninput="renderWines()">
       <select id="typeFilter" onchange="renderWines()">
         <option value="All">All Types</option>
-        <optgroup label="Wines">
-            <option value="Red Wine">Red Wine</option>
-            <option value="White Wine">White Wine</option>
-            <option value="Rosé Wine">Rosé Wine</option>
-            <option value="Sparkling Wine">Sparkling Wine</option>
+        
+        <optgroup label="Vodka">
+            <option value="Vodka - Import">Vodka - Import</option>
+            <option value="Vodka - Lokal">Vodka - Lokal</option>
         </optgroup>
-        <optgroup label="Spirits & Liqueurs">
-            <option value="Whisky / Whiskey">Whisky / Whiskey</option>
-            <option value="Vodka">Vodka</option>
-            <option value="Rum">Rum</option>
-            <option value="Gin">Gin</option>
-            <option value="Tequila / Mezcal">Tequila / Mezcal</option>
-            <option value="Brandy / Cognac">Brandy / Cognac</option>
-            <option value="Liqueur">Liqueur</option>
+        
+        <optgroup label="Gin">
+            <option value="Gin - Import">Gin - Import</option>
+            <option value="Gin - Lokal">Gin - Lokal</option>
+        </optgroup>
+        
+        <optgroup label="Rum">
+            <option value="Rum - Import">Rum - Import</option>
+            <option value="Rum - Lokal">Rum - Lokal</option>
+        </optgroup>
+        
+        <optgroup label="Tequila">
+            <option value="Tequila - Import">Tequila - Import</option>
+            <option value="Tequila - Lokal">Tequila - Lokal</option>
+        </optgroup>
+        
+        <optgroup label="Liqueur">
+            <option value="Liqueur - Import">Liqueur - Import</option>
+            <option value="Liqueur - Lokal">Liqueur - Lokal</option>
+        </optgroup>
+        
+        <optgroup label="Whiskey">
+            <option value="Whiskey - Import">Whiskey - Import</option>
+            <option value="Whiskey - Lokal">Whiskey - Lokal</option>
+        </optgroup>
+        
+        <optgroup label="Cognac">
+            <option value="Cognac - Import">Cognac - Import</option>
+            <option value="Cognac - Lokal">Cognac - Lokal</option>
+        </optgroup>
+
+        <optgroup label="Wine & Asian Spirits">
+            <option value="Wine - Import">Wine - Import</option>
+            <option value="Wine - Lokal">Wine - Lokal</option>
+            <option value="Soju - Import">Soju - Import</option>
+            <option value="Soju - Lokal">Soju - Lokal</option>
+            <option value="Sake - Import">Sake - Import</option>
+            <option value="Sake - Lokal">Sake - Lokal</option>
+        </optgroup>
+
+        <optgroup label="Others">
+            <option value="Beer - Import">Beer - Import</option>
+            <option value="Beer - Lokal">Beer - Lokal</option>
+            <option value="Syrup">Syrup</option>
         </optgroup>
       </select>
     </div>
@@ -456,7 +491,7 @@
 
     let localWines = [];
     let currentFilteredWines = [];
-    const spiritTypes = ["Whisky / Whiskey", "Vodka", "Rum", "Gin", "Tequila / Mezcal", "Brandy / Cognac", "Liqueur"];
+    const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whiskey", "Cognac", "Soju", "Sake"];
 
     async function fetchWinesFromSupabase() {
       try {
@@ -508,7 +543,9 @@
       }
 
       grid.innerHTML = currentFilteredWines.map((wine, idx) => {
-        const isSpirit = spiritTypes.includes(wine.type);
+        // Cek secara dinamis (mendukung - Lokal dan - Import)
+        const isSpirit = spiritTypes.some(spirit => wine.type && wine.type.includes(spirit));
+        
         return `
           <div class="wine-card" onclick="openDetail(${idx})" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
             <div class="img-wrapper">
@@ -546,7 +583,9 @@
     function openDetail(index) {
       const wine = currentFilteredWines[index];
       if (!wine) return;
-      const isSpirit = spiritTypes.includes(wine.type);
+      
+      // Cek secara dinamis (mendukung - Lokal dan - Import)
+      const isSpirit = spiritTypes.some(spirit => wine.type && wine.type.includes(spirit));
 
       document.getElementById('detailContent').innerHTML = `
         <div class="detail-img-box">
