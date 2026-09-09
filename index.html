@@ -389,6 +389,11 @@
           <option value="Local Soju">Local Soju</option>
           <option value="Import Sake">Import Sake</option>
           <option value="Local Sake">Local Sake</option>
+          <option value="Import Baijiu">Import Baijiu</option>
+        </optgroup>
+
+        <optgroup label="Alcopops">
+          <option value="Local Alcopops">Local Alcopops</option>
         </optgroup>
 
         <optgroup label="Others">
@@ -493,7 +498,9 @@
 
     let localWines = [];
     let currentFilteredWines = [];
-    const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whisky", "Cognac", "Soju", "Sake", "Traditional and Grain"];
+    
+    // Ditambahkan "Baijiu" dan "Alcopops" agar sistem memahaminya sebagai spirit (bukan wine) untuk label detail
+    const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whisky", "Cognac", "Soju", "Sake", "Traditional and Grain", "Baijiu", "Alcopops"];
 
     async function fetchWinesFromSupabase() {
       try {
