@@ -255,7 +255,7 @@
   </div>
 
   <script>
-    /* ISIKAN DENGAN KREDENSIAL SUPABASE MILIKMU */
+    /* KREDENSIAL SUPABASE */
     const SUPABASE_URL = "https://nuyowvjianxiobpzejnc.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eW93dmppYW54aW9icHplam5jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODkyMjUyOCwiZXhwIjoyMTA0NDk4NTI4fQ.-aeTfpvoGy3ICP2LMxa0vGfYggXlldnj5vtouzRm7bg";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -290,7 +290,7 @@
       checkAuthStatus();
     }
 
-    /* Background Canvas Engine */
+    /* Background Canvas Engine (Perbaikan Infinite Loading) */
     const canvas = document.getElementById('bgCanvas');
     const ctx = canvas.getContext('2d');
     let width = canvas.width = window.innerWidth;
@@ -328,7 +328,11 @@
       });
       requestAnimationFrame(drawInteractiveBG);
     }
-    drawInteractiveBG();
+
+    // Jalankan animasi HANYA SETELAH seluruh asset & dokumen selesai diproses penuh
+    window.addEventListener('load', () => {
+      drawInteractiveBG();
+    });
 
     function escapeHtml(str) {
       if (!str) return '';
@@ -355,12 +359,11 @@
       const fileExt = file.name.split('.').pop();
       const fileName = `bottle_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
       
-      // Opsi perbaikan nama bucket agar tidak "Bucket not found"
       const bucketName = 'bottle-images';
       const { data, error } = await supabaseClient.storage.from(bucketName).upload(fileName, file);
 
       if (error) {
-        alert('Gagal upload gambar ke Supabase Storage (' + bucketName + '): ' + error.message + '\n\nPetunjuk: Buat Storage Bucket bernama "' + bucketName + '" di Dashboard Supabase Anda.');
+        alert('Gagal upload gambar ke Supabase Storage (' + bucketName + '): ' + error.message + '\n\nPetunjuk: Jalankan SQL Script pembuatan bucket "bottle-images" di SQL Editor Supabase Anda.');
         return null;
       }
       const { data: publicUrlData } = supabaseClient.storage.from(bucketName).getPublicUrl(fileName);
@@ -463,7 +466,7 @@
         if (uploadedUrl) {
           imageUrl = uploadedUrl;
         } else {
-          return; // Batalkan proses jika upload foto lokal gagal/bucket tidak ada
+          return;
         }
       }
 
@@ -527,7 +530,6 @@
       }
     }
 
-    // FUNGSI UNTUK MEWARNAI HEADER DAN MEMBERIKAN ALL BORDERS
     function applyStyles(worksheet) {
       const range = XLSX.utils.decode_range(worksheet['!ref']);
       
@@ -557,7 +559,6 @@
       }
     }
 
-    // EXPORT DATA KE EXCEL
     function exportDataToExcel() {
       if (!adminWines || adminWines.length === 0) {
         alert("Oops, tidak ada data katalog yang bisa di-export!");
@@ -596,7 +597,6 @@
       XLSX.writeFile(workbook, `Export_Katalog_Minuman_${dateStr}.xlsx`);
     }
 
-    // DOWNLOAD TEMPLATE EXCEL
     function downloadTemplate() {
       const templateData = [
         {
