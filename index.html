@@ -46,8 +46,10 @@
     }
     .hero p { color: #c0b0b0; font-size: 0.95rem; margin-top: 0.5rem; text-shadow: 0 1px 5px rgba(0,0,0,0.8); }
 
-    .controls { display: flex; justify-content: center; gap: 0.8rem; margin: 1.8rem 1rem; flex-wrap: wrap; }
-    input, select { 
+    /* Layout Pencarian */
+    .controls { display: flex; justify-content: center; margin: 1.8rem 1rem 1rem; }
+    
+    input { 
       padding: 0.65rem 1.2rem; 
       border-radius: 20px; 
       border: 1px solid rgba(216, 178, 85, 0.25); 
@@ -58,8 +60,50 @@
       outline: none; 
       transition: all 0.3s;
     }
-    input:focus, select:focus { border-color: #d8b255; box-shadow: 0 0 12px rgba(216, 178, 85, 0.3); }
-    .search-input { width: 280px; }
+    input:focus { border-color: #d8b255; box-shadow: 0 0 12px rgba(216, 178, 85, 0.3); }
+    .search-input { width: 100%; max-width: 400px; }
+
+    /* Kategori Filter (Chips/Pills) */
+    .category-filters {
+      display: flex;
+      gap: 0.6rem;
+      padding: 0.5rem 1rem;
+      margin: 0 auto 2rem;
+      max-width: 1400px;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+    .category-filters::-webkit-scrollbar { 
+      display: none; /* Chrome, Safari and Opera */
+    }
+
+    .filter-btn {
+      padding: 0.6rem 1.2rem;
+      border-radius: 20px;
+      border: 1px solid rgba(216, 178, 85, 0.25);
+      background: rgba(18, 11, 11, 0.75);
+      backdrop-filter: blur(10px);
+      color: #ccc;
+      font-size: 0.85rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.3s ease;
+    }
+    
+    .filter-btn:hover {
+      border-color: #d8b255;
+      color: #fff;
+    }
+
+    .filter-btn.active {
+      background: #d8b255;
+      color: #070505;
+      border-color: #d8b255;
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(216, 178, 85, 0.4);
+    }
 
     .wine-grid { 
       display: grid; 
@@ -340,68 +384,40 @@
       <p id="heroSubtitle">Explore our curated collection of wines and spirits.</p>
     </div>
 
+    <!-- Input Search Baru -->
     <div class="controls">
       <input type="text" id="searchInput" class="search-input" placeholder="Search beverage name or region..." oninput="renderWines()">
-      <select id="typeFilter" onchange="renderWines()">
-        <option value="All">All Types</option>
-        
-        <option value="Local Traditional and Grain">Local Traditional and Grain</option>
-        
-        <optgroup label="Vodka">
-          <option value="Import Vodka">Import Vodka</option>
-          <option value="Local Vodka">Local Vodka</option>
-        </optgroup>
-        
-        <optgroup label="Gin">
-          <option value="Import Gin">Import Gin</option>
-          <option value="Local Gin">Local Gin</option>
-        </optgroup>
-        
-        <optgroup label="Rum">
-          <option value="Import Rum">Import Rum</option>
-          <option value="Local Rum">Local Rum</option>
-        </optgroup>
-        
-        <optgroup label="Tequila">
-          <option value="Import Tequila">Import Tequila</option>
-          <option value="Local Tequila">Local Tequila</option>
-        </optgroup>
-        
-        <optgroup label="Liqueur">
-          <option value="Import Liqueur">Import Liqueur</option>
-          <option value="Local Liqueur">Local Liqueur</option>
-        </optgroup>
-        
-        <optgroup label="Whisky">
-          <option value="Import Whisky">Import Whisky</option>
-          <option value="Local Whisky">Local Whisky</option>
-        </optgroup>
-        
-        <optgroup label="Cognac">
-          <option value="Import Cognac">Import Cognac</option>
-          <option value="Local Cognac">Local Cognac</option>
-        </optgroup>
+    </div>
 
-        <optgroup label="Wine & Asian Spirits">
-          <option value="Import Wine">Import Wine</option>
-          <option value="Local Wine">Local Wine</option>
-          <option value="Import Soju">Import Soju</option>
-          <option value="Local Soju">Local Soju</option>
-          <option value="Import Sake">Import Sake</option>
-          <option value="Local Sake">Local Sake</option>
-          <option value="Import Baijiu">Import Baijiu</option>
-        </optgroup>
-
-        <optgroup label="Alcopops">
-          <option value="Local Alcopops">Local Alcopops</option>
-        </optgroup>
-
-        <optgroup label="Others">
-          <option value="Import Beer">Import Beer</option>
-          <option value="Local Beer">Local Beer</option>
-          <option value="Syrup">Syrup</option>
-        </optgroup>
-      </select>
+    <!-- Kumpulan Tombol Kategori (Chips) Pengganti Dropdown -->
+    <div class="category-filters" id="categoryFilters">
+      <button class="filter-btn active" onclick="setFilter('All', this)">Semua Kategori</button>
+      <button class="filter-btn" onclick="setFilter('Local Traditional and Grain', this)">Traditional & Grain</button>
+      <button class="filter-btn" onclick="setFilter('Import Vodka', this)">Import Vodka</button>
+      <button class="filter-btn" onclick="setFilter('Local Vodka', this)">Local Vodka</button>
+      <button class="filter-btn" onclick="setFilter('Import Gin', this)">Import Gin</button>
+      <button class="filter-btn" onclick="setFilter('Local Gin', this)">Local Gin</button>
+      <button class="filter-btn" onclick="setFilter('Import Rum', this)">Import Rum</button>
+      <button class="filter-btn" onclick="setFilter('Local Rum', this)">Local Rum</button>
+      <button class="filter-btn" onclick="setFilter('Import Tequila', this)">Import Tequila</button>
+      <button class="filter-btn" onclick="setFilter('Local Tequila', this)">Local Tequila</button>
+      <button class="filter-btn" onclick="setFilter('Import Liqueur', this)">Import Liqueur</button>
+      <button class="filter-btn" onclick="setFilter('Local Liqueur', this)">Local Liqueur</button>
+      <button class="filter-btn" onclick="setFilter('Import Whisky', this)">Import Whisky</button>
+      <button class="filter-btn" onclick="setFilter('Local Whisky', this)">Local Whisky</button>
+      <button class="filter-btn" onclick="setFilter('Import Cognac', this)">Import Cognac</button>
+      <button class="filter-btn" onclick="setFilter('Local Cognac', this)">Local Cognac</button>
+      <button class="filter-btn" onclick="setFilter('Import Wine', this)">Import Wine</button>
+      <button class="filter-btn" onclick="setFilter('Local Wine', this)">Local Wine</button>
+      <button class="filter-btn" onclick="setFilter('Import Soju', this)">Import Soju</button>
+      <button class="filter-btn" onclick="setFilter('Local Soju', this)">Local Soju</button>
+      <button class="filter-btn" onclick="setFilter('Import Sake', this)">Import Sake</button>
+      <button class="filter-btn" onclick="setFilter('Local Sake', this)">Local Sake</button>
+      <button class="filter-btn" onclick="setFilter('Import Baijiu', this)">Import Baijiu</button>
+      <button class="filter-btn" onclick="setFilter('Local Alcopops', this)">Local Alcopops</button>
+      <button class="filter-btn" onclick="setFilter('Import Beer', this)">Import Beer</button>
+      <button class="filter-btn" onclick="setFilter('Local Beer', this)">Local Beer</button>
+      <button class="filter-btn" onclick="setFilter('Syrup', this)">Syrup</button>
     </div>
 
     <div class="wine-grid" id="wineGrid"></div>
@@ -421,7 +437,6 @@
   <script>
     /* KONFIGURASI SUPABASE */
     const SUPABASE_URL = "https://nuyowvjianxiobpzejnc.supabase.co";
-    /* PASTE ANON KEY SUPABASE MILIKMU (panjang, diawali eyJhbGci...) DI BAWAH INI: */
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eW93dmppYW54aW9icHplam5jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODkyMjUyOCwiZXhwIjoyMTA0NDk4NTI4fQ.-aeTfpvoGy3ICP2LMxa0vGfYggXlldnj5vtouzRm7bg";
     
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -498,8 +513,8 @@
 
     let localWines = [];
     let currentFilteredWines = [];
+    let currentCategory = 'All'; // Variabel untuk menyimpan kategori aktif saat ini
     
-    // Ditambahkan "Baijiu" dan "Alcopops" agar sistem memahaminya sebagai spirit (bukan wine) untuk label detail
     const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whisky", "Cognac", "Soju", "Sake", "Traditional and Grain", "Baijiu", "Alcopops"];
 
     async function fetchWinesFromSupabase() {
@@ -513,7 +528,6 @@
         }
 
         if (data) {
-          // Mapping otomatis untuk mendukung format camelCase maupun snake_case di database
           localWines = data.map(w => ({
             ...w,
             imageUrl: w.imageUrl || w.image_url || '',
@@ -528,10 +542,28 @@
       }
     }
 
+    // Fungsi mengatur klik pada kategori
+    function setFilter(categoryValue, btnElement) {
+      currentCategory = categoryValue;
+
+      // Hapus class 'active' dari semua tombol
+      const buttons = document.querySelectorAll('.filter-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+
+      // Tambahkan class 'active' ke tombol yang diklik
+      btnElement.classList.add('active');
+
+      // Scroll tombol ke tengah saat diklik (membantu UX terutama di mobile)
+      btnElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+
+      // Render ulang data
+      renderWines();
+    }
+
     function renderWines() {
       const grid = document.getElementById('wineGrid');
       const search = document.getElementById('searchInput').value.toLowerCase();
-      const filter = document.getElementById('typeFilter').value;
+      const filter = currentCategory; // Gunakan variabel kategori yang tersimpan
 
       currentFilteredWines = localWines.filter(wine => {
         const matchesSearch = (wine.name && wine.name.toLowerCase().includes(search)) || 
@@ -540,7 +572,6 @@
         return matchesSearch && matchesType;
       });
 
-      // Jika data kosong (karena admin hapus semua atau pencarian tidak ketemu)
       if (currentFilteredWines.length === 0) {
         grid.innerHTML = `
           <div style="grid-column: 1/-1; text-align: center; padding: 5rem 0;">
@@ -552,7 +583,6 @@
       }
 
       grid.innerHTML = currentFilteredWines.map((wine, idx) => {
-        // Cek secara dinamis
         const isSpirit = spiritTypes.some(spirit => wine.type && wine.type.includes(spirit));
         
         return `
@@ -593,7 +623,6 @@
       const wine = currentFilteredWines[index];
       if (!wine) return;
       
-      // Cek secara dinamis
       const isSpirit = spiritTypes.some(spirit => wine.type && wine.type.includes(spirit));
 
       document.getElementById('detailContent').innerHTML = `
@@ -640,13 +669,8 @@
       window.open(`https://wa.me/6281234567890?text=${encodeURIComponent(message)}`, '_blank');
     }
 
-    // 1. Panggil data awal saat halaman dimuat
     fetchWinesFromSupabase();
 
-    // ==========================================
-    // 2. SUPABASE REALTIME SUBSCRIPTION
-    // Menjalankan fungsi fetch ulang otomatis saat ada perubahan di Admin (Insert/Update/Delete)
-    // ==========================================
     supabaseClient
       .channel('public:wines')
       .on(
@@ -654,7 +678,6 @@
         { event: '*', schema: 'public', table: 'wines' },
         (payload) => {
           console.log('Perubahan Data dari Admin Terdeteksi:', payload);
-          // Refresh data tanpa perlu reload browser
           fetchWinesFromSupabase();
         }
       )
