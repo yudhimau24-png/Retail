@@ -272,12 +272,14 @@
       <p id="heroSubtitle">Explore our curated collection of wines and spirits.</p>
     </div>
 
+    <!-- Input Search Baru -->
     <div class="controls">
       <input type="text" id="searchInput" class="search-input" placeholder="Search beverage name or region..." oninput="renderWines()">
     </div>
 
-    <!-- Kategori Utama (Hanya Tipe Minuman) -->
+    <!-- Kategori Utama -->
     <div class="category-filters" id="mainCategories">
+      <button class="filter-btn" onclick="setMainCategory('Semua', this)">Semua Kategori</button>
       <button class="filter-btn" onclick="setMainCategory('Vodka', this)">Vodka</button>
       <button class="filter-btn" onclick="setMainCategory('Gin', this)">Gin</button>
       <button class="filter-btn" onclick="setMainCategory('Rum', this)">Rum</button>
@@ -373,7 +375,7 @@
     let localWines = [];
     let currentFilteredWines = [];
     
-    // Variabel filter
+    // Variabel state untuk filter (Awalnya kosong)
     let currentMainCategory = null; 
     let currentSubCategory = 'Semua'; 
     
@@ -403,22 +405,28 @@
     // Fungsi klik Kategori Utama
     function setMainCategory(category, btnElement) {
       currentMainCategory = category;
-      currentSubCategory = 'Semua'; // Reset sub-kategori tiap kali kategori utama berubah
+      currentSubCategory = 'Semua'; // Reset sub-kategori ke 'Semua'
 
       // Update warna tombol utama
       document.querySelectorAll('#mainCategories .filter-btn').forEach(btn => btn.classList.remove('active'));
       btnElement.classList.add('active');
+      
+      // Auto-scroll tombol ke tengah agar terlihat rapi di layar HP
       btnElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 
-      // Munculkan menu sub-kategori (Local/Import)
       const subContainer = document.getElementById('subCategories');
-      subContainer.style.display = 'flex';
       
-      // Update warna tombol sub-kategori kembali ke 'Semua'
-      document.querySelectorAll('#subCategories .sub-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if(btn.dataset.sub === 'Semua') btn.classList.add('active');
-      });
+      // Logika untuk memunculkan/menyembunyikan Sub Kategori (Local/Import)
+      if (category === 'Semua') {
+        subContainer.style.display = 'none'; // Sembunyikan jika pilih Semua Kategori
+      } else {
+        subContainer.style.display = 'flex'; // Tampilkan jika pilih jenis minuman spesifik
+        // Kembalikan tombol sub-kategori ke default 'Semua'
+        document.querySelectorAll('#subCategories .sub-btn').forEach(btn => {
+          btn.classList.remove('active');
+          if(btn.dataset.sub === 'Semua') btn.classList.add('active');
+        });
+      }
 
       renderWines();
     }
@@ -434,11 +442,12 @@
       renderWines();
     }
 
+    // Fungsi Render dan Filter Data
     function renderWines() {
       const grid = document.getElementById('wineGrid');
       const search = document.getElementById('searchInput').value.toLowerCase();
 
-      // LOGIKA AWAL: Jika kategori belum ada yang dipilih dan tidak ada pencarian, sembunyikan grid
+      // Jika kategori belum dipilih dan tidak ada pencarian, sembunyikan grid
       if (!currentMainCategory && !search) {
         grid.innerHTML = `
           <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem;">
@@ -459,17 +468,15 @@
                           (wine.region && wine.region.toLowerCase().includes(search));
         }
 
-        // 2. Cek Kategori Utama 
+        // 2. Cek Kategori Utama (Bypass jika pilih 'Semua')
         let matchesMain = true;
-        if (currentMainCategory) {
-          // Menggunakan 'includes' agar "Vodka" cocok dengan "Import Vodka" atau "Local Vodka" di database
+        if (currentMainCategory && currentMainCategory !== 'Semua') {
           matchesMain = wine.type && wine.type.toLowerCase().includes(currentMainCategory.toLowerCase());
         }
 
-        // 3. Cek Sub-Kategori (Local / Import)
+        // 3. Cek Sub-Kategori Local / Import (Bypass jika pilih 'Semua')
         let matchesSub = true;
-        if (currentMainCategory && currentSubCategory !== 'Semua') {
-          // Cari kata "Local" atau "Import" di dalam tipe
+        if (currentMainCategory && currentMainCategory !== 'Semua' && currentSubCategory !== 'Semua') {
           matchesSub = wine.type && wine.type.toLowerCase().includes(currentSubCategory.toLowerCase());
         }
 
