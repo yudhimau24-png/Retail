@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Portal - Private Reserve Collection</title>
+  <title>Admin Portal - Retail Shop</title>
   <!-- Supabase & SheetJS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -52,6 +52,10 @@
     .btn-danger { padding: 0.75rem 1.5rem; border-radius: 10px; border: none; background: linear-gradient(135deg, #e53935 0%, #b71c1c 100%); color: #fff; font-weight: 800; font-size: 0.9rem; cursor: pointer; }
     .btn-danger:hover { background: linear-gradient(135deg, #ef5350 0%, #c62828 100%); }
 
+    /* TOMBOL BARU: EXPORT EXCEL */
+    .btn-success { padding: 0.75rem 1.5rem; border-radius: 10px; border: none; background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); color: #fff; font-weight: 800; font-size: 0.9rem; cursor: pointer; }
+    .btn-success:hover { background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%); }
+
     .image-preview-container { display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem; }
     .image-preview-box { width: 70px; height: 70px; border-radius: 10px; border: 1px dashed rgba(216, 178, 85, 0.4); background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .image-preview-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
@@ -98,7 +102,7 @@
     <div class="hero">
       <button class="btn-logout" onclick="handleLogout()">🔒 Logout</button>
       <h1>⚙️ Admin Dashboard - Private Reserve</h1>
-      <p>Kelola data katalog minuman, stok, tag menu shop, dan import file Excel/CSV.</p>
+      <p>Kelola data katalog minuman, stok, tag menu shop, import, dan export file Excel.</p>
     </div>
 
     <!-- IMPORT EXCEL -->
@@ -106,7 +110,7 @@
       <h2>📂 Import Massal (Excel / CSV)</h2>
       <div class="form-grid">
         <div class="form-group full-width">
-          <label>Pilih File Excel / CSV</label>
+          <label>Pilih File Excel / CSV (Gunakan Template)</label>
           <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv">
         </div>
       </div>
@@ -171,7 +175,6 @@
             </select>
           </div>
 
-          <!-- FITUR BARU: MENU KOLEKSI SHOP -->
           <div class="form-group">
             <label>Koleksi Menu (Shop)</label>
             <select id="wineCollection">
@@ -220,8 +223,10 @@
     <div class="admin-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap: 1rem;">
         <h2>🍷 Daftar Katalog Minuman</h2>
-        <div style="display:flex; gap: 1rem; align-items:center;">
+        <div style="display:flex; gap: 1rem; align-items:center; flex-wrap: wrap;">
           <input type="text" id="adminSearch" style="width:250px;" placeholder="Cari nama / wilayah..." oninput="renderAdminTable()">
+          <!-- TOMBOL EXPORT BARU -->
+          <button class="btn-success" onclick="exportDataToExcel()">📊 Export ke Excel</button>
           <button class="btn-danger" onclick="deleteAllWines()">🗑️ Hapus Semua</button>
         </div>
       </div>
@@ -246,7 +251,7 @@
     </div>
 
     <footer>
-      <p>&copy; 2026 Copyright by <strong>Mitra Buana Intimas</strong>. All Rights Reserved.</p>
+      <p>&copy; 2026 Copyright by <strong>RETAIL LIQUOR SHOP</strong>. All Rights Reserved.</p>
     </footer>
   </div>
 
@@ -383,7 +388,6 @@
       }
 
       tbody.innerHTML = filtered.map((w) => {
-        // Tampilan Badge Koleksi
         let collectionBadge = '-';
         if (w.collection === 'Best Seller') collectionBadge = '<span class="badge-collection" style="color:#ffb300; background:rgba(255, 179, 0, 0.2)">⭐ Best Seller</span>';
         else if (w.collection === 'New Arrival') collectionBadge = '<span class="badge-collection" style="color:#00e676; background:rgba(0, 230, 118, 0.2)">✨ New Arrival</span>';
@@ -422,7 +426,6 @@
       document.getElementById('wineServingTemp').value = w.servingTemp || '';
       document.getElementById('wineStockStatus').value = w.stockStatus || 'In Stock';
       
-      // Load value koleksi (Shop Menu)
       document.getElementById('wineCollection').value = w.collection || 'All Products';
 
       document.getElementById('wineImageUrl').value = w.imageUrl || '';
@@ -465,7 +468,7 @@
         abv: document.getElementById('wineAbv').value,
         servingTemp: document.getElementById('wineServingTemp').value,
         stockStatus: document.getElementById('wineStockStatus').value,
-        collection: document.getElementById('wineCollection').value, // Simpan status menu shop
+        collection: document.getElementById('wineCollection').value,
         imageUrl: imageUrl,
         notes: document.getElementById('wineNotes').value,
         pairing: document.getElementById('winePairing').value,
@@ -514,6 +517,60 @@
       }
     }
 
+    // FUNGSI BARU: EXPORT DATA KE EXCEL
+    function exportDataToExcel() {
+      if (!adminWines || adminWines.length === 0) {
+        alert("Oops, tidak ada data katalog yang bisa di-export!");
+        return;
+      }
+
+      // Mapping data dari Supabase ke format kolom Excel
+      const exportData = adminWines.map(w => ({
+        "FOTO": w.imageUrl || '',
+        "NAMA MINUMAN": w.name || '',
+        "VINTAGE": w.vintage || 'NV',
+        "KATEGORI": w.type || '',
+        "WILAYAH": w.region || '-',
+        "KOLEKSI SHOP": w.collection || 'All Products',
+        "VARIETAL": w.varietal || '-',
+        "ABV": w.abv || '-',
+        "SUHU PENYAJIAN": w.servingTemp || '-',
+        "STATUS STOK": w.stockStatus || 'In Stock',
+        "TASTING NOTES": w.notes || '-',
+        "FOOD PAIRING": w.pairing || '-',
+        "STORAGE NOTE": w.storageNote || '-'
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      
+      // Mengatur lebar kolom agar rapi saat dibuka di Excel
+      worksheet['!cols'] = [
+        { wch: 45 }, // FOTO (URL)
+        { wch: 35 }, // NAMA
+        { wch: 10 }, // VINTAGE
+        { wch: 18 }, // KATEGORI
+        { wch: 25 }, // WILAYAH
+        { wch: 15 }, // KOLEKSI SHOP
+        { wch: 25 }, // VARIETAL
+        { wch: 10 }, // ABV
+        { wch: 20 }, // SUHU PENYAJIAN
+        { wch: 15 }, // STATUS STOK
+        { wch: 40 }, // TASTING NOTES
+        { wch: 35 }, // FOOD PAIRING
+        { wch: 25 }  // STORAGE NOTE
+      ];
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Data_Katalog");
+      
+      // Membuat nama file dengan tanggal hari ini
+      const dateStr = new Date().toISOString().split('T')[0];
+      const fileName = `Export_Katalog_Minuman_${dateStr}.xlsx`;
+      
+      // Proses download
+      XLSX.writeFile(workbook, fileName);
+    }
+
     function downloadTemplate() {
       const templateData = [
         {
@@ -522,7 +579,7 @@
           "VINTAGE": "2022",
           "KATEGORI": "Import Wine",
           "WILAYAH": "Rioja DOCa, Spain",
-          "KOLEKSI SHOP": "Best Seller", // Kolom baru untuk import Excel
+          "KOLEKSI SHOP": "Best Seller", 
           "VARIETAL": "Tempranillo",
           "ABV": "13%",
           "SUHU PENYAJIAN": "16°C - 18°C",
@@ -530,28 +587,13 @@
           "TASTING NOTES": "-",
           "FOOD PAIRING": "-",
           "STORAGE NOTE": "-"
-        },
-        {
-          "FOTO": "",
-          "NAMA MINUMAN": "ABSOLUT VODKA",
-          "VINTAGE": "NAS",
-          "KATEGORI": "Import Vodka",
-          "WILAYAH": "Ahus, Sweden",
-          "KOLEKSI SHOP": "New Arrival",
-          "VARIETAL": "Winter Wheat",
-          "ABV": "40%",
-          "SUHU PENYAJIAN": "Ice Cold (0°C - 4°C)",
-          "STATUS STOK": "In Stock",
-          "TASTING NOTES": "Rich, full-bodied, complex yet smooth and mellow with grain character",
-          "FOOD PAIRING": "Chilled Shot / Vodka Tonic / Cocktail",
-          "STORAGE NOTE": "Continuous Distillation"
         }
       ];
 
       const worksheet = XLSX.utils.json_to_sheet(templateData);
       
       worksheet['!cols'] = [
-        { wch: 15 }, { wch: 30 }, { wch: 10 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, // Foto - Koleksi
+        { wch: 15 }, { wch: 30 }, { wch: 10 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, 
         { wch: 25 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 40 }, { wch: 35 }, { wch: 25 } 
       ];
 
@@ -576,7 +618,7 @@
           vintage: row["VINTAGE"] || row.Vintage || row.vintage || 'NV',
           type: row["KATEGORI"] || row.Type || row.type || 'Import Wine',
           region: row["WILAYAH"] || row.Region || row.region || '-',
-          collection: row["KOLEKSI SHOP"] || row.Collection || row.collection || 'All Products', // Mengambil tag koleksi
+          collection: row["KOLEKSI SHOP"] || row.Collection || row.collection || 'All Products',
           varietal: row["VARIETAL"] || row.Varietal || row.varietal || '-',
           abv: row["ABV"] || row.ABV || row.abv || '-',
           servingTemp: row["SUHU PENYAJIAN"] || row.ServingTemp || row.servingTemp || '-',
