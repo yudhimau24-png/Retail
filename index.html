@@ -107,13 +107,13 @@
     }
     
     .sub-btn {
-      padding: 0.5rem 1.2rem;
+      padding: 0.6rem 2rem;
       border-radius: 15px;
       border: 1px dashed rgba(216, 178, 85, 0.4);
       background: rgba(18, 11, 11, 0.6);
       backdrop-filter: blur(5px);
       color: #aaa;
-      font-size: 0.8rem;
+      font-size: 0.9rem;
       cursor: pointer;
       transition: all 0.3s ease;
     }
@@ -272,7 +272,6 @@
       <p id="heroSubtitle">Explore our curated collection of wines and spirits.</p>
     </div>
 
-    <!-- Input Search Baru -->
     <div class="controls">
       <input type="text" id="searchInput" class="search-input" placeholder="Search beverage name or region..." oninput="renderWines()">
     </div>
@@ -299,7 +298,7 @@
 
     <!-- Sub Kategori (Local / Import) - Disembunyikan awalnya -->
     <div class="category-filters sub-filters" id="subCategories" style="display: none;">
-      <button class="sub-btn active" data-sub="Semua" onclick="setSubCategory('Semua', this)">Semua</button>
+      <!-- Hanya ada Local dan Import. User WAJIB pilih salah satu untuk memunculkan data -->
       <button class="sub-btn" data-sub="Local" onclick="setSubCategory('Local', this)">🇮🇩 Local</button>
       <button class="sub-btn" data-sub="Import" onclick="setSubCategory('Import', this)">🌍 Import</button>
     </div>
@@ -308,7 +307,7 @@
     <div class="wine-grid" id="wineGrid"></div>
 
     <footer>
-      <p>&copy; 2026 Copyright by <strong>Mitra Buana Intimas</strong>. All Rights Reserved.</p>
+      <p>&copy; 2026 Copyright by <strong>RETAIL LIQUOR SHOP</strong>. All Rights Reserved.</p>
     </footer>
   </div>
 
@@ -375,9 +374,9 @@
     let localWines = [];
     let currentFilteredWines = [];
     
-    // Variabel state untuk filter (Awalnya kosong)
+    // Variabel state untuk memantau status filter saat ini
     let currentMainCategory = null; 
-    let currentSubCategory = 'Semua'; 
+    let currentSubCategory = null; // Awalnya null, agar produk tidak langsung muncul
     
     const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whisky", "Cognac", "Soju", "Sake", "Traditional and Grain", "Baijiu", "Alcopops"];
 
@@ -402,98 +401,104 @@
       } catch (err) { console.error('Error fetching Supabase data:', err); }
     }
 
-    // Fungsi klik Kategori Utama
+    // STEP 1: Fungsi saat Tipe Minuman diklik
     function setMainCategory(category, btnElement) {
       currentMainCategory = category;
-      currentSubCategory = 'Semua'; // Reset sub-kategori ke 'Semua'
+      currentSubCategory = null; // Reset sub-kategori, memaksa user pilih Local/Import lagi
 
-      // Update warna tombol utama
+      // Styling tombol kategori utama
       document.querySelectorAll('#mainCategories .filter-btn').forEach(btn => btn.classList.remove('active'));
       btnElement.classList.add('active');
-      
-      // Auto-scroll tombol ke tengah agar terlihat rapi di layar HP
       btnElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 
       const subContainer = document.getElementById('subCategories');
       
-      // Logika untuk memunculkan/menyembunyikan Sub Kategori (Local/Import)
       if (category === 'Semua') {
-        subContainer.style.display = 'none'; // Sembunyikan jika pilih Semua Kategori
+        // Jika klik "Semua Kategori", langsung tampilkan semua, hilangkan filter Local/Import
+        subContainer.style.display = 'none'; 
+        currentSubCategory = 'Semua'; 
       } else {
-        subContainer.style.display = 'flex'; // Tampilkan jika pilih jenis minuman spesifik
-        // Kembalikan tombol sub-kategori ke default 'Semua'
-        document.querySelectorAll('#subCategories .sub-btn').forEach(btn => {
-          btn.classList.remove('active');
-          if(btn.dataset.sub === 'Semua') btn.classList.add('active');
-        });
+        // Jika klik Vodka, Gin, dll -> Tampilkan tombol Local & Import
+        subContainer.style.display = 'flex'; 
+        // Pastikan tombol Local & Import di-reset warnanya
+        document.querySelectorAll('#subCategories .sub-btn').forEach(btn => btn.classList.remove('active'));
       }
 
-      renderWines();
+      renderWines(); // Jalankan render (akan menampilkan pesan suruh pilih Local/Import)
     }
 
-    // Fungsi klik Sub-Kategori (Local/Import)
+    // STEP 2: Fungsi saat Local atau Import diklik
     function setSubCategory(subType, btnElement) {
       currentSubCategory = subType;
       
-      // Update warna tombol sub-kategori
+      // Styling tombol Local / Import
       document.querySelectorAll('#subCategories .sub-btn').forEach(btn => btn.classList.remove('active'));
       btnElement.classList.add('active');
 
-      renderWines();
+      renderWines(); // Jalankan render (sekarang baru memunculkan daftar botolnya)
     }
 
-    // Fungsi Render dan Filter Data
     function renderWines() {
       const grid = document.getElementById('wineGrid');
       const search = document.getElementById('searchInput').value.toLowerCase();
 
-      // Jika kategori belum dipilih dan tidak ada pencarian, sembunyikan grid
+      // KONDISI A: Halaman pertama kali dibuka (Belum pilih apapun)
       if (!currentMainCategory && !search) {
         grid.innerHTML = `
           <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem;">
             <div style="font-size: 3.5rem; margin-bottom: 1rem; opacity: 0.8;">🍷</div>
             <h2 style="color: #d8b255; font-size: 1.5rem; margin-bottom: 0.5rem; font-family: 'Georgia', serif;">Pilih Kategori Minuman</h2>
-            <p style="color: #887575; font-size: 1rem;">Silakan klik salah satu kategori di atas untuk menampilkan daftar produk.</p>
+            <p style="color: #887575; font-size: 1rem;">Silakan klik salah satu kategori di atas untuk memulai pencarian.</p>
           </div>
         `;
         return;
       }
 
-      // Filter Data
+      // KONDISI B: Kategori spesifik sudah diklik (contoh: Vodka), TAPI Local/Import belum diklik
+      if (currentMainCategory && currentMainCategory !== 'Semua' && !currentSubCategory && !search) {
+        grid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.8;">👇</div>
+            <h2 style="color: #d8b255; font-size: 1.3rem; margin-bottom: 0.5rem; font-family: 'Georgia', serif;">Pilih Tipe ${currentMainCategory}</h2>
+            <p style="color: #887575; font-size: 1rem;">Silakan pilih <strong>Local</strong> atau <strong>Import</strong> di atas untuk menampilkan produk.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // KONDISI C: Filter Data (Ketika Local/Import sudah dipilih, atau mode 'Semua')
       currentFilteredWines = localWines.filter(wine => {
-        // 1. Cek Pencarian Text
         let matchesSearch = true;
         if (search) {
           matchesSearch = (wine.name && wine.name.toLowerCase().includes(search)) || 
                           (wine.region && wine.region.toLowerCase().includes(search));
         }
 
-        // 2. Cek Kategori Utama (Bypass jika pilih 'Semua')
         let matchesMain = true;
         if (currentMainCategory && currentMainCategory !== 'Semua') {
           matchesMain = wine.type && wine.type.toLowerCase().includes(currentMainCategory.toLowerCase());
         }
 
-        // 3. Cek Sub-Kategori Local / Import (Bypass jika pilih 'Semua')
         let matchesSub = true;
-        if (currentMainCategory && currentMainCategory !== 'Semua' && currentSubCategory !== 'Semua') {
+        // Hanya saring Sub-Kategori jika user sudah klik Local/Import (dan bukan mode 'Semua')
+        if (currentMainCategory && currentMainCategory !== 'Semua' && currentSubCategory && currentSubCategory !== 'Semua') {
           matchesSub = wine.type && wine.type.toLowerCase().includes(currentSubCategory.toLowerCase());
         }
 
         return matchesSearch && matchesMain && matchesSub;
       });
 
-      // Jika data kosong setelah difilter
+      // Jika data kosong
       if (currentFilteredWines.length === 0) {
         grid.innerHTML = `
           <div style="grid-column: 1/-1; text-align: center; padding: 4rem 0;">
-            <p style="color: #888; font-size: 1.1rem;">Oops, tidak ada produk yang sesuai untuk pilihan ini.</p>
+            <p style="color: #888; font-size: 1.1rem;">Oops, tidak ada produk yang tersedia untuk kategori ini.</p>
           </div>
         `;
         return;
       }
 
-      // Render Grid Produk
+      // Tampilkan HTML Produk
       grid.innerHTML = currentFilteredWines.map((wine, idx) => {
         const isSpirit = spiritTypes.some(spirit => wine.type && wine.type.includes(spirit));
         
