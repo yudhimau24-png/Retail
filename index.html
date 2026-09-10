@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Retail Catalog</title>
   
-  <!-- Font Montserrat dari Google Fonts agar persis seperti gambar -->
+  <!-- Font Montserrat dari Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
   
   <!-- Supabase JS SDK -->
@@ -34,7 +34,7 @@
     #catalogPage { position: relative; z-index: 1; }
 
     /* ========================================= */
-    /* STYLING NAVIGATION BAR (Sesuai Gambar)    */
+    /* STYLING NAVIGATION BAR                    */
     /* ========================================= */
     .top-navbar {
       background-color: #1a1a1a;
@@ -50,7 +50,7 @@
       list-style: none;
       display: flex;
       align-items: center;
-      gap: 2.5rem; /* Jarak antar menu */
+      gap: 2.5rem;
     }
 
     .nav-links li {
@@ -59,7 +59,7 @@
 
     .nav-links a {
       text-decoration: none;
-      color: #f0f0f0; /* Warna putih standar */
+      color: #f0f0f0;
       font-family: 'Montserrat', sans-serif;
       font-size: 0.85rem;
       font-weight: 700;
@@ -69,21 +69,21 @@
       align-items: center;
       gap: 0.4rem;
       transition: color 0.3s ease;
+      cursor: pointer;
     }
 
     .nav-links a:hover, .nav-links li:hover > a {
-      color: #d8b255; /* Warna emas saat di-hover */
+      color: #d8b255;
     }
 
     .nav-links a.active {
-      color: #d8b255; /* Warna emas untuk menu aktif (HOME) */
+      color: #d8b255;
     }
 
     .nav-links a.sale {
-      color: #d9453a; /* Warna merah untuk SALE */
+      color: #d9453a;
     }
 
-    /* Ikon Panah Dropdown */
     .arrow {
       width: 10px;
       height: 10px;
@@ -95,7 +95,6 @@
       margin-top: 1px;
     }
 
-    /* Badge HOT */
     .badge-hot {
       background-color: #d9453a;
       color: #fff;
@@ -109,7 +108,6 @@
       transform: translateY(-1px);
     }
 
-    /* Dropdown Menu CSS */
     .dropdown-content {
       display: none;
       position: absolute;
@@ -127,7 +125,6 @@
       transition: opacity 0.3s ease, transform 0.3s ease;
     }
     
-    /* Jembatan transparan agar hover tidak terputus saat kursor turun */
     .dropdown::after {
       content: '';
       position: absolute;
@@ -159,7 +156,6 @@
       color: #d8b255;
     }
 
-    /* Responsive untuk navbar di HP */
     @media (max-width: 768px) {
       .nav-links { gap: 1rem; overflow-x: auto; padding-bottom: 0.5rem; }
       .top-navbar { padding: 1rem; justify-content: flex-start; }
@@ -184,7 +180,6 @@
     }
     .hero p { color: #c0b0b0; font-size: 0.95rem; margin-top: 0.5rem; text-shadow: 0 1px 5px rgba(0,0,0,0.8); }
 
-    /* Layout Pencarian & Filter */
     .controls { display: flex; justify-content: center; margin: 1.8rem 1rem 1rem; }
     input { padding: 0.65rem 1.2rem; border-radius: 20px; border: 1px solid rgba(216, 178, 85, 0.25); background: rgba(18, 11, 11, 0.75); backdrop-filter: blur(10px); color: #fff; font-size: 0.85rem; outline: none; transition: all 0.3s; }
     input:focus { border-color: #d8b255; box-shadow: 0 0 12px rgba(216, 178, 85, 0.3); }
@@ -273,44 +268,43 @@
 
   <div id="catalogPage">
     
-    <!-- NAVIGATION BAR (BARU) -->
+    <!-- NAVIGATION BAR -->
     <nav class="top-navbar">
       <ul class="nav-links">
-        <li><a href="#" class="active">HOME</a></li>
+        <li><a href="javascript:void(0)" class="active">HOME</a></li>
         
-        <!-- Menu dengan Dropdown -->
+        <!-- BUTTON CATEGORY DI NAVBAR (Berfungsi seperti "Semua Kategori" sebelumnya) -->
+        <li><a href="javascript:void(0)" onclick="setMainCategory('Semua', this)">CATEGORY</a></li>
+        
         <li class="dropdown">
-          <a href="#">
+          <a href="javascript:void(0)">
             SHOP 
             <svg class="arrow" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
           </a>
-          <!-- Isi Dropdown (Tampil saat di hover) -->
           <ul class="dropdown-content">
-            <li><a href="#">Best Sellers</a></li>
-            <li><a href="#">New Arrivals</a></li>
-            <li><a href="#">All Products</a></li>
+            <li><a href="javascript:void(0)">Best Sellers</a></li>
+            <li><a href="javascript:void(0)">New Arrivals</a></li>
+            <li><a href="javascript:void(0)">All Products</a></li>
           </ul>
         </li>
 
-        <!-- Menu dengan Dropdown -->
         <li class="dropdown">
-          <a href="#">
+          <a href="javascript:void(0)">
             BRANDS 
             <svg class="arrow" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
           </a>
           <ul class="dropdown-content">
-            <li><a href="#">Local Brands</a></li>
-            <li><a href="#">Import Brands</a></li>
-            <li><a href="#">Exclusive</a></li>
+            <li><a href="javascript:void(0)">Local Brands</a></li>
+            <li><a href="javascript:void(0)">Import Brands</a></li>
+            <li><a href="javascript:void(0)">Exclusive</a></li>
           </ul>
         </li>
 
-        <li><a href="#">COLLECTIONS</a></li>
-        <li><a href="#">OUR STORE</a></li>
+        <li><a href="javascript:void(0)">COLLECTIONS</a></li>
+        <li><a href="javascript:void(0)">OUR STORE</a></li>
         
-        <!-- Menu SALE dengan Badge HOT -->
         <li>
-          <a href="#" class="sale">
+          <a href="javascript:void(0)" class="sale">
             SALE <span class="badge-hot">HOT</span>
           </a>
         </li>
@@ -327,9 +321,8 @@
       <input type="text" id="searchInput" class="search-input" placeholder="Search beverage name or region..." oninput="renderWines()">
     </div>
 
-    <!-- Kategori Utama -->
+    <!-- Kategori Utama (Tombol 'Semua Kategori' sudah dihapus dari sini) -->
     <div class="category-filters" id="mainCategories">
-      <button class="filter-btn" onclick="setMainCategory('Semua', this)">Semua Kategori</button>
       <button class="filter-btn" onclick="setMainCategory('Vodka', this)">Vodka</button>
       <button class="filter-btn" onclick="setMainCategory('Gin', this)">Gin</button>
       <button class="filter-btn" onclick="setMainCategory('Rum', this)">Rum</button>
@@ -356,7 +349,7 @@
     <div class="wine-grid" id="wineGrid"></div>
 
     <footer>
-      <p>&copy; 2026 Copyright by <strong>RETAIL LIQUOR SHOP</strong>. All Rights Reserved.</p>
+      <p>&copy; 2026 Copyright by <strong>Mitra Buana Intimas</strong>. All Rights Reserved.</p>
     </footer>
   </div>
 
@@ -449,13 +442,19 @@
       } catch (err) { console.error('Error fetching Supabase data:', err); }
     }
 
+    // Fungsi Kategori yang disesuaikan
     function setMainCategory(category, btnElement) {
       currentMainCategory = category;
       currentSubCategory = null;
 
+      // Matikan warna aktif di semua tombol kategori bawah
       document.querySelectorAll('#mainCategories .filter-btn').forEach(btn => btn.classList.remove('active'));
-      btnElement.classList.add('active');
-      btnElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      
+      // Jika yang di-klik adalah tombol bawah (bukan nav atas), nyalakan efek aktifnya
+      if (btnElement && btnElement.classList.contains('filter-btn')) {
+        btnElement.classList.add('active');
+        btnElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
 
       const subContainer = document.getElementById('subCategories');
       
