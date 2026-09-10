@@ -354,13 +354,16 @@
     async function uploadImageToSupabase(file) {
       const fileExt = file.name.split('.').pop();
       const fileName = `bottle_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
-      const { data, error } = await supabaseClient.storage.from('bottle-images').upload(fileName, file);
+      
+      // Opsi perbaikan nama bucket agar tidak "Bucket not found"
+      const bucketName = 'bottle-images';
+      const { data, error } = await supabaseClient.storage.from(bucketName).upload(fileName, file);
 
       if (error) {
-        alert('Gagal upload gambar ke Supabase: ' + error.message);
+        alert('Gagal upload gambar ke Supabase Storage (' + bucketName + '): ' + error.message + '\n\nPetunjuk: Buat Storage Bucket bernama "' + bucketName + '" di Dashboard Supabase Anda.');
         return null;
       }
-      const { data: publicUrlData } = supabaseClient.storage.from('bottle-images').getPublicUrl(fileName);
+      const { data: publicUrlData } = supabaseClient.storage.from(bucketName).getPublicUrl(fileName);
       return publicUrlData.publicUrl;
     }
 
@@ -372,6 +375,8 @@
         if (!error && data) {
           adminWines = data;
           renderAdminTable();
+        } else if (error) {
+          console.error('Error fetching data:', error.message);
         }
       } catch (err) { console.error('Error loading Supabase data:', err); }
     }
@@ -455,7 +460,11 @@
 
       if (selectedFileForUpload) {
         const uploadedUrl = await uploadImageToSupabase(selectedFileForUpload);
-        if (uploadedUrl) imageUrl = uploadedUrl;
+        if (uploadedUrl) {
+          imageUrl = uploadedUrl;
+        } else {
+          return; // Batalkan proses jika upload foto lokal gagal/bucket tidak ada
+        }
       }
 
       const wineData = {
@@ -496,6 +505,8 @@
       if (!error) {
         alert('Data berhasil dihapus!');
         loadAdminData();
+      } else {
+        alert('Gagal menghapus: ' + error.message);
       }
     }
 
@@ -520,7 +531,6 @@
     function applyStyles(worksheet) {
       const range = XLSX.utils.decode_range(worksheet['!ref']);
       
-      // Konfigurasi garis batas (border tipis warna hitam)
       const borderStyle = {
         top: { style: "thin", color: { rgb: "000000" } },
         bottom: { style: "thin", color: { rgb: "000000" } },
@@ -528,23 +538,17 @@
         right: { style: "thin", color: { rgb: "000000" } }
       };
 
-      // Loop seluruh baris (R) dan kolom (C)
       for (let R = range.s.r; R <= range.e.r; ++R) {
         for (let C = range.s.c; C <= range.e.c; ++C) {
           const address = XLSX.utils.encode_cell({ r: R, c: C });
           
-          // Jika cell kosong, inisialisasi agar border tetap bisa digambar
           if (!worksheet[address]) {
             worksheet[address] = { t: 's', v: '' };
           }
           
-          // Pastikan object style `s` ada
           worksheet[address].s = worksheet[address].s || {};
-          
-          // Terapkan border ke setiap sel
           worksheet[address].s.border = borderStyle;
 
-          // Khusus Baris 0 (Header): Berikan background kuning dan tulisan bold
           if (R === 0) {
             worksheet[address].s.fill = { fgColor: { rgb: "FFFF00" } };
             worksheet[address].s.font = { bold: true, color: { rgb: "000000" } };
@@ -583,7 +587,7 @@
         { wch: 25 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 40 }, { wch: 35 }, { wch: 25 }
       ];
 
-      applyStyles(worksheet); // Panggil fungsi styling (borders & header)
+      applyStyles(worksheet);
 
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Data_Katalog");
@@ -619,7 +623,7 @@
         { wch: 25 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 40 }, { wch: 35 }, { wch: 25 } 
       ];
 
-      applyStyles(worksheet); // Panggil fungsi styling (borders & header)
+      applyStyles(worksheet);
 
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Template_Katalog");
