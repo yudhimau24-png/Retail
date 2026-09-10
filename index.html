@@ -114,7 +114,7 @@
       top: 100%;
       left: 0;
       background-color: #1a1a1a;
-      min-width: 180px;
+      min-width: 190px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.8);
       border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 4px;
@@ -123,7 +123,17 @@
       opacity: 0;
       transform: translateY(10px);
       transition: opacity 0.3s ease, transform 0.3s ease;
+      
+      /* Tambahan agar bisa di-scroll jika kategori sangat banyak */
+      max-height: 400px;
+      overflow-y: auto;
     }
+
+    /* Style scrollbar khusus dropdown */
+    .dropdown-content::-webkit-scrollbar { width: 6px; }
+    .dropdown-content::-webkit-scrollbar-track { background: transparent; }
+    .dropdown-content::-webkit-scrollbar-thumb { background: rgba(216, 178, 85, 0.5); border-radius: 3px; }
+    .dropdown-content::-webkit-scrollbar-thumb:hover { background: #d8b255; }
     
     .dropdown::after {
       content: '';
@@ -185,13 +195,8 @@
     input:focus { border-color: #d8b255; box-shadow: 0 0 12px rgba(216, 178, 85, 0.3); }
     .search-input { width: 100%; max-width: 400px; }
 
-    .category-filters { display: flex; gap: 0.6rem; padding: 0.5rem 1rem; margin: 0 auto 1rem; max-width: 1400px; overflow-x: auto; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; }
-    .category-filters::-webkit-scrollbar { display: none; }
-    .filter-btn { padding: 0.6rem 1.2rem; border-radius: 20px; border: 1px solid rgba(216, 178, 85, 0.25); background: rgba(18, 11, 11, 0.75); backdrop-filter: blur(10px); color: #ccc; font-size: 0.85rem; cursor: pointer; white-space: nowrap; transition: all 0.3s ease; }
-    .filter-btn:hover { border-color: #d8b255; color: #fff; }
-    .filter-btn.active { background: #d8b255; color: #070505; border-color: #d8b255; font-weight: 700; box-shadow: 0 0 12px rgba(216, 178, 85, 0.4); }
-
-    .sub-filters { justify-content: center; margin-bottom: 2rem; gap: 0.8rem; }
+    /* Sub Kategori (Local / Import) Styling */
+    .sub-filters { display: flex; justify-content: center; margin-bottom: 2rem; gap: 0.8rem; }
     .sub-btn { padding: 0.6rem 2rem; border-radius: 15px; border: 1px dashed rgba(216, 178, 85, 0.4); background: rgba(18, 11, 11, 0.6); backdrop-filter: blur(5px); color: #aaa; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; }
     .sub-btn:hover { border-color: #d8b255; color: #fff; }
     .sub-btn.active { background: rgba(216, 178, 85, 0.15); border: 1px solid #d8b255; color: #d8b255; font-weight: 700; }
@@ -273,8 +278,31 @@
       <ul class="nav-links">
         <li><a href="javascript:void(0)" class="active">HOME</a></li>
         
-        <!-- BUTTON CATEGORY DI NAVBAR (Berfungsi seperti "Semua Kategori" sebelumnya) -->
-        <li><a href="javascript:void(0)" onclick="setMainCategory('Semua', this)">CATEGORY</a></li>
+        <!-- MENU CATEGORY DENGAN DROPDOWN -->
+        <li class="dropdown">
+          <a href="javascript:void(0)">
+            CATEGORY 
+            <svg class="arrow" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+          </a>
+          <ul class="dropdown-content">
+            <li><a href="javascript:void(0)" onclick="setMainCategory('Semua')">⭐ Semua Kategori</a></li>
+            <li><a href="javascript:void(0)" onclick="setMainCategory('Vodka')">Vodka</a></li>
+            <li><a href="javascript:void(0)" onclick="setMainCategory('Gin')">Gin</a></li>
+            <li><a href="javascript:void(0)" onclick="setMainCategory('Rum')">Rum</a></li>
+            <li><a href="javascript:void(0)" onclick="setMainCategory('Tequila')">Tequila</a></li>
+            <li><a href="javascript:void(0)" onclick="setMainCategory('Liqueur')">Liqueur</a></li>
+            <li><a href="javascript:void(0)" onclick="setMainCategory('Whisky')">Whisky</a></li>
+            <li><a href="javascript:void(0)" onclick="setMainCategory('Cognac')">Cognac</a></li>
+            <li><a href="javascript:void(0)" onclick="setMainCategory('Wine')">Wine</a></li>
+            <li><a href="javascript:void(0)" onclick="setMainCategory('Soju')">Soju</a></li>
+            <li><a href="javascript:void(0)" onclick="setMainCategory('Sake')">Sake</a></li>
+            <li><a href="javascript:void(0)" onclick="setMainCategory('Baijiu')">Baijiu</a></li>
+            <li><a href="javascript:void(0)" onclick="setMainCategory('Alcopops')">Alcopops</a></li>
+            <li><a href="javascript:void(0)" onclick="setMainCategory('Beer')">Beer</a></li>
+            <li><a href="javascript:void(0)" onclick="setMainCategory('Traditional')">Traditional & Grain</a></li>
+            <li><a href="javascript:void(0)" onclick="setMainCategory('Syrup')">Syrup</a></li>
+          </ul>
+        </li>
         
         <li class="dropdown">
           <a href="javascript:void(0)">
@@ -321,27 +349,8 @@
       <input type="text" id="searchInput" class="search-input" placeholder="Search beverage name or region..." oninput="renderWines()">
     </div>
 
-    <!-- Kategori Utama (Tombol 'Semua Kategori' sudah dihapus dari sini) -->
-    <div class="category-filters" id="mainCategories">
-      <button class="filter-btn" onclick="setMainCategory('Vodka', this)">Vodka</button>
-      <button class="filter-btn" onclick="setMainCategory('Gin', this)">Gin</button>
-      <button class="filter-btn" onclick="setMainCategory('Rum', this)">Rum</button>
-      <button class="filter-btn" onclick="setMainCategory('Tequila', this)">Tequila</button>
-      <button class="filter-btn" onclick="setMainCategory('Liqueur', this)">Liqueur</button>
-      <button class="filter-btn" onclick="setMainCategory('Whisky', this)">Whisky</button>
-      <button class="filter-btn" onclick="setMainCategory('Cognac', this)">Cognac</button>
-      <button class="filter-btn" onclick="setMainCategory('Wine', this)">Wine</button>
-      <button class="filter-btn" onclick="setMainCategory('Soju', this)">Soju</button>
-      <button class="filter-btn" onclick="setMainCategory('Sake', this)">Sake</button>
-      <button class="filter-btn" onclick="setMainCategory('Baijiu', this)">Baijiu</button>
-      <button class="filter-btn" onclick="setMainCategory('Alcopops', this)">Alcopops</button>
-      <button class="filter-btn" onclick="setMainCategory('Beer', this)">Beer</button>
-      <button class="filter-btn" onclick="setMainCategory('Traditional', this)">Traditional & Grain</button>
-      <button class="filter-btn" onclick="setMainCategory('Syrup', this)">Syrup</button>
-    </div>
-
-    <!-- Sub Kategori (Local / Import) -->
-    <div class="category-filters sub-filters" id="subCategories" style="display: none;">
+    <!-- Sub Kategori (Local / Import) - Akan muncul setelah memilih menu CATEGORY -->
+    <div class="sub-filters" id="subCategories" style="display: none;">
       <button class="sub-btn" data-sub="Local" onclick="setSubCategory('Local', this)">🇮🇩 Local</button>
       <button class="sub-btn" data-sub="Import" onclick="setSubCategory('Import', this)">🌍 Import</button>
     </div>
@@ -442,19 +451,10 @@
       } catch (err) { console.error('Error fetching Supabase data:', err); }
     }
 
-    // Fungsi Kategori yang disesuaikan
-    function setMainCategory(category, btnElement) {
+    // Fungsi Kategori yang dipanggil melalui dropdown menu Navbar
+    function setMainCategory(category) {
       currentMainCategory = category;
       currentSubCategory = null;
-
-      // Matikan warna aktif di semua tombol kategori bawah
-      document.querySelectorAll('#mainCategories .filter-btn').forEach(btn => btn.classList.remove('active'));
-      
-      // Jika yang di-klik adalah tombol bawah (bukan nav atas), nyalakan efek aktifnya
-      if (btnElement && btnElement.classList.contains('filter-btn')) {
-        btnElement.classList.add('active');
-        btnElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      }
 
       const subContainer = document.getElementById('subCategories');
       
@@ -469,6 +469,7 @@
       renderWines(); 
     }
 
+    // Fungsi memilih Local/Import
     function setSubCategory(subType, btnElement) {
       currentSubCategory = subType;
       
@@ -482,23 +483,25 @@
       const grid = document.getElementById('wineGrid');
       const search = document.getElementById('searchInput').value.toLowerCase();
 
+      // Kalau belum ada yang dipilih (halaman awal banget)
       if (!currentMainCategory && !search) {
         grid.innerHTML = `
           <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem;">
             <div style="font-size: 3.5rem; margin-bottom: 1rem; opacity: 0.8;">🍷</div>
             <h2 style="color: #d8b255; font-size: 1.5rem; margin-bottom: 0.5rem; font-family: 'Georgia', serif;">Pilih Kategori Minuman</h2>
-            <p style="color: #887575; font-size: 1rem;">Silakan klik salah satu kategori di atas untuk memulai pencarian.</p>
+            <p style="color: #887575; font-size: 1rem;">Silakan arahkan kursor ke menu <strong>CATEGORY</strong> di atas dan pilih jenis minuman.</p>
           </div>
         `;
         return;
       }
 
+      // Kalau kategori sudah dipilih dari menu, tapi user belum pilih tipe Local/Import
       if (currentMainCategory && currentMainCategory !== 'Semua' && !currentSubCategory && !search) {
         grid.innerHTML = `
           <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem;">
             <div style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.8;">👇</div>
             <h2 style="color: #d8b255; font-size: 1.3rem; margin-bottom: 0.5rem; font-family: 'Georgia', serif;">Pilih Tipe ${currentMainCategory}</h2>
-            <p style="color: #887575; font-size: 1rem;">Silakan pilih <strong>Local</strong> atau <strong>Import</strong> di atas untuk menampilkan produk.</p>
+            <p style="color: #887575; font-size: 1rem;">Silakan pilih <strong>Local</strong> atau <strong>Import</strong> untuk menampilkan produk.</p>
           </div>
         `;
         return;
