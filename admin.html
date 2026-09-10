@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Portal - Private Reserve Collection</title>
+  <title>Admin Portal - Retail Shop</title>
   <!-- Supabase & SheetJS (dengan dukungan style) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Menggunakan xlsx-js-style agar bisa memberi warna pada cell Excel -->
@@ -101,8 +101,8 @@
   <div id="adminPage">
     <div class="hero">
       <button class="btn-logout" onclick="handleLogout()">🔒 Logout</button>
-      <h1>⚙️ Admin Dashboard - Private Reserve</h1>
-      <p>Kelola data katalog minuman, stok, tag menu shop, import, dan export file Excel.</p>
+      <h1>⚙️ Admin Dashboard - Retail Shop</h1>
+      <p>Management Beverages Inventory</p>
     </div>
 
     <!-- IMPORT EXCEL -->
@@ -225,7 +225,7 @@
         <h2>🍷 Daftar Katalog Minuman</h2>
         <div style="display:flex; gap: 1rem; align-items:center; flex-wrap: wrap;">
           <input type="text" id="adminSearch" style="width:250px;" placeholder="Cari nama / wilayah..." oninput="renderAdminTable()">
-          <button class="btn-success" onclick="exportDataToExcel()">📊 Export ke Excel</button>
+          <button class="btn-success" onclick="exportDataToExcel()">📊 Export To Excel</button>
           <button class="btn-danger" onclick="deleteAllWines()">🗑️ Hapus Semua</button>
         </div>
       </div>
@@ -250,7 +250,7 @@
     </div>
 
     <footer>
-      <p>&copy; 2026 Copyright by <strong>Mitra Buana Intimas</strong>. All Rights Reserved.</p>
+      <p>&copy; 2026 Copyright by <strong>RETAIL SHOP</strong>. All Rights Reserved.</p>
     </footer>
   </div>
 
@@ -516,23 +516,44 @@
       }
     }
 
-    // FUNGSI UNTUK MEWARNAI HEADER MENJADI KUNING & BOLD
-    function applyHeaderStyle(worksheet) {
+    // FUNGSI UNTUK MEWARNAI HEADER DAN MEMBERIKAN ALL BORDERS
+    function applyStyles(worksheet) {
       const range = XLSX.utils.decode_range(worksheet['!ref']);
-      // Loop untuk baris pertama (index 0)
-      for (let C = range.s.c; C <= range.e.c; ++C) {
-        const address = XLSX.utils.encode_cell({ r: 0, c: C });
-        if (!worksheet[address]) continue;
-        
-        // Aplikasikan warna background FFFF00 (Kuning) dan font bold (Hitam)
-        worksheet[address].s = {
-          fill: { fgColor: { rgb: "FFFF00" } },
-          font: { bold: true, color: { rgb: "000000" } }
-        };
+      
+      // Konfigurasi garis batas (border tipis warna hitam)
+      const borderStyle = {
+        top: { style: "thin", color: { rgb: "000000" } },
+        bottom: { style: "thin", color: { rgb: "000000" } },
+        left: { style: "thin", color: { rgb: "000000" } },
+        right: { style: "thin", color: { rgb: "000000" } }
+      };
+
+      // Loop seluruh baris (R) dan kolom (C)
+      for (let R = range.s.r; R <= range.e.r; ++R) {
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+          const address = XLSX.utils.encode_cell({ r: R, c: C });
+          
+          // Jika cell kosong, inisialisasi agar border tetap bisa digambar
+          if (!worksheet[address]) {
+            worksheet[address] = { t: 's', v: '' };
+          }
+          
+          // Pastikan object style `s` ada
+          worksheet[address].s = worksheet[address].s || {};
+          
+          // Terapkan border ke setiap sel
+          worksheet[address].s.border = borderStyle;
+
+          // Khusus Baris 0 (Header): Berikan background kuning dan tulisan bold
+          if (R === 0) {
+            worksheet[address].s.fill = { fgColor: { rgb: "FFFF00" } };
+            worksheet[address].s.font = { bold: true, color: { rgb: "000000" } };
+          }
+        }
       }
     }
 
-    // EXPORT DATA KE EXCEL DENGAN STYLE HEADER KUNING
+    // EXPORT DATA KE EXCEL
     function exportDataToExcel() {
       if (!adminWines || adminWines.length === 0) {
         alert("Oops, tidak ada data katalog yang bisa di-export!");
@@ -562,7 +583,7 @@
         { wch: 25 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 40 }, { wch: 35 }, { wch: 25 }
       ];
 
-      applyHeaderStyle(worksheet); // Panggil fungsi styling header
+      applyStyles(worksheet); // Panggil fungsi styling (borders & header)
 
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Data_Katalog");
@@ -571,7 +592,7 @@
       XLSX.writeFile(workbook, `Export_Katalog_Minuman_${dateStr}.xlsx`);
     }
 
-    // DOWNLOAD TEMPLATE EXCEL DENGAN STYLE HEADER KUNING
+    // DOWNLOAD TEMPLATE EXCEL
     function downloadTemplate() {
       const templateData = [
         {
@@ -598,7 +619,7 @@
         { wch: 25 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 40 }, { wch: 35 }, { wch: 25 } 
       ];
 
-      applyHeaderStyle(worksheet); // Panggil fungsi styling header
+      applyStyles(worksheet); // Panggil fungsi styling (borders & header)
 
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Template_Katalog");
