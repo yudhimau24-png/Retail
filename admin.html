@@ -49,7 +49,6 @@
     .btn-gold:hover { background: linear-gradient(135deg, #e5c065 0%, #c9a042 100%); }
     .btn-secondary { padding: 0.75rem 1.5rem; border-radius: 10px; border: 1px solid rgba(216, 178, 85, 0.3); background: transparent; color: #d8b255; font-weight: 600; cursor: pointer; }
     
-    /* Tombol Danger (Hapus Semua) */
     .btn-danger { padding: 0.75rem 1.5rem; border-radius: 10px; border: none; background: linear-gradient(135deg, #e53935 0%, #b71c1c 100%); color: #fff; font-weight: 800; font-size: 0.9rem; cursor: pointer; }
     .btn-danger:hover { background: linear-gradient(135deg, #ef5350 0%, #c62828 100%); }
 
@@ -65,6 +64,8 @@
 
     .btn-sm-edit { padding: 0.4rem 0.8rem; border-radius: 6px; border: 1px solid #d8b255; background: transparent; color: #d8b255; cursor: pointer; }
     .btn-sm-del { padding: 0.4rem 0.8rem; border-radius: 6px; border: 1px solid #e53935; background: transparent; color: #e53935; cursor: pointer; }
+
+    .badge-collection { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold; background: rgba(216, 178, 85, 0.2); color: #d8b255; }
 
     footer { text-align: center; padding: 2.5rem 1rem 1rem; margin-top: 3rem; border-top: 1px solid rgba(216, 178, 85, 0.15); color: #776666; font-size: 0.85rem; }
     footer strong { color: #d8b255; }
@@ -97,7 +98,7 @@
     <div class="hero">
       <button class="btn-logout" onclick="handleLogout()">🔒 Logout</button>
       <h1>⚙️ Admin Dashboard - Private Reserve</h1>
-      <p>Kelola data katalog minuman, stok, upload gambar ke Cloud Supabase, dan import file Excel/CSV.</p>
+      <p>Kelola data katalog minuman, stok, tag menu shop, dan import file Excel/CSV.</p>
     </div>
 
     <!-- IMPORT EXCEL -->
@@ -133,62 +134,16 @@
             <label>Kategori (Type) *</label>
             <select id="wineType" required>
               <option value="Local Traditional and Grain">Local Traditional and Grain</option>
-              
-              <optgroup label="Vodka">
-                  <option value="Import Vodka">Import Vodka</option>
-                  <option value="Local Vodka">Local Vodka</option>
-              </optgroup>
-              
-              <optgroup label="Gin">
-                  <option value="Import Gin">Import Gin</option>
-                  <option value="Local Gin">Local Gin</option>
-              </optgroup>
-              
-              <optgroup label="Rum">
-                  <option value="Import Rum">Import Rum</option>
-                  <option value="Local Rum">Local Rum</option>
-              </optgroup>
-              
-              <optgroup label="Tequila">
-                  <option value="Import Tequila">Import Tequila</option>
-                  <option value="Local Tequila">Local Tequila</option>
-              </optgroup>
-              
-              <optgroup label="Liqueur">
-                  <option value="Import Liqueur">Import Liqueur</option>
-                  <option value="Local Liqueur">Local Liqueur</option>
-              </optgroup>
-              
-              <optgroup label="Whisky">
-                  <option value="Import Whisky">Import Whisky</option>
-                  <option value="Local Whisky">Local Whisky</option>
-              </optgroup>
-              
-              <optgroup label="Cognac">
-                  <option value="Import Cognac">Import Cognac</option>
-                  <option value="Local Cognac">Local Cognac</option>
-              </optgroup>
-
-              <optgroup label="Wine & Asian Spirits">
-                  <option value="Import Wine">Import Wine</option>
-                  <option value="Local Wine">Local Wine</option>
-                  <option value="Import Soju">Import Soju</option>
-                  <option value="Local Soju">Local Soju</option>
-                  <option value="Import Sake">Import Sake</option>
-                  <option value="Local Sake">Local Sake</option>
-                  <option value="Import Baijiu">Import Baijiu</option>
-              </optgroup>
-
-              <optgroup label="Alcopops">
-                  <option value="Local Alcopops">Local Alcopops</option>
-                  <option value="Import Alcopops">Import Alcopops</option>
-              </optgroup>
-
-              <optgroup label="Others">
-                  <option value="Import Beer">Import Beer</option>
-                  <option value="Local Beer">Local Beer</option>
-                  <option value="Syrup">Syrup</option>
-              </optgroup>
+              <optgroup label="Vodka"><option value="Import Vodka">Import Vodka</option><option value="Local Vodka">Local Vodka</option></optgroup>
+              <optgroup label="Gin"><option value="Import Gin">Import Gin</option><option value="Local Gin">Local Gin</option></optgroup>
+              <optgroup label="Rum"><option value="Import Rum">Import Rum</option><option value="Local Rum">Local Rum</option></optgroup>
+              <optgroup label="Tequila"><option value="Import Tequila">Import Tequila</option><option value="Local Tequila">Local Tequila</option></optgroup>
+              <optgroup label="Liqueur"><option value="Import Liqueur">Import Liqueur</option><option value="Local Liqueur">Local Liqueur</option></optgroup>
+              <optgroup label="Whisky"><option value="Import Whisky">Import Whisky</option><option value="Local Whisky">Local Whisky</option></optgroup>
+              <optgroup label="Cognac"><option value="Import Cognac">Import Cognac</option><option value="Local Cognac">Local Cognac</option></optgroup>
+              <optgroup label="Wine & Asian Spirits"><option value="Import Wine">Import Wine</option><option value="Local Wine">Local Wine</option><option value="Import Soju">Import Soju</option><option value="Local Soju">Local Soju</option><option value="Import Sake">Import Sake</option><option value="Local Sake">Local Sake</option><option value="Import Baijiu">Import Baijiu</option></optgroup>
+              <optgroup label="Alcopops"><option value="Local Alcopops">Local Alcopops</option><option value="Import Alcopops">Import Alcopops</option></optgroup>
+              <optgroup label="Others"><option value="Import Beer">Import Beer</option><option value="Local Beer">Local Beer</option><option value="Syrup">Syrup</option></optgroup>
             </select>
           </div>
           <div class="form-group">
@@ -213,6 +168,16 @@
               <option value="In Stock">In Stock (Tersedia)</option>
               <option value="Limited Stock">Limited Stock (Terbatas)</option>
               <option value="Out of Stock">Out of Stock (Habis)</option>
+            </select>
+          </div>
+
+          <!-- FITUR BARU: MENU KOLEKSI SHOP -->
+          <div class="form-group">
+            <label>Koleksi Menu (Shop)</label>
+            <select id="wineCollection">
+              <option value="All Products">Biasa (All Products)</option>
+              <option value="Best Seller">⭐ Best Seller</option>
+              <option value="New Arrival">✨ New Arrival</option>
             </select>
           </div>
 
@@ -270,7 +235,7 @@
               <th>Vintage</th>
               <th>Kategori</th>
               <th>Wilayah</th>
-              <th>ABV</th>
+              <th>Menu Shop</th>
               <th>Stok</th>
               <th>Aksi</th>
             </tr>
@@ -417,23 +382,30 @@
         return;
       }
 
-      tbody.innerHTML = filtered.map((w) => `
+      tbody.innerHTML = filtered.map((w) => {
+        // Tampilan Badge Koleksi
+        let collectionBadge = '-';
+        if (w.collection === 'Best Seller') collectionBadge = '<span class="badge-collection" style="color:#ffb300; background:rgba(255, 179, 0, 0.2)">⭐ Best Seller</span>';
+        else if (w.collection === 'New Arrival') collectionBadge = '<span class="badge-collection" style="color:#00e676; background:rgba(0, 230, 118, 0.2)">✨ New Arrival</span>';
+        else collectionBadge = '<span style="font-size:0.8rem; color:#888;">All Products</span>';
+
+        return `
         <tr>
           <td><img src="${w.imageUrl || 'https://via.placeholder.com/45'}" class="thumb-img" onerror="this.src='https://via.placeholder.com/45'"></td>
           <td><strong>${escapeHtml(w.name)}</strong></td>
           <td>${escapeHtml(w.vintage) || '-'}</td>
           <td>${escapeHtml(w.type) || '-'}</td>
           <td>${escapeHtml(w.region) || '-'}</td>
-          <td>${escapeHtml(w.abv) || '-'}</td>
+          <td>${collectionBadge}</td>
           <td><span style="color:${w.stockStatus && w.stockStatus.includes('Habis') ? '#e53935' : '#4CAF50'}">${escapeHtml(w.stockStatus) || 'In Stock'}</span></td>
           <td>
-            <div class="action-btns">
-              <button class="btn-sm-edit" onclick="editWine('${w.id}')">✏️ Edit</button>
-              <button class="btn-sm-del" onclick="deleteWine('${w.id}')">🗑️ Hapus</button>
+            <div class="action-btns" style="display:flex; gap:5px;">
+              <button class="btn-sm-edit" onclick="editWine('${w.id}')">✏️</button>
+              <button class="btn-sm-del" onclick="deleteWine('${w.id}')">🗑️</button>
             </div>
           </td>
         </tr>
-      `).join('');
+      `}).join('');
     }
 
     function editWine(id) {
@@ -449,6 +421,10 @@
       document.getElementById('wineAbv').value = w.abv || '';
       document.getElementById('wineServingTemp').value = w.servingTemp || '';
       document.getElementById('wineStockStatus').value = w.stockStatus || 'In Stock';
+      
+      // Load value koleksi (Shop Menu)
+      document.getElementById('wineCollection').value = w.collection || 'All Products';
+
       document.getElementById('wineImageUrl').value = w.imageUrl || '';
       document.getElementById('imgPreview').src = w.imageUrl || 'https://via.placeholder.com/70?text=Preview';
       document.getElementById('wineNotes').value = w.notes || '';
@@ -457,6 +433,8 @@
 
       document.getElementById('formTitle').innerText = '✏️ Edit Data Minuman';
       document.getElementById('btnSaveWine').innerText = '💾 Update Data Minuman';
+      
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function resetForm() {
@@ -487,6 +465,7 @@
         abv: document.getElementById('wineAbv').value,
         servingTemp: document.getElementById('wineServingTemp').value,
         stockStatus: document.getElementById('wineStockStatus').value,
+        collection: document.getElementById('wineCollection').value, // Simpan status menu shop
         imageUrl: imageUrl,
         notes: document.getElementById('wineNotes').value,
         pairing: document.getElementById('winePairing').value,
@@ -518,7 +497,6 @@
       }
     }
 
-    // FUNGSI BARU: Hapus Semua Wine
     async function deleteAllWines() {
       if (!confirm('🚨 PERINGATAN BAHAYA! 🚨\n\nApakah Anda yakin ingin MENGHAPUS SEMUA SKU/DATA MINUMAN dari database?')) return;
       if (!confirm('Tindakan ini TIDAK DAPAT DIBATALKAN. Anda benar-benar yakin?')) return;
@@ -536,7 +514,6 @@
       }
     }
 
-    // FUNGSI DIPERBARUI: Download Template Excel dengan referensi Kategori yang benar
     function downloadTemplate() {
       const templateData = [
         {
@@ -545,6 +522,7 @@
           "VINTAGE": "2022",
           "KATEGORI": "Import Wine",
           "WILAYAH": "Rioja DOCa, Spain",
+          "KOLEKSI SHOP": "Best Seller", // Kolom baru untuk import Excel
           "VARIETAL": "Tempranillo",
           "ABV": "13%",
           "SUHU PENYAJIAN": "16°C - 18°C",
@@ -559,10 +537,11 @@
           "VINTAGE": "NAS",
           "KATEGORI": "Import Vodka",
           "WILAYAH": "Ahus, Sweden",
+          "KOLEKSI SHOP": "New Arrival",
           "VARIETAL": "Winter Wheat",
           "ABV": "40%",
           "SUHU PENYAJIAN": "Ice Cold (0°C - 4°C)",
-          "STATUS STOK": "-",
+          "STATUS STOK": "In Stock",
           "TASTING NOTES": "Rich, full-bodied, complex yet smooth and mellow with grain character",
           "FOOD PAIRING": "Chilled Shot / Vodka Tonic / Cocktail",
           "STORAGE NOTE": "Continuous Distillation"
@@ -572,27 +551,15 @@
       const worksheet = XLSX.utils.json_to_sheet(templateData);
       
       worksheet['!cols'] = [
-        { wch: 15 }, // FOTO
-        { wch: 30 }, // NAMA MINUMAN
-        { wch: 10 }, // VINTAGE
-        { wch: 15 }, // KATEGORI
-        { wch: 25 }, // WILAYAH
-        { wch: 25 }, // VARIETAL
-        { wch: 10 }, // ABV
-        { wch: 20 }, // SUHU PENYAJIAN
-        { wch: 15 }, // STATUS STOK
-        { wch: 40 }, // TASTING NOTES
-        { wch: 35 }, // FOOD PAIRING
-        { wch: 25 }  // STORAGE NOTE
+        { wch: 15 }, { wch: 30 }, { wch: 10 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, // Foto - Koleksi
+        { wch: 25 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 40 }, { wch: 35 }, { wch: 25 } 
       ];
 
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Template_Katalog");
-      
       XLSX.writeFile(workbook, "Template_Import_Minuman.xlsx");
     }
 
-    // FUNGSI DIPERBARUI: Import Excel dengan Mapping Kolom Bahasa Indonesia
     async function importExcelFile() {
       const file = document.getElementById('excelFileInput').files[0];
       if (!file) return alert('Pilih file dulu!');
@@ -609,6 +576,7 @@
           vintage: row["VINTAGE"] || row.Vintage || row.vintage || 'NV',
           type: row["KATEGORI"] || row.Type || row.type || 'Import Wine',
           region: row["WILAYAH"] || row.Region || row.region || '-',
+          collection: row["KOLEKSI SHOP"] || row.Collection || row.collection || 'All Products', // Mengambil tag koleksi
           varietal: row["VARIETAL"] || row.Varietal || row.varietal || '-',
           abv: row["ABV"] || row.ABV || row.abv || '-',
           servingTemp: row["SUHU PENYAJIAN"] || row.ServingTemp || row.servingTemp || '-',
@@ -618,16 +586,14 @@
           storageNote: row["STORAGE NOTE"] || row.StorageNote || row.storageNote || '-'
         }));
 
-        // Filter data kosong (mencegah impor row blank di akhir Excel)
         const validData = formatted.filter(item => item.name && item.name.trim() !== '');
-
         if (validData.length === 0) return alert('Tidak ada data valid yang ditemukan di file!');
 
         const { error } = await supabaseClient.from('wines').insert(validData);
         
         if (!error) {
           alert(`Berhasil mengimpor ${validData.length} produk ke Supabase!`);
-          document.getElementById('excelFileInput').value = ""; // Reset input
+          document.getElementById('excelFileInput').value = ""; 
           loadAdminData();
         } else {
           alert('Gagal mengimpor: ' + error.message);
