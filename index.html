@@ -123,8 +123,6 @@
       opacity: 0;
       transform: translateY(10px);
       transition: opacity 0.3s ease, transform 0.3s ease;
-      
-      /* Tambahan agar bisa di-scroll jika kategori sangat banyak */
       max-height: 400px;
       overflow-y: auto;
     }
@@ -216,6 +214,10 @@
     .wine-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
     .wine-card:hover .wine-img { transform: scale(1.05); }
 
+    .collection-badge { position: absolute; top: 10px; left: 10px; font-weight: 800; font-size: 0.65rem; padding: 3px 8px; border-radius: 4px; z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.5); text-transform: uppercase; }
+    .badge-best { background: rgba(255, 179, 0, 0.95); color: #000; }
+    .badge-new { background: rgba(0, 230, 118, 0.95); color: #000; }
+
     .vintage-badge { position: absolute; top: 10px; right: 10px; background: linear-gradient(135deg, #d8b255 0%, #aa8330 100%); color: #0b0808; font-weight: 800; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.6); z-index: 2; }
     .card-content { padding: 0.95rem; display: flex; flex-direction: column; flex-grow: 1; z-index: 2; }
     .card-title { font-size: 0.95rem; color: #fff; font-weight: 700; margin-bottom: 0.3rem; font-family: 'Georgia', serif; line-height: 1.25; }
@@ -276,7 +278,7 @@
     <!-- NAVIGATION BAR -->
     <nav class="top-navbar">
       <ul class="nav-links">
-        <li><a href="javascript:void(0)" class="active">HOME</a></li>
+        <li><a href="javascript:void(0)" onclick="resetAllFilters()">HOME</a></li>
         
         <!-- MENU CATEGORY DENGAN DROPDOWN -->
         <li class="dropdown">
@@ -304,15 +306,16 @@
           </ul>
         </li>
         
+        <!-- MENU SHOP (KONEKSI KOLEKSI BARU) -->
         <li class="dropdown">
           <a href="javascript:void(0)">
             SHOP 
             <svg class="arrow" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
           </a>
           <ul class="dropdown-content">
-            <li><a href="javascript:void(0)">Best Sellers</a></li>
-            <li><a href="javascript:void(0)">New Arrivals</a></li>
-            <li><a href="javascript:void(0)">All Products</a></li>
+            <li><a href="javascript:void(0)" onclick="setShopCollection('Best Seller')">⭐ Best Sellers</a></li>
+            <li><a href="javascript:void(0)" onclick="setShopCollection('New Arrival')">✨ New Arrivals</a></li>
+            <li><a href="javascript:void(0)" onclick="setShopCollection('All Products')">🍷 All Products</a></li>
           </ul>
         </li>
 
@@ -341,7 +344,7 @@
     <!-- END NAVIGATION BAR -->
 
     <div class="hero">
-      <h1 id="heroTitle">🍷Retail</h1>
+      <h1 id="heroTitle">🍷 Retail</h1>
       <p id="heroSubtitle">Explore our curated collection of wines and spirits.</p>
     </div>
 
@@ -425,8 +428,10 @@
     let localWines = [];
     let currentFilteredWines = [];
     
+    // VARIABEL STATE FILTER
     let currentMainCategory = null; 
     let currentSubCategory = null; 
+    let currentShopCollection = null; // Filter baru dari menu SHOP
     
     const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whisky", "Cognac", "Soju", "Sake", "Traditional and Grain", "Baijiu", "Alcopops"];
 
@@ -444,17 +449,59 @@
             imageUrl: w.imageUrl || w.image_url || '',
             servingTemp: w.servingTemp || w.serving_temp || '',
             stockStatus: w.stockStatus || w.stock_status || '',
-            storageNote: w.storageNote || w.storage_note || ''
+            storageNote: w.storageNote || w.storage_note || '',
+            collection: w.collection || 'All Products' // Ambil data tag koleksi shop
           }));
           renderWines();
         }
       } catch (err) { console.error('Error fetching Supabase data:', err); }
     }
 
+    // Fungsi Home / Reset All
+    function resetAllFilters() {
+      currentMainCategory = null;
+      currentSubCategory = null;
+      currentShopCollection = null;
+      document.getElementById('searchInput').value = '';
+      document.getElementById('subCategories').style.display = 'none';
+      document.getElementById('heroTitle').innerHTML = '🍷 Retail';
+      document.getElementById('heroSubtitle').innerHTML = 'Explore our curated collection of wines and spirits.';
+      renderWines();
+    }
+
+    // Fungsi klik dari menu SHOP
+    function setShopCollection(collectionName) {
+      currentShopCollection = collectionName;
+      
+      // Reset filter kategori jika user klik lewat menu SHOP
+      currentMainCategory = null; 
+      currentSubCategory = null; 
+      document.getElementById('subCategories').style.display = 'none'; 
+      document.getElementById('searchInput').value = '';
+
+      // Update Teks Hero Banner
+      if (collectionName === 'Best Seller') {
+        document.getElementById('heroTitle').innerHTML = '⭐ Best Sellers';
+        document.getElementById('heroSubtitle').innerHTML = 'Produk unggulan dan paling diminati oleh pelanggan kami.';
+      } else if (collectionName === 'New Arrival') {
+        document.getElementById('heroTitle').innerHTML = '✨ New Arrivals';
+        document.getElementById('heroSubtitle').innerHTML = 'Koleksi eksklusif terbaru yang baru saja tiba.';
+      } else {
+        document.getElementById('heroTitle').innerHTML = '🍷 All Products';
+        document.getElementById('heroSubtitle').innerHTML = 'Jelajahi seluruh koleksi minuman kami dari A-Z.';
+      }
+
+      renderWines();
+    }
+
     // Fungsi Kategori yang dipanggil melalui dropdown menu Navbar
     function setMainCategory(category) {
       currentMainCategory = category;
       currentSubCategory = null;
+      currentShopCollection = null; // Reset filter shop jika user ganti navigasi ke Category
+
+      document.getElementById('heroTitle').innerHTML = '🍷 ' + (category === 'Semua' ? 'Katalog Kategori' : category);
+      document.getElementById('heroSubtitle').innerHTML = 'Explore our curated collection of wines and spirits.';
 
       const subContainer = document.getElementById('subCategories');
       
@@ -483,13 +530,13 @@
       const grid = document.getElementById('wineGrid');
       const search = document.getElementById('searchInput').value.toLowerCase();
 
-      // Kalau belum ada yang dipilih (halaman awal banget)
-      if (!currentMainCategory && !search) {
+      // Halaman Awal Banget (Belum ada filter apa pun)
+      if (!currentMainCategory && !currentShopCollection && !search) {
         grid.innerHTML = `
           <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem;">
             <div style="font-size: 3.5rem; margin-bottom: 1rem; opacity: 0.8;">🍷</div>
-            <h2 style="color: #d8b255; font-size: 1.5rem; margin-bottom: 0.5rem; font-family: 'Georgia', serif;">Pilih Kategori Minuman</h2>
-            <p style="color: #887575; font-size: 1rem;">Silakan arahkan kursor ke menu <strong>CATEGORY</strong> di atas dan pilih jenis minuman.</p>
+            <h2 style="color: #d8b255; font-size: 1.5rem; margin-bottom: 0.5rem; font-family: 'Georgia', serif;">Selamat Datang di Katalog</h2>
+            <p style="color: #887575; font-size: 1rem;">Gunakan menu <strong>SHOP</strong> atau <strong>CATEGORY</strong> di atas untuk menjelajahi minuman.</p>
           </div>
         `;
         return;
@@ -507,30 +554,40 @@
         return;
       }
 
+      // FILTERING LOGIC
       currentFilteredWines = localWines.filter(wine => {
+        // Filter 1: Search Bar
         let matchesSearch = true;
         if (search) {
           matchesSearch = (wine.name && wine.name.toLowerCase().includes(search)) || 
                           (wine.region && wine.region.toLowerCase().includes(search));
         }
 
+        // Filter 2: Kategori Minuman (Vodka, Gin, Wine, dll)
         let matchesMain = true;
         if (currentMainCategory && currentMainCategory !== 'Semua') {
           matchesMain = wine.type && wine.type.toLowerCase().includes(currentMainCategory.toLowerCase());
         }
 
+        // Filter 3: Sub Tipe Kategori (Local / Import)
         let matchesSub = true;
         if (currentMainCategory && currentMainCategory !== 'Semua' && currentSubCategory && currentSubCategory !== 'Semua') {
           matchesSub = wine.type && wine.type.toLowerCase().includes(currentSubCategory.toLowerCase());
         }
 
-        return matchesSearch && matchesMain && matchesSub;
+        // Filter 4: Shop Collection (Best Seller / New Arrival / All Products)
+        let matchesShopCollection = true;
+        if (currentShopCollection && currentShopCollection !== 'All Products') {
+          matchesShopCollection = wine.collection === currentShopCollection;
+        }
+
+        return matchesSearch && matchesMain && matchesSub && matchesShopCollection;
       });
 
       if (currentFilteredWines.length === 0) {
         grid.innerHTML = `
           <div style="grid-column: 1/-1; text-align: center; padding: 4rem 0;">
-            <p style="color: #888; font-size: 1.1rem;">Oops, tidak ada produk yang tersedia untuk kategori ini.</p>
+            <p style="color: #888; font-size: 1.1rem;">Oops, tidak ada produk yang tersedia untuk filter ini.</p>
           </div>
         `;
         return;
@@ -539,9 +596,18 @@
       grid.innerHTML = currentFilteredWines.map((wine, idx) => {
         const isSpirit = spiritTypes.some(spirit => wine.type && wine.type.includes(spirit));
         
+        // Buat logic visual untuk menampilkan emblem/badge di ujung kiri botol
+        let collectionBadgeHtml = '';
+        if (wine.collection === 'Best Seller') {
+          collectionBadgeHtml = `<span class="collection-badge badge-best">⭐ Best Seller</span>`;
+        } else if (wine.collection === 'New Arrival') {
+          collectionBadgeHtml = `<span class="collection-badge badge-new">✨ New</span>`;
+        }
+
         return `
           <div class="wine-card" onclick="openDetail(${idx})" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
             <div class="img-wrapper">
+              ${collectionBadgeHtml} <!-- Emblem diletakkan disini -->
               <img src="${wine.imageUrl || 'https://via.placeholder.com/300x190?text=No+Image'}" class="wine-img" onerror="this.src='https://via.placeholder.com/300x190?text=No+Image'">
               <span class="vintage-badge">${escapeHtml(wine.vintage) || '-'}</span>
             </div>
@@ -583,6 +649,7 @@
           <div class="badge-group">
             <span class="pill-badge">📍 ${escapeHtml(wine.region) || 'Origin Unknown'}</span>
             <span class="pill-badge">🍷 ${escapeHtml(wine.type) || 'Beverage'}</span>
+            ${wine.collection !== 'All Products' && wine.collection ? `<span class="pill-badge" style="border-color:#ffb300; color:#ffb300;">🔥 ${escapeHtml(wine.collection)}</span>` : ''}
           </div>
           <div class="info-section">
             <h3>✨ Karakteristik & Profil Rasa</h3>
