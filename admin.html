@@ -4,14 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Portal - Retail Shop</title>
-  <!-- Supabase & SheetJS (dengan dukungan style) -->
+  <!-- Supabase & SheetJS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Menggunakan xlsx-js-style agar bisa memberi warna pada cell Excel -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #070505; color: #e0e0e0; padding-bottom: 2rem; min-height: 100vh; position: relative; overflow-x: hidden; }
-    #bgCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; }
+    
+    /* Background CSS Murni (Ringan & Bebas Loading Berputar) */
+    body { 
+      background: radial-gradient(circle at 50% -20%, #2a1414 0%, #070505 80%);
+      color: #e0e0e0; 
+      padding-bottom: 2rem; 
+      min-height: 100vh; 
+    }
 
     .login-overlay {
       position: fixed; inset: 0;
@@ -28,7 +33,7 @@
     .login-error { background: rgba(229, 57, 53, 0.15); border: 1px solid rgba(229, 57, 53, 0.4); color: #ef5350; font-size: 0.82rem; padding: 0.6rem; border-radius: 8px; margin-bottom: 1rem; display: none; }
 
     #adminPage { position: relative; z-index: 1; max-width: 1300px; margin: 0 auto; padding: 0 1.2rem; display: none; }
-    .hero { text-align: center; padding: 3rem 1rem 2rem; background: radial-gradient(circle at 50% -20%, #3a1c1c 0%, #120909 60%, #070505 100%); border-bottom: 1px solid rgba(216, 178, 85, 0.2); margin-bottom: 2rem; border-radius: 0 0 20px 20px; position: relative; }
+    .hero { text-align: center; padding: 3rem 1rem 2rem; background: rgba(24, 14, 14, 0.6); border-bottom: 1px solid rgba(216, 178, 85, 0.2); margin-bottom: 2rem; border-radius: 0 0 20px 20px; position: relative; }
     .hero h1 { color: #d8b255; font-size: 2.2rem; font-family: 'Georgia', serif; }
 
     .btn-logout { position: absolute; top: 15px; right: 20px; background: rgba(229, 57, 53, 0.15); border: 1px solid rgba(229, 57, 53, 0.4); color: #ef5350; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
@@ -76,8 +81,6 @@
   </style>
 </head>
 <body>
-
-  <canvas id="bgCanvas"></canvas>
 
   <div id="loginOverlay" class="login-overlay">
     <div class="login-card">
@@ -290,50 +293,6 @@
       checkAuthStatus();
     }
 
-    /* Background Canvas Engine (Perbaikan Infinite Loading) */
-    const canvas = document.getElementById('bgCanvas');
-    const ctx = canvas.getContext('2d');
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
-    let mouse = { x: width / 2, y: height / 2, active: false };
-
-    window.addEventListener('resize', () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; });
-    window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; });
-
-    const particles = Array.from({ length: 65 }, () => ({
-      x: Math.random() * width, y: Math.random() * height,
-      radius: Math.random() * 2.5 + 0.5, alpha: Math.random() * 0.5 + 0.1,
-      vx: (Math.random() - 0.5) * 0.4, vy: -(Math.random() * 0.4 + 0.2)
-    }));
-
-    function drawInteractiveBG() {
-      ctx.clearRect(0, 0, width, height);
-      if (mouse.active) {
-        const gradient = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 380);
-        gradient.addColorStop(0, 'rgba(216, 178, 85, 0.09)');
-        gradient.addColorStop(0.5, 'rgba(120, 30, 30, 0.04)');
-        gradient.addColorStop(1, 'transparent');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, width, height);
-      }
-      particles.forEach(p => {
-        p.x += p.vx; p.y += p.vy;
-        if (mouse.active) {
-          const dx = mouse.x - p.x, dy = mouse.y - p.y, dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) { p.x -= Math.cos(Math.atan2(dy, dx)) * 1.5; p.y -= Math.sin(Math.atan2(dy, dx)) * 1.5; }
-        }
-        if (p.y < -10) { p.y = height + 10; p.x = Math.random() * width; }
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(216, 178, 85, ${p.alpha})`; ctx.shadowBlur = 8; ctx.shadowColor = '#d8b255'; ctx.fill();
-      });
-      requestAnimationFrame(drawInteractiveBG);
-    }
-
-    // Jalankan animasi HANYA SETELAH seluruh asset & dokumen selesai diproses penuh
-    window.addEventListener('load', () => {
-      drawInteractiveBG();
-    });
-
     function escapeHtml(str) {
       if (!str) return '';
       return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
@@ -363,7 +322,7 @@
       const { data, error } = await supabaseClient.storage.from(bucketName).upload(fileName, file);
 
       if (error) {
-        alert('Gagal upload gambar ke Supabase Storage (' + bucketName + '): ' + error.message + '\n\nPetunjuk: Jalankan SQL Script pembuatan bucket "bottle-images" di SQL Editor Supabase Anda.');
+        alert('Gagal upload gambar ke Supabase Storage (' + bucketName + '): ' + error.message);
         return null;
       }
       const { data: publicUrlData } = supabaseClient.storage.from(bucketName).getPublicUrl(fileName);
@@ -532,7 +491,6 @@
 
     function applyStyles(worksheet) {
       const range = XLSX.utils.decode_range(worksheet['!ref']);
-      
       const borderStyle = {
         top: { style: "thin", color: { rgb: "000000" } },
         bottom: { style: "thin", color: { rgb: "000000" } },
@@ -543,11 +501,9 @@
       for (let R = range.s.r; R <= range.e.r; ++R) {
         for (let C = range.s.c; C <= range.e.c; ++C) {
           const address = XLSX.utils.encode_cell({ r: R, c: C });
-          
           if (!worksheet[address]) {
             worksheet[address] = { t: 's', v: '' };
           }
-          
           worksheet[address].s = worksheet[address].s || {};
           worksheet[address].s.border = borderStyle;
 
@@ -582,14 +538,12 @@
       }));
 
       const worksheet = XLSX.utils.json_to_sheet(exportData);
-      
       worksheet['!cols'] = [
         { wch: 45 }, { wch: 35 }, { wch: 10 }, { wch: 18 }, { wch: 25 }, { wch: 15 }, 
         { wch: 25 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 40 }, { wch: 35 }, { wch: 25 }
       ];
 
       applyStyles(worksheet);
-
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Data_Katalog");
       
@@ -617,14 +571,12 @@
       ];
 
       const worksheet = XLSX.utils.json_to_sheet(templateData);
-      
       worksheet['!cols'] = [
         { wch: 15 }, { wch: 30 }, { wch: 10 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, 
         { wch: 25 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 40 }, { wch: 35 }, { wch: 25 } 
       ];
 
       applyStyles(worksheet);
-
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Template_Katalog");
       XLSX.writeFile(workbook, "Template_Import_Minuman.xlsx");
