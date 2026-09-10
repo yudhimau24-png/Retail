@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Retail Catalog</title>
+  
+  <!-- Font Montserrat dari Google Fonts agar persis seperti gambar -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+  
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -29,9 +33,143 @@
 
     #catalogPage { position: relative; z-index: 1; }
 
+    /* ========================================= */
+    /* STYLING NAVIGATION BAR (Sesuai Gambar)    */
+    /* ========================================= */
+    .top-navbar {
+      background-color: #1a1a1a;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: center;
+      position: relative;
+      z-index: 50;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 2.5rem; /* Jarak antar menu */
+    }
+
+    .nav-links li {
+      position: relative;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #f0f0f0; /* Warna putih standar */
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover, .nav-links li:hover > a {
+      color: #d8b255; /* Warna emas saat di-hover */
+    }
+
+    .nav-links a.active {
+      color: #d8b255; /* Warna emas untuk menu aktif (HOME) */
+    }
+
+    .nav-links a.sale {
+      color: #d9453a; /* Warna merah untuk SALE */
+    }
+
+    /* Ikon Panah Dropdown */
+    .arrow {
+      width: 10px;
+      height: 10px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      margin-top: 1px;
+    }
+
+    /* Badge HOT */
+    .badge-hot {
+      background-color: #d9453a;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 12px;
+      margin-left: 0.3rem;
+      letter-spacing: 0.5px;
+      display: inline-block;
+      transform: translateY(-1px);
+    }
+
+    /* Dropdown Menu CSS */
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: #1a1a1a;
+      min-width: 180px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      padding: 0.5rem 0;
+      margin-top: 1.5rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    
+    /* Jembatan transparan agar hover tidak terputus saat kursor turun */
+    .dropdown::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      height: 1.5rem;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .dropdown-content li {
+      list-style: none;
+    }
+
+    .dropdown-content a {
+      padding: 0.8rem 1.2rem;
+      font-size: 0.75rem;
+      color: #ccc;
+      letter-spacing: 1px;
+    }
+
+    .dropdown-content a:hover {
+      background-color: rgba(216, 178, 85, 0.1);
+      color: #d8b255;
+    }
+
+    /* Responsive untuk navbar di HP */
+    @media (max-width: 768px) {
+      .nav-links { gap: 1rem; overflow-x: auto; padding-bottom: 0.5rem; }
+      .top-navbar { padding: 1rem; justify-content: flex-start; }
+      .nav-links a { font-size: 0.75rem; }
+    }
+    /* ========================================= */
+
     .hero { 
       text-align: center; 
-      padding: 4rem 1rem 3rem; 
+      padding: 3rem 1rem 3rem; 
       background: radial-gradient(circle at 50% -20%, #3a1c1c 0%, #120909 60%, #070505 100%);
       border-bottom: 1px solid rgba(216, 178, 85, 0.15); 
       position: relative;
@@ -46,152 +184,39 @@
     }
     .hero p { color: #c0b0b0; font-size: 0.95rem; margin-top: 0.5rem; text-shadow: 0 1px 5px rgba(0,0,0,0.8); }
 
-    /* Layout Pencarian */
+    /* Layout Pencarian & Filter */
     .controls { display: flex; justify-content: center; margin: 1.8rem 1rem 1rem; }
-    
-    input { 
-      padding: 0.65rem 1.2rem; 
-      border-radius: 20px; 
-      border: 1px solid rgba(216, 178, 85, 0.25); 
-      background: rgba(18, 11, 11, 0.75); 
-      backdrop-filter: blur(10px); 
-      color: #fff; 
-      font-size: 0.85rem; 
-      outline: none; 
-      transition: all 0.3s;
-    }
+    input { padding: 0.65rem 1.2rem; border-radius: 20px; border: 1px solid rgba(216, 178, 85, 0.25); background: rgba(18, 11, 11, 0.75); backdrop-filter: blur(10px); color: #fff; font-size: 0.85rem; outline: none; transition: all 0.3s; }
     input:focus { border-color: #d8b255; box-shadow: 0 0 12px rgba(216, 178, 85, 0.3); }
     .search-input { width: 100%; max-width: 400px; }
 
-    /* Kategori Filter Tier 1 (Kategori Utama) */
-    .category-filters {
-      display: flex;
-      gap: 0.6rem;
-      padding: 0.5rem 1rem;
-      margin: 0 auto 1rem;
-      max-width: 1400px;
-      overflow-x: auto;
-      scroll-behavior: smooth;
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
+    .category-filters { display: flex; gap: 0.6rem; padding: 0.5rem 1rem; margin: 0 auto 1rem; max-width: 1400px; overflow-x: auto; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; }
     .category-filters::-webkit-scrollbar { display: none; }
-
-    .filter-btn {
-      padding: 0.6rem 1.2rem;
-      border-radius: 20px;
-      border: 1px solid rgba(216, 178, 85, 0.25);
-      background: rgba(18, 11, 11, 0.75);
-      backdrop-filter: blur(10px);
-      color: #ccc;
-      font-size: 0.85rem;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.3s ease;
-    }
-    
+    .filter-btn { padding: 0.6rem 1.2rem; border-radius: 20px; border: 1px solid rgba(216, 178, 85, 0.25); background: rgba(18, 11, 11, 0.75); backdrop-filter: blur(10px); color: #ccc; font-size: 0.85rem; cursor: pointer; white-space: nowrap; transition: all 0.3s ease; }
     .filter-btn:hover { border-color: #d8b255; color: #fff; }
-    .filter-btn.active {
-      background: #d8b255;
-      color: #070505;
-      border-color: #d8b255;
-      font-weight: 700;
-      box-shadow: 0 0 12px rgba(216, 178, 85, 0.4);
-    }
+    .filter-btn.active { background: #d8b255; color: #070505; border-color: #d8b255; font-weight: 700; box-shadow: 0 0 12px rgba(216, 178, 85, 0.4); }
 
-    /* Kategori Filter Tier 2 (Local / Import) */
-    .sub-filters {
-      justify-content: center;
-      margin-bottom: 2rem;
-      gap: 0.8rem;
-    }
-    
-    .sub-btn {
-      padding: 0.6rem 2rem;
-      border-radius: 15px;
-      border: 1px dashed rgba(216, 178, 85, 0.4);
-      background: rgba(18, 11, 11, 0.6);
-      backdrop-filter: blur(5px);
-      color: #aaa;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
+    .sub-filters { justify-content: center; margin-bottom: 2rem; gap: 0.8rem; }
+    .sub-btn { padding: 0.6rem 2rem; border-radius: 15px; border: 1px dashed rgba(216, 178, 85, 0.4); background: rgba(18, 11, 11, 0.6); backdrop-filter: blur(5px); color: #aaa; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; }
     .sub-btn:hover { border-color: #d8b255; color: #fff; }
-    .sub-btn.active {
-      background: rgba(216, 178, 85, 0.15);
-      border: 1px solid #d8b255;
-      color: #d8b255;
-      font-weight: 700;
-    }
+    .sub-btn.active { background: rgba(216, 178, 85, 0.15); border: 1px solid #d8b255; color: #d8b255; font-weight: 700; }
 
-    /* Grid Produk */
-    .wine-grid { 
-      display: grid; 
-      grid-template-columns: repeat(5, 1fr); 
-      gap: 1.1rem; 
-      max-width: 1400px; 
-      margin: 0 auto; 
-      padding: 0 1rem; 
-      perspective: 1000px;
-    }
-
+    .wine-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.1rem; max-width: 1400px; margin: 0 auto; padding: 0 1rem; perspective: 1000px; }
     @media (max-width: 1200px) { .wine-grid { grid-template-columns: repeat(4, 1fr); } }
     @media (max-width: 900px) { .wine-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (max-width: 600px) { .wine-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; } }
     @media (max-width: 400px) { .wine-grid { grid-template-columns: 1fr; } }
 
-    .wine-card { 
-      background: rgba(18, 12, 12, 0.85); 
-      border: 1px solid rgba(255, 255, 255, 0.08); 
-      border-radius: 14px; 
-      overflow: hidden; 
-      display: flex; 
-      flex-direction: column; 
-      cursor: pointer; 
-      transition: transform 0.2s ease-out, border-color 0.3s, box-shadow 0.3s; 
-      backdrop-filter: blur(8px);
-      position: relative;
-      transform-style: preserve-3d;
-    }
-
-    .wine-card::before {
-      content: '';
-      position: absolute;
-      top: -100%;
-      left: -100%;
-      width: 300%;
-      height: 300%;
-      background: linear-gradient(45deg, transparent 45%, rgba(216, 178, 85, 0.12) 50%, transparent 55%);
-      transition: transform 0.8s ease;
-      pointer-events: none;
-      z-index: 5;
-    }
+    .wine-card { background: rgba(18, 12, 12, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s ease-out, border-color 0.3s, box-shadow 0.3s; backdrop-filter: blur(8px); position: relative; transform-style: preserve-3d; }
+    .wine-card::before { content: ''; position: absolute; top: -100%; left: -100%; width: 300%; height: 300%; background: linear-gradient(45deg, transparent 45%, rgba(216, 178, 85, 0.12) 50%, transparent 55%); transition: transform 0.8s ease; pointer-events: none; z-index: 5; }
     .wine-card:hover::before { transform: translate(50%, 50%); }
-
-    .wine-card:hover { 
-      border-color: #d8b255; 
-      box-shadow: 0 12px 30px rgba(216, 178, 85, 0.25), 0 0 15px rgba(0, 0, 0, 0.8); 
-    }
+    .wine-card:hover { border-color: #d8b255; box-shadow: 0 12px 30px rgba(216, 178, 85, 0.25), 0 0 15px rgba(0, 0, 0, 0.8); }
     
     .img-wrapper { position: relative; width: 100%; height: 175px; background: radial-gradient(circle at center, #1a0d0d 0%, #050303 100%); }
     .wine-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
     .wine-card:hover .wine-img { transform: scale(1.05); }
 
-    .vintage-badge { 
-      position: absolute; 
-      top: 10px; 
-      right: 10px; 
-      background: linear-gradient(135deg, #d8b255 0%, #aa8330 100%); 
-      color: #0b0808; 
-      font-weight: 800; 
-      font-size: 0.7rem; 
-      padding: 2px 8px; 
-      border-radius: 10px; 
-      box-shadow: 0 2px 8px rgba(0,0,0,0.6);
-      z-index: 2;
-    }
-
+    .vintage-badge { position: absolute; top: 10px; right: 10px; background: linear-gradient(135deg, #d8b255 0%, #aa8330 100%); color: #0b0808; font-weight: 800; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.6); z-index: 2; }
     .card-content { padding: 0.95rem; display: flex; flex-direction: column; flex-grow: 1; z-index: 2; }
     .card-title { font-size: 0.95rem; color: #fff; font-weight: 700; margin-bottom: 0.3rem; font-family: 'Georgia', serif; line-height: 1.25; }
     .region { color: #887575; font-size: 0.75rem; margin-bottom: 0.6rem; }
@@ -199,37 +224,17 @@
     .detail-row { margin-bottom: 0.3rem; }
     .detail-row strong { color: #d8b255; }
 
-    .btn-order { 
-      width: 100%; 
-      padding: 0.65rem; 
-      border-radius: 8px; 
-      border: 1px solid #d8b255; 
-      background: rgba(216, 178, 85, 0.05); 
-      color: #d8b255; 
-      font-weight: 700; 
-      font-size: 0.8rem; 
-      cursor: pointer; 
-      transition: all 0.25s ease; 
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-    }
+    .btn-order { width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid #d8b255; background: rgba(216, 178, 85, 0.05); color: #d8b255; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.25s ease; display: flex; align-items: center; justify-content: center; gap: 0.4rem; }
     .btn-order:hover { background: #d8b255; color: #0b0808; box-shadow: 0 4px 15px rgba(216, 178, 85, 0.4); }
 
     footer { text-align: center; padding: 2.5rem 1rem 1rem; margin-top: 4rem; border-top: 1px solid rgba(216, 178, 85, 0.15); color: #776666; font-size: 0.85rem; }
     footer strong { color: #d8b255; font-weight: 600; }
 
-    /* Modal Detail View */
-    .fullpage-detail { 
-      display: none; position: fixed; inset: 0; background: rgba(7, 5, 5, 0.96); z-index: 9999; overflow-y: auto; padding: 2.5rem 1rem; backdrop-filter: blur(12px);
-    }
+    .fullpage-detail { display: none; position: fixed; inset: 0; background: rgba(7, 5, 5, 0.96); z-index: 9999; overflow-y: auto; padding: 2.5rem 1rem; backdrop-filter: blur(12px); }
     .fullpage-detail.active { display: block; animation: fadeIn 0.3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     
-    .detail-container { 
-      max-width: 950px; margin: 0 auto; background: linear-gradient(145deg, #180e0e 0%, #0d0808 100%); border: 1px solid rgba(216, 178, 85, 0.25); border-radius: 20px; padding: 2.5rem; position: relative; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.95), 0 0 50px rgba(216, 178, 85, 0.08);
-    }
+    .detail-container { max-width: 950px; margin: 0 auto; background: linear-gradient(145deg, #180e0e 0%, #0d0808 100%); border: 1px solid rgba(216, 178, 85, 0.25); border-radius: 20px; padding: 2.5rem; position: relative; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.95), 0 0 50px rgba(216, 178, 85, 0.08); }
     .btn-back { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(31, 19, 19, 0.8); border: 1px solid rgba(216, 178, 85, 0.3); color: #d8b255; padding: 0.6rem 1.2rem; border-radius: 25px; cursor: pointer; font-weight: 600; font-size: 0.85rem; margin-bottom: 2rem; transition: all 0.25s; }
     .btn-back:hover { background: #d8b255; color: #0b0808; transform: translateX(-3px); }
 
@@ -267,6 +272,52 @@
   <canvas id="bgCanvas"></canvas>
 
   <div id="catalogPage">
+    
+    <!-- NAVIGATION BAR (BARU) -->
+    <nav class="top-navbar">
+      <ul class="nav-links">
+        <li><a href="#" class="active">HOME</a></li>
+        
+        <!-- Menu dengan Dropdown -->
+        <li class="dropdown">
+          <a href="#">
+            SHOP 
+            <svg class="arrow" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+          </a>
+          <!-- Isi Dropdown (Tampil saat di hover) -->
+          <ul class="dropdown-content">
+            <li><a href="#">Best Sellers</a></li>
+            <li><a href="#">New Arrivals</a></li>
+            <li><a href="#">All Products</a></li>
+          </ul>
+        </li>
+
+        <!-- Menu dengan Dropdown -->
+        <li class="dropdown">
+          <a href="#">
+            BRANDS 
+            <svg class="arrow" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+          </a>
+          <ul class="dropdown-content">
+            <li><a href="#">Local Brands</a></li>
+            <li><a href="#">Import Brands</a></li>
+            <li><a href="#">Exclusive</a></li>
+          </ul>
+        </li>
+
+        <li><a href="#">COLLECTIONS</a></li>
+        <li><a href="#">OUR STORE</a></li>
+        
+        <!-- Menu SALE dengan Badge HOT -->
+        <li>
+          <a href="#" class="sale">
+            SALE <span class="badge-hot">HOT</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <!-- END NAVIGATION BAR -->
+
     <div class="hero">
       <h1 id="heroTitle">🍷 Retail</h1>
       <p id="heroSubtitle">Explore our curated collection of wines and spirits.</p>
@@ -296,18 +347,16 @@
       <button class="filter-btn" onclick="setMainCategory('Syrup', this)">Syrup</button>
     </div>
 
-    <!-- Sub Kategori (Local / Import) - Disembunyikan awalnya -->
+    <!-- Sub Kategori (Local / Import) -->
     <div class="category-filters sub-filters" id="subCategories" style="display: none;">
-      <!-- Hanya ada Local dan Import. User WAJIB pilih salah satu untuk memunculkan data -->
       <button class="sub-btn" data-sub="Local" onclick="setSubCategory('Local', this)">🇮🇩 Local</button>
       <button class="sub-btn" data-sub="Import" onclick="setSubCategory('Import', this)">🌍 Import</button>
     </div>
 
-    <!-- Kontainer Data -->
     <div class="wine-grid" id="wineGrid"></div>
 
     <footer>
-      <p>&copy; 2026 Copyright by <strong>Mitra Buana Intimas</strong>. All Rights Reserved.</p>
+      <p>&copy; 2026 Copyright by <strong>RETAIL LIQUOR SHOP</strong>. All Rights Reserved.</p>
     </footer>
   </div>
 
@@ -374,9 +423,8 @@
     let localWines = [];
     let currentFilteredWines = [];
     
-    // Variabel state untuk memantau status filter saat ini
     let currentMainCategory = null; 
-    let currentSubCategory = null; // Awalnya null, agar produk tidak langsung muncul
+    let currentSubCategory = null; 
     
     const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whisky", "Cognac", "Soju", "Sake", "Traditional and Grain", "Baijiu", "Alcopops"];
 
@@ -401,12 +449,10 @@
       } catch (err) { console.error('Error fetching Supabase data:', err); }
     }
 
-    // STEP 1: Fungsi saat Tipe Minuman diklik
     function setMainCategory(category, btnElement) {
       currentMainCategory = category;
-      currentSubCategory = null; // Reset sub-kategori, memaksa user pilih Local/Import lagi
+      currentSubCategory = null;
 
-      // Styling tombol kategori utama
       document.querySelectorAll('#mainCategories .filter-btn').forEach(btn => btn.classList.remove('active'));
       btnElement.classList.add('active');
       btnElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
@@ -414,35 +460,29 @@
       const subContainer = document.getElementById('subCategories');
       
       if (category === 'Semua') {
-        // Jika klik "Semua Kategori", langsung tampilkan semua, hilangkan filter Local/Import
         subContainer.style.display = 'none'; 
         currentSubCategory = 'Semua'; 
       } else {
-        // Jika klik Vodka, Gin, dll -> Tampilkan tombol Local & Import
         subContainer.style.display = 'flex'; 
-        // Pastikan tombol Local & Import di-reset warnanya
         document.querySelectorAll('#subCategories .sub-btn').forEach(btn => btn.classList.remove('active'));
       }
 
-      renderWines(); // Jalankan render (akan menampilkan pesan suruh pilih Local/Import)
+      renderWines(); 
     }
 
-    // STEP 2: Fungsi saat Local atau Import diklik
     function setSubCategory(subType, btnElement) {
       currentSubCategory = subType;
       
-      // Styling tombol Local / Import
       document.querySelectorAll('#subCategories .sub-btn').forEach(btn => btn.classList.remove('active'));
       btnElement.classList.add('active');
 
-      renderWines(); // Jalankan render (sekarang baru memunculkan daftar botolnya)
+      renderWines(); 
     }
 
     function renderWines() {
       const grid = document.getElementById('wineGrid');
       const search = document.getElementById('searchInput').value.toLowerCase();
 
-      // KONDISI A: Halaman pertama kali dibuka (Belum pilih apapun)
       if (!currentMainCategory && !search) {
         grid.innerHTML = `
           <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem;">
@@ -454,7 +494,6 @@
         return;
       }
 
-      // KONDISI B: Kategori spesifik sudah diklik (contoh: Vodka), TAPI Local/Import belum diklik
       if (currentMainCategory && currentMainCategory !== 'Semua' && !currentSubCategory && !search) {
         grid.innerHTML = `
           <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem;">
@@ -466,7 +505,6 @@
         return;
       }
 
-      // KONDISI C: Filter Data (Ketika Local/Import sudah dipilih, atau mode 'Semua')
       currentFilteredWines = localWines.filter(wine => {
         let matchesSearch = true;
         if (search) {
@@ -480,7 +518,6 @@
         }
 
         let matchesSub = true;
-        // Hanya saring Sub-Kategori jika user sudah klik Local/Import (dan bukan mode 'Semua')
         if (currentMainCategory && currentMainCategory !== 'Semua' && currentSubCategory && currentSubCategory !== 'Semua') {
           matchesSub = wine.type && wine.type.toLowerCase().includes(currentSubCategory.toLowerCase());
         }
@@ -488,7 +525,6 @@
         return matchesSearch && matchesMain && matchesSub;
       });
 
-      // Jika data kosong
       if (currentFilteredWines.length === 0) {
         grid.innerHTML = `
           <div style="grid-column: 1/-1; text-align: center; padding: 4rem 0;">
@@ -498,7 +534,6 @@
         return;
       }
 
-      // Tampilkan HTML Produk
       grid.innerHTML = currentFilteredWines.map((wine, idx) => {
         const isSpirit = spiritTypes.some(spirit => wine.type && wine.type.includes(spirit));
         
