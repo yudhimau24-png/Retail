@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Retail Catalog - Royal Vintage Edition</title>
+  <title>Retail Catalog - Modern High-End Edition</title>
   
-  <!-- Google Fonts Lengkap -->
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Montserrat:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+  <!-- Font Google Luxury & Modern -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
   
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -15,7 +15,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
     body { 
       background-color: #070505; 
       color: #e0e0e0; 
@@ -39,9 +39,9 @@
 
     /* NAVIGATION BAR */
     .top-navbar {
-      background-color: #1a1a1a;
-      border-bottom: 1px solid rgba(216, 178, 85, 0.2);
-      padding: 1.5rem 2rem;
+      background-color: #120e0d;
+      border-bottom: 1px solid rgba(216, 178, 85, 0.25);
+      padding: 1.2rem 2rem;
       display: flex;
       justify-content: center;
       position: relative;
@@ -60,8 +60,7 @@
     .nav-links a {
       text-decoration: none;
       color: #f0f0f0;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 700;
       letter-spacing: 1.5px;
       text-transform: uppercase;
@@ -75,40 +74,27 @@
     .nav-links a:hover, .nav-links li:hover > a { color: #d8b255; }
     .nav-links a.sale { color: #d9453a; }
 
-    .badge-hot {
-      background-color: #d9453a;
-      color: #fff;
-      font-size: 0.65rem;
-      font-weight: 800;
-      padding: 2px 7px;
-      border-radius: 12px;
-      margin-left: 0.3rem;
-      letter-spacing: 0.5px;
-      display: inline-block;
-      transform: translateY(-1px);
-    }
-
     .dropdown-content {
       display: none;
       position: absolute;
       top: 100%;
       left: 0;
-      background-color: #1a1a1a;
-      min-width: 190px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-      border: 1px solid rgba(216, 178, 85, 0.2);
-      border-radius: 4px;
+      background-color: #161211;
+      min-width: 200px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+      border: 1px solid rgba(216, 178, 85, 0.25);
+      border-radius: 8px;
       padding: 0.5rem 0;
-      margin-top: 1.5rem;
+      margin-top: 1rem;
       opacity: 0;
       transform: translateY(10px);
-      transition: opacity 0.3s ease, transform 0.3s ease;
+      transition: all 0.3s ease;
       max-height: 400px;
       overflow-y: auto;
       z-index: 100;
     }
 
-    .dropdown-content::-webkit-scrollbar { width: 6px; }
+    .dropdown-content::-webkit-scrollbar { width: 5px; }
     .dropdown-content::-webkit-scrollbar-thumb { background: rgba(216, 178, 85, 0.5); border-radius: 3px; }
     
     .dropdown::after { content: ''; position: absolute; top: 100%; left: 0; width: 100%; height: 1.5rem; }
@@ -128,7 +114,7 @@
     }
 
     .dropdown-content a:hover {
-      background-color: rgba(216, 178, 85, 0.1);
+      background-color: rgba(216, 178, 85, 0.15);
       color: #d8b255;
     }
 
@@ -143,7 +129,6 @@
       padding: 3rem 1rem; 
       background: radial-gradient(circle at 50% -20%, #3a1c1c 0%, #120909 60%, #070505 100%);
       border-bottom: 1px solid rgba(216, 178, 85, 0.15); 
-      position: relative;
     }
 
     .hero h1 { 
@@ -157,9 +142,8 @@
 
     /* CONTROLS */
     .controls { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 1.8rem 1rem 1rem; gap: 0.8rem; }
-    input { padding: 0.65rem 1.2rem; border-radius: 20px; border: 1px solid rgba(216, 178, 85, 0.25); background: rgba(18, 11, 11, 0.75); color: #fff; font-size: 0.85rem; outline: none; transition: all 0.3s; }
-    input:focus { border-color: #d8b255; box-shadow: 0 0 12px rgba(216, 178, 85, 0.3); }
-    .search-input { width: 100%; max-width: 400px; }
+    input.search-input { padding: 0.65rem 1.2rem; border-radius: 20px; border: 1px solid rgba(216, 178, 85, 0.25); background: rgba(18, 11, 11, 0.75); color: #fff; font-size: 0.85rem; outline: none; transition: all 0.3s; width: 100%; max-width: 400px; }
+    input.search-input:focus { border-color: #d8b255; box-shadow: 0 0 12px rgba(216, 178, 85, 0.3); }
 
     .sort-container {
       display: flex;
@@ -193,16 +177,16 @@
     .sub-btn.active { background: rgba(216, 178, 85, 0.15); border: 1px solid #d8b255; color: #d8b255; font-weight: 700; }
 
     /* KATALOG GRID */
-    .wine-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.1rem; max-width: 1400px; margin: 0 auto; padding: 0 1rem; perspective: 1000px; }
+    .wine-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.1rem; max-width: 1400px; margin: 0 auto; padding: 0 1rem; }
     @media (max-width: 1200px) { .wine-grid { grid-template-columns: repeat(4, 1fr); } }
     @media (max-width: 900px) { .wine-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (max-width: 600px) { .wine-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; } }
 
     .wine-card { background: rgba(18, 12, 12, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s ease-out, border-color 0.3s, box-shadow 0.3s; position: relative; }
-    .wine-card:hover { border-color: #d8b255; box-shadow: 0 12px 30px rgba(216, 178, 85, 0.25); }
+    .wine-card:hover { border-color: #d8b255; box-shadow: 0 12px 30px rgba(216, 178, 85, 0.25); transform: translateY(-4px); }
     
-    .img-wrapper { position: relative; width: 100%; height: 175px; background: radial-gradient(circle at center, #1a0d0d 0%, #050303 100%); }
-    .wine-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+    .img-wrapper { position: relative; width: 100%; height: 180px; background: radial-gradient(circle at center, #2e1a1b 0%, #050303 100%); }
+    .wine-img { width: 100%; height: 100%; object-fit: contain; padding: 10px; transition: transform 0.4s ease; }
     .wine-card:hover .wine-img { transform: scale(1.05); }
 
     .collection-badge { position: absolute; top: 10px; left: 10px; font-weight: 800; font-size: 0.65rem; padding: 3px 8px; border-radius: 4px; z-index: 2; text-transform: uppercase; }
@@ -211,7 +195,7 @@
 
     .vintage-badge { position: absolute; top: 10px; right: 10px; background: linear-gradient(135deg, #d8b255 0%, #aa8330 100%); color: #0b0808; font-weight: 800; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; z-index: 2; }
     .card-content { padding: 0.95rem; display: flex; flex-direction: column; flex-grow: 1; z-index: 2; }
-    .card-title { font-size: 0.95rem; color: #fff; font-weight: 700; margin-bottom: 0.3rem; font-family: 'Georgia', serif; line-height: 1.25; }
+    .card-title { font-size: 0.95rem; color: #fff; font-weight: 700; margin-bottom: 0.3rem; font-family: 'Cinzel', serif; line-height: 1.25; }
     .region { color: #887575; font-size: 0.75rem; margin-bottom: 0.6rem; }
     .details { font-size: 0.75rem; color: #ccc; margin-bottom: 1rem; flex-grow: 1; line-height: 1.35; }
     .detail-row { margin-bottom: 0.3rem; }
@@ -226,67 +210,161 @@
     footer { text-align: center; padding: 2.5rem 1rem 1rem; margin-top: 4rem; border-top: 1px solid rgba(216, 178, 85, 0.15); color: #776666; font-size: 0.85rem; }
     footer strong { color: #d8b255; font-weight: 600; }
 
-    /* MODAL VINTAGE PARCHMENT TASTING PROFILE */
-    .fullpage-detail { display: none; position: fixed; inset: 0; background: rgba(7, 5, 5, 0.95); z-index: 9999; overflow-y: auto; padding: 2rem 1rem; backdrop-filter: blur(10px); }
-    .fullpage-detail.active { display: block; }
+    /* ========================================================= */
+    /* MODAL MODERN HIGH-END LUXURY (OBSIDIAN GOLD GLASS)       */
+    /* ========================================================= */
+    .fullpage-detail { display: none; position: fixed; inset: 0; background: rgba(5, 3, 3, 0.92); z-index: 9999; overflow-y: auto; padding: 2.5rem 1rem; backdrop-filter: blur(16px); }
+    .fullpage-detail.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    .vintage-profile-card {
-      background: linear-gradient(135deg, #fdfbf7 0%, #f4eee3 100%);
-      color: #2b2118;
-      max-width: 880px;
+    .luxury-modal-card {
+      background: linear-gradient(145deg, rgba(22, 16, 15, 0.98) 0%, rgba(10, 7, 6, 0.99) 100%);
+      border: 1px solid rgba(216, 178, 85, 0.35);
+      border-radius: 24px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 40px rgba(216, 178, 85, 0.1);
+      color: #f3f4f6;
+      max-width: 900px;
       margin: 0 auto;
-      padding: 30px;
+      padding: 35px 40px;
       position: relative;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-      border: 1px solid #c5a059;
+      overflow: hidden;
     }
 
-    .v-outer-border { border: 2px solid #c5a059; padding: 20px; position: relative; }
-    .v-inner-border { border: 1px solid #d8be8a; padding: 20px; position: relative; }
+    .luxury-modal-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 20%, rgba(216, 178, 85, 0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
 
-    .v-corner { position: absolute; width: 20px; height: 20px; border: 3px solid #c5a059; }
-    .v-top-left { top: -5px; left: -5px; border-right: none; border-bottom: none; }
-    .v-top-right { top: -5px; right: -5px; border-left: none; border-bottom: none; }
-    .v-bottom-left { bottom: -5px; left: -5px; border-right: none; border-top: none; }
-    .v-bottom-right { bottom: -5px; right: -5px; border-left: none; border-top: none; }
+    .m-header { text-align: center; margin-bottom: 25px; border-bottom: 1px solid rgba(216, 178, 85, 0.2); padding-bottom: 18px; }
+    .m-header h2 { font-family: 'Cinzel', serif; font-size: 2.2rem; color: #d8b255; letter-spacing: 3px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
+    .m-header .m-sub { font-size: 0.8rem; color: #a1a1aa; letter-spacing: 2px; font-weight: 600; text-transform: uppercase; }
 
-    .v-header { text-align: center; border-bottom: 1px solid #e2d2a8; padding-bottom: 12px; margin-bottom: 20px; }
-    .v-header h2 { font-family: 'Cinzel', serif; font-size: 2rem; color: #937135; letter-spacing: 2px; text-transform: uppercase; }
-    .v-header .v-meta { font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 700; color: #2b2118; margin-top: 4px; }
+    .m-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 30px; align-items: start; }
+    @media (max-width: 720px) { .m-grid { grid-template-columns: 1fr; } .luxury-modal-card { padding: 25px 20px; } }
 
-    .v-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 25px; align-items: start; }
-    @media (max-width: 700px) { .v-grid { grid-template-columns: 1fr; } }
+    .m-bottle-box { text-align: center; }
+    .m-wine-name { font-family: 'Cinzel', serif; font-size: 1.7rem; font-weight: 800; color: #ffffff; line-height: 1.2; text-transform: uppercase; margin-bottom: 4px; }
+    .m-wine-origin { font-size: 0.85rem; color: #d8b255; font-weight: 600; margin-bottom: 15px; }
 
-    .v-bottle-box { text-align: center; }
-    .v-wine-title { font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 800; color: #1a1110; text-transform: uppercase; }
-    .v-wine-subtitle { font-family: 'Cinzel', serif; font-size: 0.85rem; color: #634f37; margin-bottom: 15px; }
-    .v-bottle-img { max-height: 320px; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3)); }
+    .m-img-wrapper {
+      position: relative;
+      width: 100%;
+      height: 350px;
+      border-radius: 18px;
+      background: radial-gradient(circle at center, rgba(60, 30, 20, 0.4) 0%, rgba(10, 7, 6, 0.8) 70%);
+      border: 1px solid rgba(216, 178, 85, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
 
-    .v-matrix-title { font-family: 'Cinzel', serif; font-size: 0.95rem; font-weight: 700; color: #1a1110; text-align: center; letter-spacing: 1.5px; margin-bottom: 15px; }
+    .m-bottle-img { max-height: 320px; object-fit: contain; filter: drop-shadow(0 15px 20px rgba(0,0,0,0.7)); }
 
-    .v-bar-item { margin-bottom: 12px; }
-    .v-bar-label { display: flex; justify-content: space-between; font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700; color: #1a1110; }
-    .v-bar-track { height: 10px; background: linear-gradient(90deg, #dfd0b5 0%, #c5a059 100%); border-radius: 5px; position: relative; border: 1px solid #b3914a; margin: 4px 0; }
-    .v-bar-pin { position: absolute; top: 50%; transform: translate(-50%, -50%) rotate(45deg); width: 14px; height: 14px; background: #8b6b28; border: 2px solid #fff; }
-    .v-bar-sub { display: flex; justify-content: space-between; font-size: 0.68rem; color: #554433; }
+    /* FLAVOR MATRIX CHARTS MODERN */
+    .m-matrix-header { font-family: 'Cinzel', serif; font-size: 0.95rem; font-weight: 700; color: #d8b255; text-align: center; letter-spacing: 2px; margin-bottom: 18px; }
 
-    .v-notes { border-top: 1px solid #e2d2a8; padding-top: 12px; margin-top: 15px; }
-    .v-note-row { display: flex; gap: 10px; margin-bottom: 8px; font-size: 0.8rem; line-height: 1.4; }
-    .v-note-row strong { font-family: 'Cinzel', serif; color: #8b6b28; min-width: 90px; flex-shrink: 0; }
-    .v-note-row span { color: #3d3028; font-style: italic; }
+    .m-bar-row { margin-bottom: 14px; }
+    .m-bar-label { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; color: #e4e4e7; font-family: 'Cinzel', serif; margin-bottom: 4px; }
+    .m-bar-track { height: 8px; background: rgba(255, 255, 255, 0.08); border-radius: 10px; position: relative; overflow: hidden; border: 1px solid rgba(216, 178, 85, 0.15); }
+    .m-bar-fill { height: 100%; background: linear-gradient(90deg, #b89235 0%, #d8b255 100%); border-radius: 10px; transition: width 0.6s ease; box-shadow: 0 0 10px rgba(216, 178, 85, 0.5); }
 
-    .v-info-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; border-top: 1px solid #e2d2a8; padding-top: 15px; }
-    .v-info-box { background: #f0e6d6; border: 1px solid #c5a059; padding: 10px; border-radius: 6px; text-align: center; }
-    .v-info-box span { font-family: 'Cinzel', serif; font-size: 0.68rem; color: #665240; font-weight: 700; display: block; text-transform: uppercase; }
-    .v-info-box strong { font-size: 0.85rem; color: #1a1110; margin-top: 2px; display: block; }
+    /* SENSORY NOTES CARDS */
+    .m-sensory-box { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+    .m-sensory-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-left: 3px solid #d8b255;
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .m-sensory-card strong { font-family: 'Cinzel', serif; font-size: 0.75rem; color: #d8b255; min-width: 75px; letter-spacing: 1px; }
+    .m-sensory-card span { font-size: 0.82rem; color: #d4d4d8; font-style: italic; line-height: 1.35; }
 
-    .v-pairing { border-top: 1px solid #e2d2a8; padding-top: 15px; margin-top: 20px; text-align: center; }
-    .v-pairing-text { font-size: 0.85rem; color: #3d3028; font-style: italic; margin-top: 6px; }
+    /* SPECS GRID (ABV, TEMP, STOK) */
+    .m-specs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+    .m-spec-card {
+      background: rgba(216, 178, 85, 0.05);
+      border: 1px solid rgba(216, 178, 85, 0.2);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+    }
+    .m-spec-card span { display: block; font-size: 0.68rem; color: #a1a1aa; font-weight: 600; text-transform: uppercase; margin-bottom: 2px; }
+    .m-spec-card strong { font-size: 0.9rem; color: #ffffff; font-weight: 700; }
 
-    .v-btn-group { display: flex; gap: 10px; margin-top: 20px; }
-    .v-btn-wa { flex: 2; padding: 12px; background: #8b6b28; color: #fff; border: none; font-weight: 700; cursor: pointer; border-radius: 4px; font-family: 'Cinzel', serif; }
-    .v-btn-pdf { flex: 1; padding: 12px; background: #2b2118; color: #c5a059; border: 1px solid #c5a059; font-weight: 700; cursor: pointer; border-radius: 4px; font-family: 'Cinzel', serif; }
-    .v-btn-close { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5rem; color: #8b6b28; cursor: pointer; font-weight: bold; }
+    /* PAIRING SECTION */
+    .m-pairing-box {
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(216, 178, 85, 0.15);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+    .m-pairing-box h5 { font-family: 'Cinzel', serif; font-size: 0.82rem; color: #d8b255; letter-spacing: 1.5px; margin-bottom: 4px; }
+    .m-pairing-box p { font-size: 0.82rem; color: #e4e4e7; font-style: italic; }
+
+    /* BUTTON ACTION GROUP */
+    .m-btn-group { display: flex; gap: 12px; margin-top: 25px; }
+    .m-btn-wa {
+      flex: 2;
+      padding: 14px;
+      background: linear-gradient(135deg, #d8b255 0%, #b89235 100%);
+      color: #0b0808;
+      border: none;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border-radius: 10px;
+      font-family: 'Montserrat', sans-serif;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 20px rgba(216, 178, 85, 0.3);
+    }
+    .m-btn-wa:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(216, 178, 85, 0.5); }
+
+    .m-btn-pdf {
+      flex: 1;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #d8b255;
+      border: 1px solid #d8b255;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+    .m-btn-pdf:hover { background: #d8b255; color: #0b0808; }
+
+    .m-btn-close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      z-index: 10;
+    }
+    .m-btn-close:hover { background: #d9453a; border-color: #d9453a; }
   </style>
 </head>
 <body>
@@ -294,13 +372,16 @@
   <canvas id="bgCanvas"></canvas>
 
   <div id="catalogPage">
+    
+    <!-- NAVIGATION BAR -->
     <nav class="top-navbar">
       <ul class="nav-links">
         <li><a href="javascript:void(0)" onclick="resetAllFilters()">HOME</a></li>
         
+        <!-- MENU CATEGORY DROPDOWN LENGKAP -->
         <li class="dropdown">
           <a href="javascript:void(0)">
-            CATEGORY <svg class="arrow" viewBox="0 0 24 24" style="width:10px; height:10px; fill:none; stroke:currentColor; stroke-width:2;"><path d="M6 9l6 6 6-6"/></svg>
+            CATEGORY <svg viewBox="0 0 24 24" style="width:10px; height:10px; fill:none; stroke:currentColor; stroke-width:2;"><path d="M6 9l6 6 6-6"/></svg>
           </a>
           <ul class="dropdown-content">
             <li><a href="javascript:void(0)" onclick="setMainCategory('Semua')">⭐ Semua Kategori</a></li>
@@ -322,9 +403,10 @@
           </ul>
         </li>
         
+        <!-- MENU SHOP -->
         <li class="dropdown">
           <a href="javascript:void(0)">
-            SHOP <svg class="arrow" viewBox="0 0 24 24" style="width:10px; height:10px; fill:none; stroke:currentColor; stroke-width:2;"><path d="M6 9l6 6 6-6"/></svg>
+            SHOP <svg viewBox="0 0 24 24" style="width:10px; height:10px; fill:none; stroke:currentColor; stroke-width:2;"><path d="M6 9l6 6 6-6"/></svg>
           </a>
           <ul class="dropdown-content">
             <li><a href="javascript:void(0)" onclick="setShopCollection('Best Seller')">⭐ Best Sellers</a></li>
@@ -352,6 +434,7 @@
       <p id="heroSubtitle">Explore our curated collection of wines and spirits.</p>
     </div>
 
+    <!-- CONTROLS CONTAINER -->
     <div class="controls">
       <input type="text" id="searchInput" class="search-input" placeholder="Search beverage name or region..." oninput="renderWines()">
       <div class="sort-container">
@@ -361,6 +444,7 @@
       </div>
     </div>
 
+    <!-- SUB-FILTERS (LOCAL / IMPORT) -->
     <div class="sub-filters" id="subCategories" style="display: none;">
       <button class="sub-btn" data-sub="Local" onclick="setSubCategory('Local', this)">🇮🇩 Local</button>
       <button class="sub-btn" data-sub="Import" onclick="setSubCategory('Import', this)">🌍 Import</button>
@@ -373,19 +457,18 @@
     </footer>
   </div>
 
-  <!-- MODAL VINTAGE PARCHMENT TASTING PROFILE -->
+  <!-- MODAL HIGH-END LUXURY SOMMELIER PROFILE -->
   <div id="detailView" class="fullpage-detail">
-    <div class="vintage-profile-card" id="vintageTargetCard">
-      <button class="v-btn-close" onclick="closeDetail()">✕</button>
-      <div class="v-outer-border">
-        <div class="v-inner-border" id="vintageContent">
-          <!-- Dihasilkan secara dinamis via JavaScript -->
-        </div>
+    <div class="luxury-modal-card" id="vintageTargetCard">
+      <button class="m-btn-close" onclick="closeDetail()">✕</button>
+      <div id="vintageContent">
+        <!-- Dihasilkan secara dinamis via JavaScript -->
       </div>
     </div>
   </div>
 
   <script>
+    /* KONFIGURASI SUPABASE */
     const SUPABASE_URL = "https://nuyowvjianxiobpzejnc.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eW93dmppYW54aW9icHplam5jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODkyMjUyOCwiZXhwIjoyMTA0NDk4NTI4fQ.-aeTfpvoGy3ICP2LMxa0vGfYggXlldnj5vtouzRm7bg";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -443,14 +526,11 @@
             tanninVal: w.tanninVal || w.tannin || 80,
             acidityVal: w.acidityVal || w.acidity || 65,
             sweetnessVal: w.sweetnessVal || w.sweetness || 20,
-            
-            // SINKRONISASI FIELD HASIL ADMIN (GENERAL NOTES, PAIRING, STORAGE, SENSORI)
             visual: w.visual || 'Deep ruby red, garnet rim',
-            aroma: w.aroma || 'Blackcurrant, violet, cedar, spice bouquet',
-            palate: w.palate || 'Full-bodied, structured, velvety tannins, elegant finish',
-            notes: w.notes || 'Fine quality wine with rich characteristics.',
-            pairing: w.pairing || 'Ribeye steak, lamb, aged cheeses',
-            storageNote: w.storageNote || 'Store horizontal in cool dark place'
+            aroma: w.aroma || w.notes || 'Blackcurrant, violet, cedar, spice bouquet',
+            palate: w.palate || w.pairing || 'Full-bodied, structured, velvety tannins, elegant finish',
+            notes: w.notes || 'Fine quality beverage with rich characteristics.',
+            pairing: w.pairing || 'Grilled meats, cheeses, rich cuisine'
           }));
           renderWines();
         }
@@ -551,77 +631,68 @@
       if (!wine) return;
 
       document.getElementById('vintageContent').innerHTML = `
-        <div class="v-corner v-top-left"></div>
-        <div class="v-corner v-top-right"></div>
-        <div class="v-corner v-bottom-left"></div>
-        <div class="v-corner v-bottom-right"></div>
-
-        <header class="v-header">
-          <h2>Wine Tasting Profile</h2>
-          <div class="v-meta">VINTAGE: ${escapeHtml(wine.vintage) || 'NV'} &nbsp;|&nbsp; VARIETAL: ${escapeHtml(wine.varietal) || 'Cabernet Sauvignon'}</div>
+        <header class="m-header">
+          <h2>MASTER SOMMELIER PROFILE</h2>
+          <div class="m-sub">VINTAGE: ${escapeHtml(wine.vintage) || 'NV'} &nbsp;•&nbsp; VARIETAL: ${escapeHtml(wine.varietal) || 'Red Blend'}</div>
         </header>
 
-        <div class="v-grid">
-          <div class="v-bottle-box">
-            <div class="v-wine-title">${escapeHtml(wine.name)}</div>
-            <div class="v-wine-subtitle">📍 ${escapeHtml(wine.region) || 'Origin Unknown'} • ${escapeHtml(wine.type)}</div>
-            <img src="${wine.imageUrl}" class="v-bottle-img">
+        <div class="m-grid">
+          <div class="m-bottle-box">
+            <div class="m-wine-name">${escapeHtml(wine.name)}</div>
+            <div class="m-wine-origin">📍 ${escapeHtml(wine.region) || 'Origin Unknown'} • ${escapeHtml(wine.type)}</div>
+            <div class="m-img-wrapper">
+              <img src="${wine.imageUrl}" class="m-bottle-img">
+            </div>
           </div>
 
           <div>
-            <div class="v-matrix-title">FLAVOR MATRIX CHARTS</div>
+            <div class="m-matrix-header">FLAVOR MATRIX CHARTS</div>
 
-            <div class="v-bar-item">
-              <div class="v-bar-label"><span>BODY</span></div>
-              <div class="v-bar-track"><div class="v-bar-pin" style="left: ${wine.bodyVal}%;"></div></div>
-              <div class="v-bar-sub"><span>Full</span><span>Score: ${wine.bodyVal / 10}/10</span></div>
+            <div class="m-bar-row">
+              <div class="m-bar-label"><span>BODY</span><span>${wine.bodyVal / 10}/10</span></div>
+              <div class="m-bar-track"><div class="m-bar-fill" style="width: ${wine.bodyVal}%;"></div></div>
             </div>
 
-            <div class="v-bar-item">
-              <div class="v-bar-label"><span>TANNIN</span></div>
-              <div class="v-bar-track"><div class="v-bar-pin" style="left: ${wine.tanninVal}%;"></div></div>
-              <div class="v-bar-sub"><span>Structured</span><span>Score: ${wine.tanninVal / 10}/10</span></div>
+            <div class="m-bar-row">
+              <div class="m-bar-label"><span>TANNIN</span><span>${wine.tanninVal / 10}/10</span></div>
+              <div class="m-bar-track"><div class="m-bar-fill" style="width: ${wine.tanninVal}%;"></div></div>
             </div>
 
-            <div class="v-bar-item">
-              <div class="v-bar-label"><span>ACIDITY</span></div>
-              <div class="v-bar-track"><div class="v-bar-pin" style="left: ${wine.acidityVal}%;"></div></div>
-              <div class="v-bar-sub"><span>Balanced</span><span>Score: ${wine.acidityVal / 10}/10</span></div>
+            <div class="m-bar-row">
+              <div class="m-bar-label"><span>ACIDITY</span><span>${wine.acidityVal / 10}/10</span></div>
+              <div class="m-bar-track"><div class="m-bar-fill" style="width: ${wine.acidityVal}%;"></div></div>
             </div>
 
-            <div class="v-bar-item">
-              <div class="v-bar-label"><span>SWEETNESS</span></div>
-              <div class="v-bar-track"><div class="v-bar-pin" style="left: ${wine.sweetnessVal}%;"></div></div>
-              <div class="v-bar-sub"><span>Dry</span><span>Score: ${wine.sweetnessVal / 10}/10</span></div>
+            <div class="m-bar-row">
+              <div class="m-bar-label"><span>SWEETNESS</span><span>${wine.sweetnessVal / 10}/10</span></div>
+              <div class="m-bar-track"><div class="m-bar-fill" style="width: ${wine.sweetnessVal}%;"></div></div>
             </div>
 
-            <div class="v-notes">
-              <div class="v-note-row"><strong>👁️ VISUAL</strong><span>${escapeHtml(wine.visual)}</span></div>
-              <div class="v-note-row"><strong>🍇 AROMA</strong><span>${escapeHtml(wine.aroma)}</span></div>
-              <div class="v-note-row"><strong>🍷 PALATE</strong><span>${escapeHtml(wine.palate)}</span></div>
-              <!-- TAMPILAN FIELD GENERAL NOTES & STORAGE NOTE DARI ADMIN -->
-              <div class="v-note-row"><strong>📝 NOTES</strong><span>${escapeHtml(wine.notes)}</span></div>
-              <div class="v-note-row"><strong>🍾 STORAGE</strong><span>${escapeHtml(wine.storageNote)}</span></div>
+            <div class="m-sensory-box">
+              <div class="m-sensory-card"><strong>👁️ VISUAL</strong><span>${escapeHtml(wine.visual)}</span></div>
+              <div class="m-sensory-card"><strong>🍇 AROMA</strong><span>${escapeHtml(wine.aroma)}</span></div>
+              <div class="m-sensory-card"><strong>🍷 PALATE</strong><span>${escapeHtml(wine.palate)}</span></div>
+              <div class="m-sensory-card"><strong>📝 NOTES</strong><span>${escapeHtml(wine.notes)}</span></div>
+              <div class="m-sensory-card"><strong>🍾 STORAGE</strong><span>${escapeHtml(wine.storageNote)}</span></div>
             </div>
           </div>
         </div>
 
-        <!-- TAMPILAN FIELD FOOD PAIRING DINAMIS DARI ADMIN -->
-        <section class="v-pairing">
-          <div style="font-family:'Cinzel', serif; font-weight:700; font-size:0.9rem;">SUGGESTED FOOD PAIRINGS</div>
-          <div class="v-pairing-text">🥩 ${escapeHtml(wine.pairing)}</div>
-        </section>
-
-        <!-- INFORMASI TAMBAHAN (ABV, SUHU, STOK) -->
-        <div class="v-info-cards">
-          <div class="v-info-box"><span>ALCOHOL (ABV)</span><strong>${escapeHtml(wine.abv) || '-'}</strong></div>
-          <div class="v-info-box"><span>SUHU PENYAJIAN</span><strong>${escapeHtml(wine.servingTemp) || '-'}</strong></div>
-          <div class="v-info-box"><span>STATUS STOK</span><strong>${escapeHtml(wine.stockStatus) || 'Tersedia'}</strong></div>
+        <!-- PAIRING & SPECS FOOTER -->
+        <div class="m-pairing-box">
+          <h5>SUGGESTED FOOD PAIRINGS</h5>
+          <p>🍽️ ${escapeHtml(wine.pairing)}</p>
         </div>
 
-        <div class="v-btn-group">
-          <button class="v-btn-wa" onclick="inquireWine('${escapeHtml(wine.name)}')">💬 WhatsApp Order</button>
-          <button class="v-btn-pdf" onclick="exportVintagePDF('${escapeHtml(wine.name)}')">📄 Download PDF</button>
+        <div class="m-specs-grid">
+          <div class="m-spec-card"><span>ALCOHOL (ABV)</span><strong>${escapeHtml(wine.abv) || '-'}</strong></div>
+          <div class="m-spec-card"><span>SUHU PENYAJIAN</span><strong>${escapeHtml(wine.servingTemp) || '-'}</strong></div>
+          <div class="m-spec-card"><span>STATUS STOK</span><strong>${escapeHtml(wine.stockStatus) || 'Tersedia'}</strong></div>
+        </div>
+
+        <div class="m-btn-group">
+          <button class="m-btn-wa" onclick="inquireWine('${escapeHtml(wine.name)}')">💬 WhatsApp Order / Inquire</button>
+          <button class="m-btn-pdf" onclick="exportVintagePDF('${escapeHtml(wine.name)}')">📄 Download PDF</button>
         </div>
       `;
 
