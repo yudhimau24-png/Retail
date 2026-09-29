@@ -11,8 +11,8 @@
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- PptxGenJS untuk Export PowerPoint (.pptx) Single Item -->
-  <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+  <!-- html2pdf.js untuk Ekspor PDF Presisi -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -243,7 +243,7 @@
     .btn-order { flex: 1; padding: 0.65rem; border-radius: 8px; border: 1px solid #d8b255; background: rgba(216, 178, 85, 0.05); color: #d8b255; font-weight: 700; font-size: 0.78rem; cursor: pointer; transition: all 0.25s ease; display: flex; align-items: center; justify-content: center; gap: 0.3rem; }
     .btn-order:hover { background: #d8b255; color: #0b0808; box-shadow: 0 4px 15px rgba(216, 178, 85, 0.4); }
 
-    .btn-ppt-card {
+    .btn-pdf-card {
       padding: 0.65rem 0.75rem;
       border-radius: 8px;
       border: 1px solid #d8b255;
@@ -257,7 +257,7 @@
       align-items: center;
       justify-content: center;
     }
-    .btn-ppt-card:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(216, 178, 85, 0.4); }
+    .btn-pdf-card:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(216, 178, 85, 0.4); }
 
     footer { text-align: center; padding: 2.5rem 1rem 1rem; margin-top: 4rem; border-top: 1px solid rgba(216, 178, 85, 0.15); color: #776666; font-size: 0.85rem; }
     footer strong { color: #d8b255; font-weight: 600; }
@@ -299,8 +299,8 @@
     .btn-order-cta { flex: 2; padding: 1rem; border-radius: 10px; border: none; background: linear-gradient(135deg, #d8b255 0%, #b89235 100%); color: #0b0808; font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 6px 20px rgba(216, 178, 85, 0.25); display: flex; align-items: center; justify-content: center; gap: 0.6rem; }
     .btn-order-cta:hover { background: linear-gradient(135deg, #e5c065 0%, #c9a042 100%); transform: translateY(-2px); box-shadow: 0 10px 25px rgba(216, 178, 85, 0.4); }
 
-    .btn-ppt-cta { flex: 1; padding: 1rem; border-radius: 10px; border: 1px solid #d8b255; background: rgba(30, 18, 18, 0.8); color: #d8b255; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
-    .btn-ppt-cta:hover { background: #d8b255; color: #0b0808; transform: translateY(-2px); }
+    .btn-pdf-cta { flex: 1; padding: 1rem; border-radius: 10px; border: 1px solid #d8b255; background: rgba(30, 18, 18, 0.8); color: #d8b255; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .btn-pdf-cta:hover { background: #d8b255; color: #0b0808; transform: translateY(-2px); }
   </style>
 </head>
 <body>
@@ -671,8 +671,8 @@
                 <button class="btn-order" onclick="event.stopPropagation(); inquireWineByIdx(${idx})">
                   💬 Order
                 </button>
-                <button class="btn-ppt-card" title="Download PPT Item Ini" onclick="event.stopPropagation(); downloadSingleWinePPT(${idx})">
-                  📊 PPT
+                <button class="btn-pdf-card" title="Download PDF Item Ini" onclick="event.stopPropagation(); downloadSingleWinePDF(${idx})">
+                  📄 PDF
                 </button>
               </div>
             </div>
@@ -721,7 +721,7 @@
           </div>
           <div class="cta-group">
             <button class="btn-order-cta" onclick="inquireWineByIdx(${index})">💬 Pesan / Konsultasi via WhatsApp</button>
-            <button class="btn-ppt-cta" onclick="downloadSingleWinePPT(${index})">📊 Download Slide PPT</button>
+            <button class="btn-pdf-cta" onclick="downloadSingleWinePDF(${index})">📄 Download PDF</button>
           </div>
         </div>
       `;
@@ -739,227 +739,151 @@
     }
 
     /* ========================================================================= */
-    /* HELPER KONVERSI URL GAMBAR KE BASE64 (MENGHINDARI BLOKIR CORS)            */
+    /* FUNGSI UTAMA GENERASI PDF PRESISI MENYERUPAI DESAIN INFOGRAFIS           */
     /* ========================================================================= */
-    function urlToBase64(url) {
-      return new Promise((resolve) => {
-        if (!url) { resolve(null); return; }
-        const img = new Image();
-        img.crossOrigin = 'Anonymous';
-        img.onload = () => {
-          try {
-            const canvas = document.createElement('canvas');
-            canvas.width = img.naturalWidth || img.width;
-            canvas.height = img.naturalHeight || img.height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
-            const dataURL = canvas.toDataURL('image/png');
-            resolve(dataURL);
-          } catch (e) {
-            console.warn("CORS Canvas Export Error:", e);
-            resolve(null);
-          }
-        };
-        img.onerror = () => resolve(null);
-        img.src = url;
-      });
-    }
-
-    /* ========================================================================= */
-    /* GENERASI PPTX INFOGRAFIS PRESISI & RAPI (100% MUAT DI DALAM SLAID 16:9)  */
-    /* ========================================================================= */
-    async function downloadSingleWinePPT(index) {
+    async function downloadSingleWinePDF(index) {
       const wine = currentFilteredWines[index];
       if (!wine) {
         alert('Produk tidak ditemukan!');
         return;
       }
 
+      // Buat container HTML sementara di luar layar
+      const container = document.createElement('div');
+      container.id = 'temp-pdf-container';
+      container.style.position = 'fixed';
+      container.style.left = '-9999px';
+      container.style.top = '-9999px';
+      container.style.width = '1050px';
+      container.style.height = '590px';
+      container.style.backgroundColor = '#ffffff';
+      container.style.color = '#222222';
+      container.style.padding = '35px 40px';
+      container.style.boxSizing = 'border-box';
+      container.style.display = 'flex';
+      container.style.gap = '35px';
+      container.style.fontFamily = 'Arial, sans-serif';
+
+      const isSpirit = spiritTypes.some(spirit => wine.type && wine.type.includes(spirit));
+      const varietalLabel = isSpirit ? 'Base Ingredient' : 'Varietal / Grape';
+      const pairingLabel = isSpirit ? 'Serving Style' : 'Food Pairing';
+
+      // Bar Indicator Posisi (Light/Bold, Smooth/Tannin, Dry/Sweet, Soft/Acidic)
+      const bars = [
+        { left: 'Light', right: 'Bold', percent: 65 },
+        { left: 'Smooth', right: 'Tannin', percent: 50 },
+        { left: 'Dry', right: 'Sweet', percent: 35 },
+        { left: 'Soft', right: 'Acidic', percent: 60 }
+      ];
+
+      const barRowsHtml = bars.map(b => `
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: 11px;">
+          <span style="width: 55px; color: #222;">${b.left}</span>
+          <div style="flex: 1; height: 7px; background: #EADBDF; border-radius: 4px; margin: 0 10px; position: relative;">
+            <div style="position: absolute; left: ${b.percent}%; top: -3px; width: 22px; height: 13px; background: #8C233D; border-radius: 7px; transform: translateX(-50%);"></div>
+          </div>
+          <span style="width: 55px; text-align: right; color: #222;">${b.right}</span>
+        </div>
+      `).join('');
+
+      container.innerHTML = `
+        <!-- SISI KIRI: FOTO BOTOL -->
+        <div style="width: 240px; display: flex; align-items: center; justify-content: center; height: 100%;">
+          <img src="${wine.imageUrl || 'https://via.placeholder.com/300x500?text=No+Image'}" 
+               crossorigin="anonymous" 
+               style="max-height: 500px; max-width: 100%; object-fit: contain;">
+        </div>
+
+        <!-- SISI KANAN: KONTEN INFOGRAFIS -->
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+          
+          <!-- HEADER ATAS: NAMA & DESKRIPSI -->
+          <div style="display: flex; justify-content: space-between; gap: 20px; align-items: flex-start;">
+            <div style="flex: 1.2;">
+              <h1 style="font-family: Georgia, serif; font-size: 28px; color: #4A1525; margin: 0 0 5px 0; font-weight: bold; line-height: 1.2;">
+                ${escapeHtml(wine.name)} ${wine.vintage ? '(' + escapeHtml(wine.vintage) + ')' : ''}
+              </h1>
+            </div>
+            <div style="flex: 1; font-size: 10.5px; color: #333333; line-height: 1.45; text-align: left;">
+              ${escapeHtml(wine.notes) || 'A fine selection with a balanced flavor profile, rich aromas, and a smooth finish. Perfect for special occasions.'}
+            </div>
+          </div>
+
+          <!-- TENGAH: FLAVORS, TASTING PROFILE, FOOD PAIRING -->
+          <div style="display: flex; gap: 30px; margin-top: 10px;">
+            
+            <!-- MID-LEFT: FLAVORS & TASTING PROFILE -->
+            <div style="flex: 1.1;">
+              <div style="margin-bottom: 15px;">
+                <h3 style="font-size: 12px; font-weight: bold; color: #222222; margin: 0 0 4px 0; letter-spacing: 0.5px;">FLAVORS</h3>
+                <p style="font-size: 11px; color: #666666; margin: 0;">🍇 ${escapeHtml(wine.varietal) || 'Dark fruit, Spice, Oak notes'}</p>
+              </div>
+
+              <div>
+                <h3 style="font-size: 12px; font-weight: bold; color: #222222; margin: 0 0 10px 0; letter-spacing: 0.5px;">TASTING PROFILE</h3>
+                ${barRowsHtml}
+              </div>
+            </div>
+
+            <!-- MID-RIGHT: FOOD PAIRING -->
+            <div style="flex: 1;">
+              <h3 style="font-size: 12px; font-weight: bold; color: #222222; margin: 0 0 6px 0; letter-spacing: 0.5px;">FOOD PAIRING</h3>
+              <p style="font-size: 11px; color: #222222; margin: 0 0 10px 0; line-height: 1.3;">🍽️ ${escapeHtml(wine.pairing) || 'Grilled meats, cheeses, roasted cuisine'}</p>
+              <p style="font-size: 10.5px; color: #444444; margin: 0; line-height: 1.4;">
+                <strong>Food Ideas:</strong> Excellent companion to grilled meats, roasted vegetables, and rich cuisine. Pairs exceptionally well with aged cheeses.
+              </p>
+            </div>
+
+          </div>
+
+          <!-- KARTU BAWAH (3 CARDS) -->
+          <div style="display: flex; gap: 20px; margin-top: 10px;">
+            <!-- CARD 1: ALCOHOL -->
+            <div style="flex: 1; border-radius: 6px; overflow: hidden; border: 1px solid #D0C0B8;">
+              <div style="background: #8C5335; color: #ffffff; text-align: center; font-size: 12px; font-weight: bold; padding: 6px 0;">Alcohol</div>
+              <div style="background: #ffffff; text-align: center; font-size: 16px; font-weight: bold; color: #4A1525; padding: 12px 0;">
+                ${escapeHtml(wine.abv) || '13.5 - 14.5%'}
+              </div>
+            </div>
+
+            <!-- CARD 2: MAJOR REGIONS -->
+            <div style="flex: 1; border-radius: 6px; overflow: hidden; border: 1px solid #B0C0E0;">
+              <div style="background: #2B4380; color: #ffffff; text-align: center; font-size: 12px; font-weight: bold; padding: 6px 0;">Major Regions</div>
+              <div style="background: #ffffff; text-align: center; font-size: 13px; font-weight: bold; color: #2B4380; padding: 12px 0;">
+                ${escapeHtml(wine.region) || 'Origin Unknown'}
+              </div>
+            </div>
+
+            <!-- CARD 3: COLOUR / TYPE -->
+            <div style="flex: 1; border-radius: 6px; overflow: hidden; border: 1px solid #D0A0B0;">
+              <div style="background: #5C1224; color: #ffffff; text-align: center; font-size: 12px; font-weight: bold; padding: 6px 0;">Colour</div>
+              <div style="background: #ffffff; text-align: center; font-size: 13px; font-weight: bold; color: #5C1224; padding: 12px 0;">
+                ${escapeHtml(wine.type) || 'Beverage'}
+              </div>
+            </div>
+          </div>
+
+        </div>
+      `;
+
+      document.body.appendChild(container);
+
+      const cleanName = (wine.name || 'Wine').replace(/[^a-zA-Z0-9]/g, '_');
+      const opt = {
+        margin: 0,
+        filename: `${cleanName}_Infographic.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+      };
+
       try {
-        let pptx = new PptxGenJS();
-        pptx.layout = 'LAYOUT_16x9'; // Slaid 13.33 x 7.5 inci[cite: 11]
-
-        // Skema Warna Infografis Presisi[cite: 11]
-        const COLOR_BG = 'FFFFFF';           // Background Putih Bersih
-        const COLOR_TITLE = '4A1525';        // Deep Burgundy
-        const COLOR_TEXT_DARK = '222222';    // Teks Utama Gelap
-        const COLOR_MUTED = '666666';        // Teks Muted
-        const COLOR_TRACK = 'EADBDF';        // Track Bar Pinkish Gray
-        const COLOR_BAR_ACTIVE = '8C233D';   // Active Indicator Burgundy
-        
-        // Header Kartu Bawah[cite: 11]
-        const CARD_BROWN_HDR = '8C5335';     // Alcohol Header Cokelat
-        const CARD_BLUE_HDR  = '2B4380';     // Regions Header Biru
-        const CARD_WINE_HDR  = '5C1224';     // Colour Header Burgundy
-
-        let slide = pptx.addSlide();
-        slide.background = { color: COLOR_BG };
-
-        // 1. GAMBAR BOTOL DI SISI KIRI (X = 0.5, Y = 0.5, W = 2.6, H = 6.5)[cite: 11]
-        let imageBase64 = null;
-        if (wine.imageUrl) {
-          imageBase64 = await urlToBase64(wine.imageUrl);
-        }
-
-        if (imageBase64) {
-          slide.addImage({
-            data: imageBase64,
-            x: 0.5, y: 0.5, w: 2.6, h: 6.5,
-            sizing: { type: 'contain' }
-          });
-        } else if (wine.imageUrl) {
-          slide.addImage({
-            url: wine.imageUrl,
-            x: 0.5, y: 0.5, w: 2.6, h: 6.5,
-            sizing: { type: 'contain' }
-          });
-        }
-
-        // 2. JUDUL UTAMA PRODUK (X = 3.4, Y = 0.4, W = 5.2, H = 0.8)[cite: 11]
-        slide.addText(wine.name || 'Unnamed Wine', {
-          x: 3.4, y: 0.4, w: 5.2, h: 0.8,
-          fontFace: 'Georgia', fontSize: 22, color: COLOR_TITLE, bold: true, valig: 'top'
-        });
-
-        // 3. PARAGRAF DESKRIPSI KANAN ATAS (X = 8.8, Y = 0.4, W = 4.0, H = 1.4)[cite: 11]
-        const descText = wine.notes || `${wine.name || 'This wine'} is a medium-bodied fine selection known for its vibrant acidity and balanced tannins. Features a complex flavor profile that balances fruitiness with aromatic notes.`;
-        slide.addText(descText, {
-          x: 8.8, y: 0.4, w: 4.0, h: 1.4,
-          fontFace: 'Arial', fontSize: 8.5, color: COLOR_TEXT_DARK, align: 'left', valig: 'top', lineSpacing: 12
-        });
-
-        // 4. SECTION FLAVORS (X = 3.4, Y = 1.3)[cite: 11]
-        slide.addText('FLAVORS', {
-          x: 3.4, y: 1.3, w: 5.2, h: 0.25,
-          fontFace: 'Arial', fontSize: 9.5, color: COLOR_TEXT_DARK, bold: true
-        });
-
-        const varietalText = wine.varietal || 'Dark plum, Pepper, Vanilla, Spice, Oak notes';
-        slide.addText(`🍇 ${varietalText}`, {
-          x: 3.4, y: 1.55, w: 5.2, h: 0.4,
-          fontFace: 'Arial', fontSize: 9, color: COLOR_MUTED, valig: 'top'
-        });
-
-        // 5. SECTION TASTING PROFILE (INDIKATOR SLIDER BAR PRESISI TANPA BERTINDIH)[cite: 11]
-        slide.addText('TASTING PROFILE', {
-          x: 3.4, y: 2.05, w: 5.2, h: 0.25,
-          fontFace: 'Arial', fontSize: 9.5, color: COLOR_TEXT_DARK, bold: true
-        });
-
-        const bars = [
-          { left: 'Light', right: 'Bold', pos: 0.65 },
-          { left: 'Smooth', right: 'Tannin', pos: 0.50 },
-          { left: 'Dry', right: 'Sweet', pos: 0.35 },
-          { left: 'Soft', right: 'Acidic', pos: 0.60 }
-        ];
-
-        bars.forEach((b, idx) => {
-          let rowY = 2.35 + (idx * 0.45);
-
-          // Label Kiri
-          slide.addText(b.left, {
-            x: 3.4, y: rowY, w: 0.8, h: 0.3,
-            fontFace: 'Arial', fontSize: 8.5, color: COLOR_TEXT_DARK, align: 'left', valig: 'middle'
-          });
-
-          // Track Bar (Kelabu Pinkish)
-          slide.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
-            x: 4.25, y: rowY + 0.11, w: 3.2, h: 0.08,
-            fill: { color: COLOR_TRACK }, line: { color: COLOR_TRACK }, rectRadius: 0.04
-          });
-
-          // Active Indicator Pill (Burgundy)
-          let activeX = 4.25 + (b.pos * 2.5);
-          slide.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
-            x: activeX, y: rowY + 0.08, w: 0.5, h: 0.14,
-            fill: { color: COLOR_BAR_ACTIVE }, line: { color: COLOR_BAR_ACTIVE }, rectRadius: 0.07
-          });
-
-          // Label Kanan
-          slide.addText(b.right, {
-            x: 7.55, y: rowY, w: 0.8, h: 0.3,
-            fontFace: 'Arial', fontSize: 8.5, color: COLOR_TEXT_DARK, align: 'right', valig: 'middle'
-          });
-        });
-
-        // 6. SECTION FOOD PAIRING (MID-RIGHT, X = 8.8, Y = 2.05)[cite: 11]
-        slide.addText('FOOD PAIRING', {
-          x: 8.8, y: 2.05, w: 4.0, h: 0.25,
-          fontFace: 'Arial', fontSize: 9.5, color: COLOR_TEXT_DARK, bold: true
-        });
-
-        const pairingText = wine.pairing || 'BBQ, Grilled meats, Aged cheese, Pasta';
-        slide.addText(`🍽️ ${pairingText}\n\nFood Ideas: Excellent companion to grilled meats, roasted vegetables, and rich cuisine. Pairs exceptionally well with aged cheeses. Bon appétit!`, {
-          x: 8.8, y: 2.35, w: 4.0, h: 1.8,
-          fontFace: 'Arial', fontSize: 8.5, color: COLOR_TEXT_DARK, valig: 'top', lineSpacing: 12
-        });
-
-        // 7. KAD INFOGRAFIK BAWAH (3 KAD SEIMBANG DAAN RAPI, Y = 4.8)[cite: 11]
-        const cardY = 4.8;
-        const cardW = 2.9;
-        const cardH_top = 0.45;
-        const cardH_bot = 1.2;
-
-        // Kad 1: Alcohol (X = 3.4)[cite: 11]
-        slide.addShape(pptx.shapes.RECTANGLE, {
-          x: 3.4, y: cardY, w: cardW, h: cardH_top,
-          fill: { color: CARD_BROWN_HDR }, line: { color: CARD_BROWN_HDR }
-        });
-        slide.addText('Alcohol', {
-          x: 3.4, y: cardY, w: cardW, h: cardH_top,
-          fontFace: 'Arial', fontSize: 11, color: 'FFFFFF', bold: true, align: 'center', valig: 'middle'
-        });
-        slide.addShape(pptx.shapes.RECTANGLE, {
-          x: 3.4, y: cardY + cardH_top, w: cardW, h: cardH_bot,
-          fill: { color: 'FFFFFF' }, line: { color: 'D0C0B8', width: 1 }
-        });
-        slide.addText(String(wine.abv || '13.5 - 14.5%'), {
-          x: 3.4, y: cardY + cardH_top, w: cardW, h: cardH_bot,
-          fontFace: 'Arial', fontSize: 13, color: COLOR_TITLE, bold: true, align: 'center', valig: 'middle'
-        });
-
-        // Kad 2: Major Regions (X = 6.6)[cite: 11]
-        slide.addShape(pptx.shapes.RECTANGLE, {
-          x: 6.6, y: cardY, w: cardW, h: cardH_top,
-          fill: { color: CARD_BLUE_HDR }, line: { color: CARD_BLUE_HDR }
-        });
-        slide.addText('Major Regions', {
-          x: 6.6, y: cardY, w: cardW, h: cardH_top,
-          fontFace: 'Arial', fontSize: 11, color: 'FFFFFF', bold: true, align: 'center', valig: 'middle'
-        });
-        slide.addShape(pptx.shapes.RECTANGLE, {
-          x: 6.6, y: cardY + cardH_top, w: cardW, h: cardH_bot,
-          fill: { color: 'FFFFFF' }, line: { color: 'B0C0E0', width: 1 }
-        });
-        slide.addText(String(wine.region || 'Australia / France / USA'), {
-          x: 6.6, y: cardY + cardH_top, w: cardW, h: cardH_bot,
-          fontFace: 'Arial', fontSize: 11, color: CARD_BLUE_HDR, bold: true, align: 'center', valig: 'middle'
-        });
-
-        // Kad 3: Colour / Type (X = 9.8, Hujung Kanan = 12.7" -> Selamat di dalam Slaid 13.33")[cite: 11]
-        slide.addShape(pptx.shapes.RECTANGLE, {
-          x: 9.8, y: cardY, w: cardW, h: cardH_top,
-          fill: { color: CARD_WINE_HDR }, line: { color: CARD_WINE_HDR }
-        });
-        slide.addText('Colour', {
-          x: 9.8, y: cardY, w: cardW, h: cardH_top,
-          fontFace: 'Arial', fontSize: 11, color: 'FFFFFF', bold: true, align: 'center', valig: 'middle'
-        });
-        slide.addShape(pptx.shapes.RECTANGLE, {
-          x: 9.8, y: cardY + cardH_top, w: cardW, h: cardH_bot,
-          fill: { color: 'FFFFFF' }, line: { color: 'D0A0B0', width: 1 }
-        });
-        slide.addText(`${wine.type || 'A deep ruby to garnet hue'}`, {
-          x: 9.8, y: cardY + cardH_top, w: cardW, h: cardH_bot,
-          fontFace: 'Arial', fontSize: 11, color: CARD_WINE_HDR, bold: true, align: 'center', valig: 'middle'
-        });
-
-        const cleanName = (wine.name || 'Wine').replace(/[^a-zA-Z0-9]/g, '_');
-        await pptx.writeFile({ fileName: `${cleanName}_Infographic.pptx` });
-
+        await html2pdf().set(opt).from(container).save();
       } catch (err) {
-        console.error('Error saat membuat slide PPT:', err);
-        alert('Gagal membuat slide PowerPoint: ' + err.message);
+        console.error('Error membuat PDF:', err);
+        alert('Gagal mengunduh PDF: ' + err.message);
+      } finally {
+        document.body.removeChild(container);
       }
     }
 
