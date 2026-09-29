@@ -10,6 +10,10 @@
   
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- PptxGenJS untuk Fitur Export PowerPoint (.pptx) -->
+  <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { 
@@ -33,9 +37,7 @@
 
     #catalogPage { position: relative; z-index: 1; }
 
-    /* ========================================= */
-    /* STYLING NAVIGATION BAR                    */
-    /* ========================================= */
+    /* NAVIGATION BAR */
     .top-navbar {
       background-color: #1a1a1a;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -53,9 +55,7 @@
       gap: 2.5rem;
     }
 
-    .nav-links li {
-      position: relative;
-    }
+    .nav-links li { position: relative; }
 
     .nav-links a {
       text-decoration: none;
@@ -72,17 +72,9 @@
       cursor: pointer;
     }
 
-    .nav-links a:hover, .nav-links li:hover > a {
-      color: #d8b255;
-    }
-
-    .nav-links a.active {
-      color: #d8b255;
-    }
-
-    .nav-links a.sale {
-      color: #d9453a;
-    }
+    .nav-links a:hover, .nav-links li:hover > a { color: #d8b255; }
+    .nav-links a.active { color: #d8b255; }
+    .nav-links a.sale { color: #d9453a; }
 
     .arrow {
       width: 10px;
@@ -147,10 +139,7 @@
       transform: translateY(0);
     }
 
-    .dropdown-content li {
-      list-style: none;
-    }
-
+    .dropdown-content li { list-style: none; }
     .dropdown-content a {
       padding: 0.8rem 1.2rem;
       font-size: 0.75rem;
@@ -186,17 +175,18 @@
     }
     .hero p { color: #c0b0b0; font-size: 0.95rem; margin-top: 0.5rem; text-shadow: 0 1px 5px rgba(0,0,0,0.8); }
 
-    /* CONTROLS & TOMBOL SORTING */
+    /* CONTROLS & TOMBOL SORTING / DOWNLOAD */
     .controls { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 1.8rem 1rem 1rem; gap: 0.8rem; }
     input { padding: 0.65rem 1.2rem; border-radius: 20px; border: 1px solid rgba(216, 178, 85, 0.25); background: rgba(18, 11, 11, 0.75); backdrop-filter: blur(10px); color: #fff; font-size: 0.85rem; outline: none; transition: all 0.3s; }
     input:focus { border-color: #d8b255; box-shadow: 0 0 12px rgba(216, 178, 85, 0.3); }
     .search-input { width: 100%; max-width: 400px; }
 
-    /* STYLING TOMBOL A-Z & Z-A */
     .sort-container {
       display: flex;
       align-items: center;
       gap: 0.6rem;
+      flex-wrap: wrap;
+      justify-content: center;
     }
     .sort-btn {
       padding: 0.45rem 1.1rem;
@@ -218,6 +208,18 @@
       color: #0b0808;
       border-color: #d8b255;
       box-shadow: 0 2px 10px rgba(216, 178, 85, 0.3);
+    }
+
+    /* TOMBOL KHUSUS DOWNLOAD PPT */
+    .btn-ppt {
+      background: linear-gradient(135deg, #d8b255 0%, #b89235 100%);
+      color: #0b0808;
+      border: 1px solid #d8b255;
+      font-weight: 800;
+    }
+    .btn-ppt:hover {
+      background: linear-gradient(135deg, #e5c065 0%, #c9a042 100%);
+      box-shadow: 0 0 12px rgba(216, 178, 85, 0.5);
     }
 
     .sub-filters { display: flex; justify-content: center; margin-bottom: 2rem; gap: 0.8rem; }
@@ -377,11 +379,16 @@
     <div class="controls">
       <input type="text" id="searchInput" class="search-input" placeholder="Search beverage name or region..." oninput="renderWines()">
       
-      <!-- TOMBOL SORTING A-Z & Z-A -->
+      <!-- TOMBOL SORTING & TOMBOL DOWNLOAD PPT -->
       <div class="sort-container">
         <span style="font-size: 0.78rem; color: #887575; font-weight: 600; letter-spacing: 0.5px;">URUTKAN:</span>
         <button type="button" class="sort-btn active" id="btnSortASC" onclick="setSortOrder('ASC')">🔤 A - Z</button>
         <button type="button" class="sort-btn" id="btnSortDESC" onclick="setSortOrder('DESC')">🔠 Z - A</button>
+
+        <!-- TOMBOL EXPORT PPT -->
+        <button type="button" class="sort-btn btn-ppt" id="btnDownloadPPT" onclick="exportCatalogToPPT()">
+          📊 Download PPT
+        </button>
       </div>
     </div>
 
@@ -617,7 +624,7 @@
         return matchesSearch && matchesMain && matchesSub && matchesShopCollection;
       });
 
-      // ** URUTKAN BERDASARKAN TOMBOL AKTIF (A-Z ATAU Z-A) **
+      // URUTKAN BERDASARKAN TOMBOL AKTIF (A-Z ATAU Z-A)
       currentFilteredWines.sort((a, b) => {
         const nameA = a.name || '';
         const nameB = b.name || '';
@@ -725,6 +732,137 @@
       if (!wine) return;
       const message = `Halo, saya tertarik dengan minuman: ${wine.name} (${wine.vintage || '-'}). Boleh minta info pemesanan?`;
       window.open(`https://wa.me/6285691563814?text=${encodeURIComponent(message)}`, '_blank');
+    }
+
+    /* ======================================================== */
+    /* FUNGSI UTAMA EXPORT KATALOG KE POWERPOINT (.PPTX)         */
+    /* ======================================================== */
+    async function exportCatalogToPPT() {
+      if (!currentFilteredWines || currentFilteredWines.length === 0) {
+        alert('Tidak ada produk untuk diunduh ke PPT. Silakan pilih kategori terlebih dahulu.');
+        return;
+      }
+
+      const btn = document.getElementById('btnDownloadPPT');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '⏳ Generasi PPT...';
+      btn.disabled = true;
+
+      try {
+        let pptx = new PptxGenJS();
+        pptx.layout = 'LAYOUT_16x9';
+
+        // Tema Warna PPT
+        const BG_DARK = '070505';
+        const CARD_BG = '180E0E';
+        const COLOR_GOLD = 'D8B255';
+        const COLOR_WHITE = 'FFFFFF';
+        const COLOR_MUTED = '887575';
+
+        // --- SLIDE 1: JUDUL UTAMA (COVER SLIDE) ---
+        let coverSlide = pptx.addSlide();
+        coverSlide.background = { color: BG_DARK };
+
+        coverSlide.addText('🍷 KAVA RETAIL CATALOG', {
+          x: 0.5, y: 2.0, w: 12.33, h: 1.2,
+          fontFace: 'Georgia', fontSize: 38, color: COLOR_GOLD, bold: true, align: 'center'
+        });
+
+        coverSlide.addText('Exquisite Wine & Spirits Collection', {
+          x: 0.5, y: 3.3, w: 12.33, h: 0.6,
+          fontFace: 'Arial', fontSize: 18, color: COLOR_WHITE, align: 'center'
+        });
+
+        const activeFilterName = currentMainCategory || currentShopCollection || 'Katalog Pilihan';
+        coverSlide.addText(`Kategori: ${activeFilterName} | Total: ${currentFilteredWines.length} Produk\nDibuat Otomatis pada ${new Date().toLocaleDateString('id-ID')}`, {
+          x: 0.5, y: 5.2, w: 12.33, h: 0.8,
+          fontFace: 'Arial', fontSize: 12, color: COLOR_MUTED, align: 'center'
+        });
+
+        // --- SLIDE PRODUK (1 PRODUK PER SLIDE) ---
+        for (let i = 0; i < currentFilteredWines.length; i++) {
+          const wine = currentFilteredWines[i];
+          const isSpirit = spiritTypes.some(spirit => wine.type && wine.type.includes(spirit));
+
+          let slide = pptx.addSlide();
+          slide.background = { color: BG_DARK };
+
+          // Header atas slide
+          slide.addShape(pptx.shapes.RECTANGLE, {
+            x: 0, y: 0, w: 13.33, h: 0.7, fill: { color: '120909' }
+          });
+          slide.addText('KAVA RETAIL CATALOG', {
+            x: 0.8, y: 0.12, w: 6.0, h: 0.45,
+            fontFace: 'Georgia', fontSize: 14, color: COLOR_GOLD, bold: true
+          });
+
+          // Foto Produk
+          if (wine.imageUrl) {
+            slide.addImage({
+              url: wine.imageUrl,
+              x: 0.8, y: 1.1, w: 4.2, h: 5.4,
+              sizing: { type: 'contain' }
+            });
+          } else {
+            slide.addShape(pptx.shapes.RECTANGLE, {
+              x: 0.8, y: 1.1, w: 4.2, h: 5.4,
+              fill: { color: CARD_BG }, line: { color: COLOR_GOLD, width: 1 }
+            });
+            slide.addText('Foto Tidak Tersedia', {
+              x: 0.8, y: 3.5, w: 4.2, h: 0.5,
+              fontSize: 14, color: COLOR_MUTED, align: 'center'
+            });
+          }
+
+          // Judul Produk
+          const titleText = `${wine.name || 'Unnamed Product'} ${wine.vintage ? '(' + wine.vintage + ')' : ''}`;
+          slide.addText(titleText, {
+            x: 5.3, y: 1.1, w: 7.2, h: 0.8,
+            fontFace: 'Georgia', fontSize: 22, color: COLOR_GOLD, bold: true
+          });
+
+          // Lokasi & Kategori
+          slide.addText(`📍 ${wine.region || 'Origin Unknown'}   |   🍷 ${wine.type || 'Beverage'}`, {
+            x: 5.3, y: 1.9, w: 7.2, h: 0.4,
+            fontFace: 'Arial', fontSize: 13, color: COLOR_WHITE, bold: true
+          });
+
+          // Kotak Detail Karakteristik
+          slide.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
+            x: 5.3, y: 2.5, w: 7.2, h: 4.0,
+            fill: { color: CARD_BG }, line: { color: '2E1A1A', width: 1 }
+          });
+
+          const details = [
+            { text: isSpirit ? "Base Grain / Ingredient: " : "Varietal / Grape: ", options: { bold: true, color: COLOR_GOLD } },
+            { text: `${wine.varietal || '-'}\n\n`, options: { color: COLOR_WHITE } },
+            { text: "Tasting Notes: ", options: { bold: true, color: COLOR_GOLD } },
+            { text: `${wine.notes || '-'}\n\n`, options: { color: COLOR_WHITE } },
+            { text: isSpirit ? "Serving Style: " : "Pairing: ", options: { bold: true, color: COLOR_GOLD } },
+            { text: `${wine.pairing || '-'}\n\n`, options: { color: COLOR_WHITE } },
+            { text: "Alcohol (ABV): ", options: { bold: true, color: COLOR_GOLD } },
+            { text: `${wine.abv || '-'}  |  `, options: { color: COLOR_WHITE } },
+            { text: "Status Stok: ", options: { bold: true, color: COLOR_GOLD } },
+            { text: `${wine.stockStatus || 'Tersedia'}`, options: { color: COLOR_WHITE } }
+          ];
+
+          slide.addText(details, {
+            x: 5.6, y: 2.7, w: 6.6, h: 3.6,
+            fontFace: 'Arial', fontSize: 12, valig: 'top'
+          });
+        }
+
+        // Simpan File PPT
+        const fileName = `Kava_Retail_Catalog_${new Date().toISOString().slice(0, 10)}.pptx`;
+        await pptx.writeFile({ fileName: fileName });
+
+      } catch (err) {
+        console.error('Error saat membuat PPT:', err);
+        alert('Gagal mengunduh PowerPoint: ' + err.message);
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
     }
 
     fetchWinesFromSupabase();
