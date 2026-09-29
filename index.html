@@ -766,7 +766,7 @@
     }
 
     /* ========================================================================= */
-    /* GENERASI PPTX INFOGRAFIS PRESISI (SESUAI GAMBAR LAYOUT TEMPLATE)          */
+    /* GENERASI PPTX INFOGRAFIS PRESISI & RAPI (100% MUAT DI DALAM SLAID 16:9)  */
     /* ========================================================================= */
     async function downloadSingleWinePPT(index) {
       const wine = currentFilteredWines[index];
@@ -777,9 +777,9 @@
 
       try {
         let pptx = new PptxGenJS();
-        pptx.layout = 'LAYOUT_16x9'; // Slide 13.33 x 7.5 inci
+        pptx.layout = 'LAYOUT_16x9'; // Slaid 13.33 x 7.5 inci[cite: 11]
 
-        // Kode Warna Infografis Presisi
+        // Skema Warna Infografis Presisi[cite: 11]
         const COLOR_BG = 'FFFFFF';           // Background Putih Bersih
         const COLOR_TITLE = '4A1525';        // Deep Burgundy
         const COLOR_TEXT_DARK = '222222';    // Teks Utama Gelap
@@ -787,7 +787,7 @@
         const COLOR_TRACK = 'EADBDF';        // Track Bar Pinkish Gray
         const COLOR_BAR_ACTIVE = '8C233D';   // Active Indicator Burgundy
         
-        // Header Kartu Bawah
+        // Header Kartu Bawah[cite: 11]
         const CARD_BROWN_HDR = '8C5335';     // Alcohol Header Cokelat
         const CARD_BLUE_HDR  = '2B4380';     // Regions Header Biru
         const CARD_WINE_HDR  = '5C1224';     // Colour Header Burgundy
@@ -795,7 +795,7 @@
         let slide = pptx.addSlide();
         slide.background = { color: COLOR_BG };
 
-        // 1. GAMBAR BOTOL DI SISI KIRI (X = 0.5, Y = 0.5, W = 2.8, H = 6.4)
+        // 1. GAMBAR BOTOL DI SISI KIRI (X = 0.5, Y = 0.5, W = 2.6, H = 6.5)[cite: 11]
         let imageBase64 = null;
         if (wine.imageUrl) {
           imageBase64 = await urlToBase64(wine.imageUrl);
@@ -804,46 +804,46 @@
         if (imageBase64) {
           slide.addImage({
             data: imageBase64,
-            x: 0.5, y: 0.5, w: 2.8, h: 6.4,
+            x: 0.5, y: 0.5, w: 2.6, h: 6.5,
             sizing: { type: 'contain' }
           });
         } else if (wine.imageUrl) {
           slide.addImage({
             url: wine.imageUrl,
-            x: 0.5, y: 0.5, w: 2.8, h: 6.4,
+            x: 0.5, y: 0.5, w: 2.6, h: 6.5,
             sizing: { type: 'contain' }
           });
         }
 
-        // 2. JUDUL UTAMA PRODUK
+        // 2. JUDUL UTAMA PRODUK (X = 3.4, Y = 0.4, W = 5.2, H = 0.8)[cite: 11]
         slide.addText(wine.name || 'Unnamed Wine', {
-          x: 3.6, y: 0.5, w: 5.1, h: 0.9,
-          fontFace: 'Georgia', fontSize: 24, color: COLOR_TITLE, bold: true, valig: 'top'
+          x: 3.4, y: 0.4, w: 5.2, h: 0.8,
+          fontFace: 'Georgia', fontSize: 22, color: COLOR_TITLE, bold: true, valig: 'top'
         });
 
-        // 3. PARAGRAF DESKRIPSI KANAN ATAS (Batas X Max = 12.8, aman dari overflow!)
-        const descText = wine.notes || `${wine.name || 'This wine'} is a fine selection with a balanced flavor profile, rich aromas, and a smooth finish. Perfect for special occasions and fine dining pairings.`;
+        // 3. PARAGRAF DESKRIPSI KANAN ATAS (X = 8.8, Y = 0.4, W = 4.0, H = 1.4)[cite: 11]
+        const descText = wine.notes || `${wine.name || 'This wine'} is a medium-bodied fine selection known for its vibrant acidity and balanced tannins. Features a complex flavor profile that balances fruitiness with aromatic notes.`;
         slide.addText(descText, {
-          x: 8.9, y: 0.5, w: 3.9, h: 1.3,
-          fontFace: 'Arial', fontSize: 9, color: COLOR_TEXT_DARK, align: 'left', valig: 'top', lineSpacing: 13
+          x: 8.8, y: 0.4, w: 4.0, h: 1.4,
+          fontFace: 'Arial', fontSize: 8.5, color: COLOR_TEXT_DARK, align: 'left', valig: 'top', lineSpacing: 12
         });
 
-        // 4. SECTION FLAVORS
+        // 4. SECTION FLAVORS (X = 3.4, Y = 1.3)[cite: 11]
         slide.addText('FLAVORS', {
-          x: 3.6, y: 1.45, w: 5.1, h: 0.25,
-          fontFace: 'Arial', fontSize: 10, color: COLOR_TEXT_DARK, bold: true
+          x: 3.4, y: 1.3, w: 5.2, h: 0.25,
+          fontFace: 'Arial', fontSize: 9.5, color: COLOR_TEXT_DARK, bold: true
         });
 
         const varietalText = wine.varietal || 'Dark plum, Pepper, Vanilla, Spice, Oak notes';
         slide.addText(`🍇 ${varietalText}`, {
-          x: 3.6, y: 1.75, w: 5.1, h: 0.45,
-          fontFace: 'Arial', fontSize: 9.5, color: COLOR_MUTED, valig: 'top'
+          x: 3.4, y: 1.55, w: 5.2, h: 0.4,
+          fontFace: 'Arial', fontSize: 9, color: COLOR_MUTED, valig: 'top'
         });
 
-        // 5. SECTION TASTING PROFILE (INDIKATOR SLIDER BAR TERIKAT PRESISI)
+        // 5. SECTION TASTING PROFILE (INDIKATOR SLIDER BAR PRESISI TANPA BERTINDIH)[cite: 11]
         slide.addText('TASTING PROFILE', {
-          x: 3.6, y: 2.35, w: 5.1, h: 0.25,
-          fontFace: 'Arial', fontSize: 10, color: COLOR_TEXT_DARK, bold: true
+          x: 3.4, y: 2.05, w: 5.2, h: 0.25,
+          fontFace: 'Arial', fontSize: 9.5, color: COLOR_TEXT_DARK, bold: true
         });
 
         const bars = [
@@ -854,103 +854,103 @@
         ];
 
         bars.forEach((b, idx) => {
-          let rowY = 2.75 + (idx * 0.40);
+          let rowY = 2.35 + (idx * 0.45);
 
           // Label Kiri
           slide.addText(b.left, {
-            x: 3.6, y: rowY, w: 0.7, h: 0.22,
+            x: 3.4, y: rowY, w: 0.8, h: 0.3,
             fontFace: 'Arial', fontSize: 8.5, color: COLOR_TEXT_DARK, align: 'left', valig: 'middle'
           });
 
-          // Track Bar
+          // Track Bar (Kelabu Pinkish)
           slide.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
-            x: 4.35, y: rowY + 0.07, w: 3.2, h: 0.08,
+            x: 4.25, y: rowY + 0.11, w: 3.2, h: 0.08,
             fill: { color: COLOR_TRACK }, line: { color: COLOR_TRACK }, rectRadius: 0.04
           });
 
-          // Active Indicator Pill (Tepat Sejajar di Atas Track Bar)
-          let activeX = 4.35 + (b.pos * 2.4);
+          // Active Indicator Pill (Burgundy)
+          let activeX = 4.25 + (b.pos * 2.5);
           slide.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
-            x: activeX, y: rowY + 0.02, w: 0.5, h: 0.18,
-            fill: { color: COLOR_BAR_ACTIVE }, line: { color: COLOR_BAR_ACTIVE }, rectRadius: 0.09
+            x: activeX, y: rowY + 0.08, w: 0.5, h: 0.14,
+            fill: { color: COLOR_BAR_ACTIVE }, line: { color: COLOR_BAR_ACTIVE }, rectRadius: 0.07
           });
 
           // Label Kanan
           slide.addText(b.right, {
-            x: 7.6, y: rowY, w: 0.9, h: 0.22,
+            x: 7.55, y: rowY, w: 0.8, h: 0.3,
             fontFace: 'Arial', fontSize: 8.5, color: COLOR_TEXT_DARK, align: 'right', valig: 'middle'
           });
         });
 
-        // 6. SECTION FOOD PAIRING (MID-RIGHT)
+        // 6. SECTION FOOD PAIRING (MID-RIGHT, X = 8.8, Y = 2.05)[cite: 11]
         slide.addText('FOOD PAIRING', {
-          x: 8.9, y: 2.35, w: 3.9, h: 0.25,
-          fontFace: 'Arial', fontSize: 10, color: COLOR_TEXT_DARK, bold: true
+          x: 8.8, y: 2.05, w: 4.0, h: 0.25,
+          fontFace: 'Arial', fontSize: 9.5, color: COLOR_TEXT_DARK, bold: true
         });
 
         const pairingText = wine.pairing || 'BBQ, Grilled meats, Aged cheese, Pasta';
         slide.addText(`🍽️ ${pairingText}\n\nFood Ideas: Excellent companion to grilled meats, roasted vegetables, and rich cuisine. Pairs exceptionally well with aged cheeses. Bon appétit!`, {
-          x: 8.9, y: 2.75, w: 3.9, h: 1.8,
-          fontFace: 'Arial', fontSize: 9, color: COLOR_TEXT_DARK, valig: 'top', lineSpacing: 13
+          x: 8.8, y: 2.35, w: 4.0, h: 1.8,
+          fontFace: 'Arial', fontSize: 8.5, color: COLOR_TEXT_DARK, valig: 'top', lineSpacing: 12
         });
 
-        // 7. BOTTOM 3 CARDS (TERBAGI RATA PRESISI, TANPA OVERFLOW)
-        const cardY = 4.95;
+        // 7. KAD INFOGRAFIK BAWAH (3 KAD SEIMBANG DAAN RAPI, Y = 4.8)[cite: 11]
+        const cardY = 4.8;
         const cardW = 2.9;
         const cardH_top = 0.45;
-        const cardH_bot = 1.1;
+        const cardH_bot = 1.2;
 
-        // Card 1: Alcohol (X = 3.6)
+        // Kad 1: Alcohol (X = 3.4)[cite: 11]
         slide.addShape(pptx.shapes.RECTANGLE, {
-          x: 3.6, y: cardY, w: cardW, h: cardH_top,
+          x: 3.4, y: cardY, w: cardW, h: cardH_top,
           fill: { color: CARD_BROWN_HDR }, line: { color: CARD_BROWN_HDR }
         });
         slide.addText('Alcohol', {
-          x: 3.6, y: cardY, w: cardW, h: cardH_top,
+          x: 3.4, y: cardY, w: cardW, h: cardH_top,
           fontFace: 'Arial', fontSize: 11, color: 'FFFFFF', bold: true, align: 'center', valig: 'middle'
         });
         slide.addShape(pptx.shapes.RECTANGLE, {
-          x: 3.6, y: cardY + cardH_top, w: cardW, h: cardH_bot,
+          x: 3.4, y: cardY + cardH_top, w: cardW, h: cardH_bot,
           fill: { color: 'FFFFFF' }, line: { color: 'D0C0B8', width: 1 }
         });
         slide.addText(String(wine.abv || '13.5 - 14.5%'), {
-          x: 3.6, y: cardY + cardH_top, w: cardW, h: cardH_bot,
+          x: 3.4, y: cardY + cardH_top, w: cardW, h: cardH_bot,
           fontFace: 'Arial', fontSize: 13, color: COLOR_TITLE, bold: true, align: 'center', valig: 'middle'
         });
 
-        // Card 2: Major Regions (X = 6.75)
+        // Kad 2: Major Regions (X = 6.6)[cite: 11]
         slide.addShape(pptx.shapes.RECTANGLE, {
-          x: 6.75, y: cardY, w: cardW, h: cardH_top,
+          x: 6.6, y: cardY, w: cardW, h: cardH_top,
           fill: { color: CARD_BLUE_HDR }, line: { color: CARD_BLUE_HDR }
         });
         slide.addText('Major Regions', {
-          x: 6.75, y: cardY, w: cardW, h: cardH_top,
+          x: 6.6, y: cardY, w: cardW, h: cardH_top,
           fontFace: 'Arial', fontSize: 11, color: 'FFFFFF', bold: true, align: 'center', valig: 'middle'
         });
         slide.addShape(pptx.shapes.RECTANGLE, {
-          x: 6.75, y: cardY + cardH_top, w: cardW, h: cardH_bot,
+          x: 6.6, y: cardY + cardH_top, w: cardW, h: cardH_bot,
           fill: { color: 'FFFFFF' }, line: { color: 'B0C0E0', width: 1 }
         });
         slide.addText(String(wine.region || 'Australia / France / USA'), {
-          x: 6.75, y: cardY + cardH_top, w: cardW, h: cardH_bot,
+          x: 6.6, y: cardY + cardH_top, w: cardW, h: cardH_bot,
           fontFace: 'Arial', fontSize: 11, color: CARD_BLUE_HDR, bold: true, align: 'center', valig: 'middle'
         });
 
-        // Card 3: Colour / Type (X = 9.9, Ujung Kanan = 12.8 -> Aman dari Batas Slide 13.33)
+        // Kad 3: Colour / Type (X = 9.8, Hujung Kanan = 12.7" -> Selamat di dalam Slaid 13.33")[cite: 11]
         slide.addShape(pptx.shapes.RECTANGLE, {
-          x: 9.9, y: cardY, w: cardW, h: cardH_top,
+          x: 9.8, y: cardY, w: cardW, h: cardH_top,
           fill: { color: CARD_WINE_HDR }, line: { color: CARD_WINE_HDR }
         });
         slide.addText('Colour', {
-          x: 9.9, y: cardY, w: cardW, h: cardH_top,
+          x: 9.8, y: cardY, w: cardW, h: cardH_top,
           fontFace: 'Arial', fontSize: 11, color: 'FFFFFF', bold: true, align: 'center', valig: 'middle'
         });
         slide.addShape(pptx.shapes.RECTANGLE, {
-          x: 9.9, y: cardY + cardH_top, w: cardW, h: cardH_bot,
+          x: 9.8, y: cardY + cardH_top, w: cardW, h: cardH_bot,
           fill: { color: 'FFFFFF' }, line: { color: 'D0A0B0', width: 1 }
         });
         slide.addText(`${wine.type || 'A deep ruby to garnet hue'}`, {
-          x: 9.9, y: cardY + cardH_top, w: cardW, h: cardH_bot,
+          x: 9.8, y: cardY + cardH_top, w: cardW, h: cardH_bot,
           fontFace: 'Arial', fontSize: 11, color: CARD_WINE_HDR, bold: true, align: 'center', valig: 'middle'
         });
 
