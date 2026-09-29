@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Retail Catalog - Royal Vintage Edition</title>
   
-  <!-- Google Fonts Lengkap -->
+  <!-- Font Google Klasik & Modern -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Montserrat:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
   
   <!-- Supabase JS SDK -->
@@ -74,30 +74,6 @@
 
     .nav-links a:hover, .nav-links li:hover > a { color: #d8b255; }
     .nav-links a.sale { color: #d9453a; }
-
-    .arrow {
-      width: 10px;
-      height: 10px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      margin-top: 1px;
-    }
-
-    .badge-hot {
-      background-color: #d9453a;
-      color: #fff;
-      font-size: 0.65rem;
-      font-weight: 800;
-      padding: 2px 7px;
-      border-radius: 12px;
-      margin-left: 0.3rem;
-      letter-spacing: 0.5px;
-      display: inline-block;
-      transform: translateY(-1px);
-    }
 
     .dropdown-content {
       display: none;
@@ -285,7 +261,7 @@
 
     .v-notes { border-top: 1px solid #e2d2a8; padding-top: 12px; margin-top: 15px; }
     .v-note-row { display: flex; gap: 10px; margin-bottom: 8px; font-size: 0.8rem; }
-    .v-note-row strong { font-family: 'Cinzel', serif; color: #8b6b28; min-width: 70px; }
+    .v-note-row strong { font-family: 'Cinzel', serif; color: #8b6b28; min-width: 75px; }
     .v-note-row span { color: #3d3028; font-style: italic; }
 
     .v-pairing { border-top: 1px solid #e2d2a8; padding-top: 15px; margin-top: 20px; text-align: center; }
@@ -422,10 +398,8 @@
     const ctx = canvas.getContext('2d');
     let width = canvas.width = window.innerWidth;
     let height = canvas.height = window.innerHeight;
-    let mouse = { x: width / 2, y: height / 2, active: false };
 
     window.addEventListener('resize', () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; });
-    window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; });
 
     const particles = Array.from({ length: 60 }, () => ({
       x: Math.random() * width, y: Math.random() * height, radius: Math.random() * 2.5 + 0.5,
@@ -471,7 +445,10 @@
             bodyVal: w.bodyVal || 75,
             tanninVal: w.tanninVal || 80,
             acidityVal: w.acidityVal || 65,
-            sweetnessVal: w.sweetnessVal || 20
+            sweetnessVal: w.sweetnessVal || 20,
+            visual: w.visual || 'Deep ruby red, garnet rim',
+            aroma: w.aroma || w.notes || 'Blackcurrant, violet, cedar, spice bouquet',
+            palate: w.palate || w.pairing || 'Full-bodied, structured, velvety tannins, elegant finish'
           }));
           renderWines();
         }
@@ -617,9 +594,9 @@
             </div>
 
             <div class="v-notes">
-              <div class="v-note-row"><strong>👁️ VISUAL</strong><span>Deep ruby red, garnet rim</span></div>
-              <div class="v-note-row"><strong>🍇 AROMA</strong><span>${escapeHtml(wine.notes) || 'Blackcurrant, violet, cedar, spice bouquet'}</span></div>
-              <div class="v-note-row"><strong>🍷 PALATE</strong><span>${escapeHtml(wine.pairing) || 'Full-bodied, structured, velvety tannins, elegant finish'}</span></div>
+              <div class="v-note-row"><strong>👁️ VISUAL</strong><span>${escapeHtml(wine.visual)}</span></div>
+              <div class="v-note-row"><strong>🍇 AROMA</strong><span>${escapeHtml(wine.aroma)}</span></div>
+              <div class="v-note-row"><strong>🍷 PALATE</strong><span>${escapeHtml(wine.palate)}</span></div>
             </div>
           </div>
         </div>
