@@ -14,6 +14,9 @@
   <!-- html2pdf.js SDK -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
+  <!-- PptxGenJS SDK -->
+  <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { 
@@ -289,6 +292,15 @@
     .flavor-label { color: #887575; min-width: 120px; font-weight: 600; }
     .flavor-value { color: #e0e0e0; flex: 1; }
 
+    /* CSS INDIKATOR TASTING METER (BODY, TANNIN, SWEETNESS, ACIDITY) */
+    .taste-meter-container { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px dashed rgba(216, 178, 85, 0.2); }
+    .taste-meter { display: flex; flex-direction: column; gap: 0.3rem; }
+    .taste-meter-header { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 600; }
+    .taste-meter-title { color: #d8b255; }
+    .taste-meter-value { color: #ccc; }
+    .taste-meter-track { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden; position: relative; }
+    .taste-meter-fill { height: 100%; background: linear-gradient(90deg, #d8b255 0%, #b89235 100%); border-radius: 3px; }
+
     .extra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 0.3rem; }
     .extra-card { background: linear-gradient(135deg, rgba(30, 18, 18, 0.7) 0%, rgba(15, 10, 10, 0.8) 100%); border: 1px solid #2e1a1a; padding: 0.9rem 1rem; border-radius: 10px; transition: border-color 0.2s; }
     .extra-card:hover { border-color: rgba(216, 178, 85, 0.4); }
@@ -494,7 +506,12 @@
             servingTemp: w.servingTemp || w.serving_temp || '',
             stockStatus: w.stockStatus || w.stock_status || '',
             storageNote: w.storageNote || w.storage_note || '',
-            collection: w.collection || 'All Products'
+            collection: w.collection || 'All Products',
+            // Default nilai indikator profil rasa jika belum ada di database (Skala 0 - 100%)
+            bodyVal: w.bodyVal || w.body || 70,
+            tanninVal: w.tanninVal || w.tannin || 60,
+            sweetnessVal: w.sweetnessVal || w.sweetness || 30,
+            acidityVal: w.acidityVal || w.acidity || 65
           }));
           renderWines();
         }
@@ -709,6 +726,26 @@
             <div class="flavor-item"><div class="flavor-label">${isSpirit ? '🍇 Base Ingredient' : '🍇 Varietal / Grape'}</div><div class="flavor-value">${escapeHtml(wine.varietal) || '-'}</div></div>
             <div class="flavor-item"><div class="flavor-label">📝 Tasting Notes</div><div class="flavor-value">${escapeHtml(wine.notes) || '-'}</div></div>
             <div class="flavor-item"><div class="flavor-label">${isSpirit ? '🍹 Serving Style' : '🥩 Food Pairing'}</div><div class="flavor-value">${escapeHtml(wine.pairing) || '-'}</div></div>
+            
+            <!-- INDIKATOR TASTING METER (BODY, TANNIN, SWEETNESS, ACIDITY) -->
+            <div class="taste-meter-container">
+              <div class="taste-meter">
+                <div class="taste-meter-header"><span class="taste-meter-title">Body</span><span class="taste-meter-value">${wine.bodyVal}%</span></div>
+                <div class="taste-meter-track"><div class="taste-meter-fill" style="width: ${wine.bodyVal}%;"></div></div>
+              </div>
+              <div class="taste-meter">
+                <div class="taste-meter-header"><span class="taste-meter-title">Tannin</span><span class="taste-meter-value">${wine.tanninVal}%</span></div>
+                <div class="taste-meter-track"><div class="taste-meter-fill" style="width: ${wine.tanninVal}%;"></div></div>
+              </div>
+              <div class="taste-meter">
+                <div class="taste-meter-header"><span class="taste-meter-title">Sweetness</span><span class="taste-meter-value">${wine.sweetnessVal}%</span></div>
+                <div class="taste-meter-track"><div class="taste-meter-fill" style="width: ${wine.sweetnessVal}%;"></div></div>
+              </div>
+              <div class="taste-meter">
+                <div class="taste-meter-header"><span class="taste-meter-title">Acidity</span><span class="taste-meter-value">${wine.acidityVal}%</span></div>
+                <div class="taste-meter-track"><div class="taste-meter-fill" style="width: ${wine.acidityVal}%;"></div></div>
+              </div>
+            </div>
           </div>
           <div class="info-section">
             <h3>⚙️ Informasi Tambahan</h3>
@@ -766,7 +803,7 @@
     }
 
     /* ========================================================================= */
-    /* GENERASI PDF PRESISI 100% PERSIS DENGAN INFOGRAFIK BOTTLE INFOGRAPHIC      */
+    /* GENERASI PDF PRESISI 100% PERSIS INFOGRAFIK BOTTLE INFOGRAPHIC            */
     /* ========================================================================= */
     async function downloadSingleWinePDF(index) {
       const wine = currentFilteredWines[index];
@@ -782,12 +819,12 @@
       }
       const imgSrc = imageBase64 || wine.imageUrl || 'https://via.placeholder.com/300x500?text=No+Image';
 
-      // Indikator Tasting Profile Bar
+      // Indikator Tasting Profile Bar (Body, Tannin, Sweetness, Acidity)
       const bars = [
-        { left: 'Light', right: 'Bold', percent: 65, active: true },
-        { left: 'Smooth', right: '**0 Tannin', percent: 0, active: false },
-        { left: 'Dry', right: 'Sweet', percent: 65, active: true },
-        { left: 'Soft', right: 'Acidic', percent: 65, active: true }
+        { left: 'Light', right: 'Bold', percent: wine.bodyVal || 70, active: true },
+        { left: 'Smooth', right: 'Tannin', percent: wine.tanninVal || 60, active: true },
+        { left: 'Dry', right: 'Sweet', percent: wine.sweetnessVal || 30, active: true },
+        { left: 'Soft', right: 'Acidic', percent: wine.acidityVal || 65, active: true }
       ];
 
       const barRowsHtml = bars.map(b => `
@@ -796,7 +833,7 @@
           <div style="flex: 1; height: 10px; background: #F8F5EE; border-radius: 5px; margin: 0 15px; position: relative; border: ${b.active ? 'none' : '1px solid #EADBDF'};">
             ${b.active ? `<div style="position: absolute; left: ${b.percent}%; top: 0; width: 60px; height: 10px; background: #E0E000; border-radius: 5px; transform: translateX(-50%);"></div>` : ''}
           </div>
-          <span style="width: 80px; text-align: right; font-weight: ${b.right.includes('*') ? 'bold' : '500'};">${b.right}</span>
+          <span style="width: 80px; text-align: right; font-weight: bold;">${b.right}</span>
         </div>
       `).join('');
 
@@ -904,7 +941,7 @@
             <!-- TASTING PROFILE & FOOD PAIRING (SIDE BY SIDE) -->
             <div style="display: flex; gap: 35px; align-items: flex-end;">
               
-              <!-- TASTING PROFILE SLIDERS -->
+              <!-- TASTING PROFILE SLIDERS (BODY, TANNIN, SWEETNESS, ACIDITY) -->
               <div style="flex: 1.1;">
                 <h3 style="font-size: 11px; font-weight: bold; color: #333; margin: 0 0 10px 0; letter-spacing: 0.5px; text-transform: uppercase;">TASTING PROFILE</h3>
                 ${barRowsHtml}
