@@ -469,11 +469,10 @@
     let localWines = [];
     let currentFilteredWines = [];
     
-    // VARIABEL STATE FILTER & SORT
     let currentMainCategory = null; 
     let currentSubCategory = null; 
     let currentShopCollection = null; 
-    let currentSortOrder = 'ASC'; // Default A-Z ('ASC' atau 'DESC')
+    let currentSortOrder = 'ASC';
     
     const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whisky", "Cognac", "Soju", "Sake", "Traditional and Grain", "Baijiu", "Alcopops"];
 
@@ -598,7 +597,6 @@
         return;
       }
 
-      // FILTERING LOGIC
       currentFilteredWines = localWines.filter(wine => {
         let matchesSearch = true;
         if (search) {
@@ -624,7 +622,6 @@
         return matchesSearch && matchesMain && matchesSub && matchesShopCollection;
       });
 
-      // URUTKAN BERDASARKAN TOMBOL AKTIF (A-Z ATAU Z-A)
       currentFilteredWines.sort((a, b) => {
         const nameA = a.name || '';
         const nameB = b.name || '';
@@ -674,7 +671,6 @@
                 <button class="btn-order" onclick="event.stopPropagation(); inquireWineByIdx(${idx})">
                   💬 Order
                 </button>
-                <!-- TOMBOL DOWNLOAD PPT UNTUK ITEM SPESIFIK -->
                 <button class="btn-ppt-card" title="Download PPT Item Ini" onclick="event.stopPropagation(); downloadSingleWinePPT(${idx})">
                   📊 PPT
                 </button>
@@ -743,7 +739,34 @@
     }
 
     /* ========================================================================= */
-    /* FUNGSI UTAMA GENERASI PPT SINGLE ITEM SESUAI LAYOUT GAMBAR DESAIN         */
+    /* FUNGSI HELPER: KONVERSI URL GAMBAR KE BASE64 (MENGATASI MASALAH CORS)     */
+    /* ========================================================================= */
+    function urlToBase64(url) {
+      return new Promise((resolve) => {
+        if (!url) { resolve(null); return; }
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth || img.width;
+            canvas.height = img.naturalHeight || img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            const dataURL = canvas.toDataURL('image/png');
+            resolve(dataURL);
+          } catch (e) {
+            console.warn("Canvas CORS export failed, trying direct fetch or fallback:", e);
+            resolve(null);
+          }
+        };
+        img.onerror = () => resolve(null);
+        img.src = url;
+      });
+    }
+
+    /* ========================================================================= */
+    /* FUNGSI UTAMA GENERASI PPT SINGLE ITEM PRESISI SAMA PERSIS DENGAN DESAIN   */
     /* ========================================================================= */
     async function downloadSingleWinePPT(index) {
       const wine = currentFilteredWines[index];
@@ -778,8 +801,20 @@
           rectRadius: 0.08
         });
 
-        // Gambar Botol
+        // Pengambilan data gambar Base64 untuk memastikan foto terunduh ke PPT
+        let imageBase64 = null;
         if (wine.imageUrl) {
+          imageBase64 = await urlToBase64(wine.imageUrl);
+        }
+
+        if (imageBase64) {
+          slide.addImage({
+            data: imageBase64,
+            x: 0.8, y: 0.8, w: 4.0, h: 5.9,
+            sizing: { type: 'contain' }
+          });
+        } else if (wine.imageUrl) {
+          // Fallback direct URL jika CORS diizinkan oleh host
           slide.addImage({
             url: wine.imageUrl,
             x: 0.8, y: 0.8, w: 4.0, h: 5.9,
@@ -911,7 +946,7 @@
           { text: String(wine.storageNote || '-'), options: { fontSize: 10, color: WHITE_COLOR, bold: true } }
         ], { x: 9.25, y: 5.95, w: 3.1, h: 0.75 });
 
-        // Simpan File
+        // Simpan File PPT
         const cleanName = (wine.name || 'Product').replace(/[^a-zA-Z0-9]/g, '_');
         const fileName = `${cleanName}_Slide.pptx`;
         await pptx.writeFile({ fileName: fileName });
