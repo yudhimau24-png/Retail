@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Retail Catalog - Royal Vintage Edition</title>
   
-  <!-- Font Google Klasik & Modern -->
+  <!-- Google Fonts Lengkap -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Montserrat:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
   
   <!-- Supabase JS SDK -->
@@ -74,6 +74,19 @@
 
     .nav-links a:hover, .nav-links li:hover > a { color: #d8b255; }
     .nav-links a.sale { color: #d9453a; }
+
+    .badge-hot {
+      background-color: #d9453a;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 12px;
+      margin-left: 0.3rem;
+      letter-spacing: 0.5px;
+      display: inline-block;
+      transform: translateY(-1px);
+    }
 
     .dropdown-content {
       display: none;
@@ -213,16 +226,14 @@
     footer { text-align: center; padding: 2.5rem 1rem 1rem; margin-top: 4rem; border-top: 1px solid rgba(216, 178, 85, 0.15); color: #776666; font-size: 0.85rem; }
     footer strong { color: #d8b255; font-weight: 600; }
 
-    /* ========================================================= */
-    /* MODAL CLASSIC LUXURY VINTAGE WINE PROFILE (PARCHMENT GOLD) */
-    /* ========================================================= */
+    /* MODAL VINTAGE PARCHMENT TASTING PROFILE */
     .fullpage-detail { display: none; position: fixed; inset: 0; background: rgba(7, 5, 5, 0.95); z-index: 9999; overflow-y: auto; padding: 2rem 1rem; backdrop-filter: blur(10px); }
     .fullpage-detail.active { display: block; }
 
     .vintage-profile-card {
       background: linear-gradient(135deg, #fdfbf7 0%, #f4eee3 100%);
       color: #2b2118;
-      max-width: 860px;
+      max-width: 880px;
       margin: 0 auto;
       padding: 30px;
       position: relative;
@@ -260,15 +271,17 @@
     .v-bar-sub { display: flex; justify-content: space-between; font-size: 0.68rem; color: #554433; }
 
     .v-notes { border-top: 1px solid #e2d2a8; padding-top: 12px; margin-top: 15px; }
-    .v-note-row { display: flex; gap: 10px; margin-bottom: 8px; font-size: 0.8rem; }
-    .v-note-row strong { font-family: 'Cinzel', serif; color: #8b6b28; min-width: 75px; }
+    .v-note-row { display: flex; gap: 10px; margin-bottom: 8px; font-size: 0.8rem; line-height: 1.4; }
+    .v-note-row strong { font-family: 'Cinzel', serif; color: #8b6b28; min-width: 90px; flex-shrink: 0; }
     .v-note-row span { color: #3d3028; font-style: italic; }
 
+    .v-info-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; border-top: 1px solid #e2d2a8; padding-top: 15px; }
+    .v-info-box { background: #f0e6d6; border: 1px solid #c5a059; padding: 10px; border-radius: 6px; text-align: center; }
+    .v-info-box span { font-family: 'Cinzel', serif; font-size: 0.68rem; color: #665240; font-weight: 700; display: block; text-transform: uppercase; }
+    .v-info-box strong { font-size: 0.85rem; color: #1a1110; margin-top: 2px; display: block; }
+
     .v-pairing { border-top: 1px solid #e2d2a8; padding-top: 15px; margin-top: 20px; text-align: center; }
-    .v-pairing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
-    .v-pair-card { background: #f0e6d6; border: 1px solid #c5a059; padding: 8px; border-radius: 6px; }
-    .v-pair-card h5 { font-family: 'Cinzel', serif; font-size: 0.72rem; color: #1a1110; }
-    .v-pair-card p { font-size: 0.65rem; color: #665240; font-style: italic; }
+    .v-pairing-text { font-size: 0.85rem; color: #3d3028; font-style: italic; margin-top: 6px; }
 
     .v-btn-group { display: flex; gap: 10px; margin-top: 20px; }
     .v-btn-wa { flex: 2; padding: 12px; background: #8b6b28; color: #fff; border: none; font-weight: 700; cursor: pointer; border-radius: 4px; font-family: 'Cinzel', serif; }
@@ -281,13 +294,10 @@
   <canvas id="bgCanvas"></canvas>
 
   <div id="catalogPage">
-    
-    <!-- NAVIGATION BAR -->
     <nav class="top-navbar">
       <ul class="nav-links">
         <li><a href="javascript:void(0)" onclick="resetAllFilters()">HOME</a></li>
         
-        <!-- MENU CATEGORY DROPDOWN LENGKAP -->
         <li class="dropdown">
           <a href="javascript:void(0)">
             CATEGORY <svg class="arrow" viewBox="0 0 24 24" style="width:10px; height:10px; fill:none; stroke:currentColor; stroke-width:2;"><path d="M6 9l6 6 6-6"/></svg>
@@ -312,7 +322,6 @@
           </ul>
         </li>
         
-        <!-- MENU SHOP -->
         <li class="dropdown">
           <a href="javascript:void(0)">
             SHOP <svg class="arrow" viewBox="0 0 24 24" style="width:10px; height:10px; fill:none; stroke:currentColor; stroke-width:2;"><path d="M6 9l6 6 6-6"/></svg>
@@ -325,24 +334,16 @@
         </li>
 
         <li class="dropdown">
-          <a href="javascript:void(0)">
-            BRANDS <svg class="arrow" viewBox="0 0 24 24" style="width:10px; height:10px; fill:none; stroke:currentColor; stroke-width:2;"><path d="M6 9l6 6 6-6"/></svg>
-          </a>
+          <a href="javascript:void(0)">BRANDS</a>
           <ul class="dropdown-content">
             <li><a href="javascript:void(0)">Local Brands</a></li>
             <li><a href="javascript:void(0)">Import Brands</a></li>
-            <li><a href="javascript:void(0)">Exclusive</a></li>
           </ul>
         </li>
 
         <li><a href="javascript:void(0)">COLLECTIONS</a></li>
         <li><a href="javascript:void(0)">OUR STORE</a></li>
-        
-        <li>
-          <a href="javascript:void(0)" class="sale">
-            SALE <span class="badge-hot">HOT</span>
-          </a>
-        </li>
+        <li><a href="javascript:void(0)" class="sale">SALE <span class="badge-hot">HOT</span></a></li>
       </ul>
     </nav>
 
@@ -351,10 +352,8 @@
       <p id="heroSubtitle">Explore our curated collection of wines and spirits.</p>
     </div>
 
-    <!-- CONTROLS CONTAINER -->
     <div class="controls">
       <input type="text" id="searchInput" class="search-input" placeholder="Search beverage name or region..." oninput="renderWines()">
-      
       <div class="sort-container">
         <span style="font-size: 0.78rem; color: #887575; font-weight: 600;">URUTKAN:</span>
         <button type="button" class="sort-btn active" id="btnSortASC" onclick="setSortOrder('ASC')">🔤 A - Z</button>
@@ -362,7 +361,6 @@
       </div>
     </div>
 
-    <!-- SUB-FILTERS (LOCAL / IMPORT) -->
     <div class="sub-filters" id="subCategories" style="display: none;">
       <button class="sub-btn" data-sub="Local" onclick="setSubCategory('Local', this)">🇮🇩 Local</button>
       <button class="sub-btn" data-sub="Import" onclick="setSubCategory('Import', this)">🌍 Import</button>
@@ -388,7 +386,6 @@
   </div>
 
   <script>
-    /* KONFIGURASI SUPABASE */
     const SUPABASE_URL = "https://nuyowvjianxiobpzejnc.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eW93dmppYW54aW9icHplam5jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODkyMjUyOCwiZXhwIjoyMTA0NDk4NTI4fQ.-aeTfpvoGy3ICP2LMxa0vGfYggXlldnj5vtouzRm7bg";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -442,13 +439,18 @@
             stockStatus: w.stockStatus || w.stock_status || 'Tersedia',
             storageNote: w.storageNote || w.storage_note || 'Cool & dark storage',
             collection: w.collection || 'All Products',
-            bodyVal: w.bodyVal || 75,
-            tanninVal: w.tanninVal || 80,
-            acidityVal: w.acidityVal || 65,
-            sweetnessVal: w.sweetnessVal || 20,
+            bodyVal: w.bodyVal || w.body || 75,
+            tanninVal: w.tanninVal || w.tannin || 80,
+            acidityVal: w.acidityVal || w.acidity || 65,
+            sweetnessVal: w.sweetnessVal || w.sweetness || 20,
+            
+            // SINKRONISASI FIELD HASIL ADMIN (GENERAL NOTES, PAIRING, STORAGE, SENSORI)
             visual: w.visual || 'Deep ruby red, garnet rim',
-            aroma: w.aroma || w.notes || 'Blackcurrant, violet, cedar, spice bouquet',
-            palate: w.palate || w.pairing || 'Full-bodied, structured, velvety tannins, elegant finish'
+            aroma: w.aroma || 'Blackcurrant, violet, cedar, spice bouquet',
+            palate: w.palate || 'Full-bodied, structured, velvety tannins, elegant finish',
+            notes: w.notes || 'Fine quality wine with rich characteristics.',
+            pairing: w.pairing || 'Ribeye steak, lamb, aged cheeses',
+            storageNote: w.storageNote || 'Store horizontal in cool dark place'
           }));
           renderWines();
         }
@@ -597,19 +599,25 @@
               <div class="v-note-row"><strong>👁️ VISUAL</strong><span>${escapeHtml(wine.visual)}</span></div>
               <div class="v-note-row"><strong>🍇 AROMA</strong><span>${escapeHtml(wine.aroma)}</span></div>
               <div class="v-note-row"><strong>🍷 PALATE</strong><span>${escapeHtml(wine.palate)}</span></div>
+              <!-- TAMPILAN FIELD GENERAL NOTES & STORAGE NOTE DARI ADMIN -->
+              <div class="v-note-row"><strong>📝 NOTES</strong><span>${escapeHtml(wine.notes)}</span></div>
+              <div class="v-note-row"><strong>🍾 STORAGE</strong><span>${escapeHtml(wine.storageNote)}</span></div>
             </div>
           </div>
         </div>
 
+        <!-- TAMPILAN FIELD FOOD PAIRING DINAMIS DARI ADMIN -->
         <section class="v-pairing">
           <div style="font-family:'Cinzel', serif; font-weight:700; font-size:0.9rem;">SUGGESTED FOOD PAIRINGS</div>
-          <div class="v-pairing-grid">
-            <div class="v-pair-card"><h5>🥩 RED MEATS</h5><p>ribeye, lamb</p></div>
-            <div class="v-pair-card"><h5>🦌 GAME</h5><p>venison, duck</p></div>
-            <div class="v-pair-card"><h5>🧀 CHEESES</h5><p>Aged Cheddar</p></div>
-            <div class="v-pair-card"><h5>🍫 CHOCOLATE</h5><p>Dark Truffles</p></div>
-          </div>
+          <div class="v-pairing-text">🥩 ${escapeHtml(wine.pairing)}</div>
         </section>
+
+        <!-- INFORMASI TAMBAHAN (ABV, SUHU, STOK) -->
+        <div class="v-info-cards">
+          <div class="v-info-box"><span>ALCOHOL (ABV)</span><strong>${escapeHtml(wine.abv) || '-'}</strong></div>
+          <div class="v-info-box"><span>SUHU PENYAJIAN</span><strong>${escapeHtml(wine.servingTemp) || '-'}</strong></div>
+          <div class="v-info-box"><span>STATUS STOK</span><strong>${escapeHtml(wine.stockStatus) || 'Tersedia'}</strong></div>
+        </div>
 
         <div class="v-btn-group">
           <button class="v-btn-wa" onclick="inquireWine('${escapeHtml(wine.name)}')">💬 WhatsApp Order</button>
