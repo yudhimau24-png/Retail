@@ -3,999 +3,462 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Retail Catalog</title>
+  <title>Wine Tasting Profile - Château Margaux</title>
   
-  <!-- Font Montserrat dari Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Google Klasik & Mewah -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   
-  <!-- Supabase JS SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- html2pdf.js SDK -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-  <!-- PptxGenJS SDK -->
-  <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
-
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { 
-      background-color: #070505; 
-      color: #e0e0e0; 
-      padding-bottom: 2rem; 
-      min-height: 100vh; 
-      position: relative;
-      overflow-x: hidden;
-    }
-    
-    #bgCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 0;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    #catalogPage { position: relative; z-index: 1; }
-
-    /* NAVIGATION BAR */
-    .top-navbar {
-      background-color: #1a1a1a;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 1.5rem 2rem;
+    body {
+      background-color: #120c0e;
+      color: #2b2118;
+      font-family: 'Montserrat', sans-serif;
       display: flex;
       justify-content: center;
-      position: relative;
-      z-index: 50;
-    }
-
-    .nav-links {
-      list-style: none;
-      display: flex;
       align-items: center;
-      gap: 2.5rem;
+      min-height: 100vh;
+      padding: 20px;
     }
 
-    .nav-links li { position: relative; }
+    /* BINGKAI MEWAH UTAMA */
+    .profile-card {
+      background: linear-gradient(135deg, #fdfbf7 0%, #f4eee3 100%);
+      width: 100%;
+      max-width: 850px;
+      padding: 35px 40px;
+      border-radius: 4px;
+      position: relative;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6), inset 0 0 100px rgba(197, 160, 89, 0.08);
+      border: 1px solid #d4af37;
+    }
 
-    .nav-links a {
-      text-decoration: none;
-      color: #f0f0f0;
-      font-family: 'Montserrat', sans-serif;
+    /* ORNAMEN BORDER GANDA */
+    .outer-border {
+      border: 2px solid #c5a059;
+      padding: 25px 30px;
+      position: relative;
+    }
+
+    .inner-border {
+      border: 1px solid #d8be8a;
+      padding: 20px;
+      position: relative;
+    }
+
+    /* DEKORASI SUDUT EMAS */
+    .corner-ornament {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border: 3px solid #c5a059;
+    }
+    .top-left { top: -6px; left: -6px; border-right: none; border-bottom: none; }
+    .top-right { top: -6px; right: -6px; border-left: none; border-bottom: none; }
+    .bottom-left { bottom: -6px; left: -6px; border-right: none; border-top: none; }
+    .bottom-right { bottom: -6px; right: -6px; border-left: none; border-top: none; }
+
+    /* HEADER */
+    .header {
+      text-align: center;
+      margin-bottom: 25px;
+      border-bottom: 1px solid #e2d2a8;
+      padding-bottom: 15px;
+    }
+
+    .header h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #937135;
+      letter-spacing: 3px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .header .meta-info {
+      font-family: 'Cinzel', serif;
       font-size: 0.85rem;
       font-weight: 700;
+      color: #2b2118;
       letter-spacing: 1.5px;
-      text-transform: uppercase;
+    }
+
+    /* CONTENT GRID UTAMA */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 30px;
+      align-items: start;
+    }
+
+    /* KOLOM KIRI: BOTOL & JUDUL */
+    .bottle-section {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 0.4rem;
-      transition: color 0.3s ease;
-      cursor: pointer;
+      text-align: center;
     }
 
-    .nav-links a:hover, .nav-links li:hover > a { color: #d8b255; }
-    .nav-links a.active { color: #d8b255; }
-    .nav-links a.sale { color: #d9453a; }
-
-    .arrow {
-      width: 10px;
-      height: 10px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      margin-top: 1px;
-    }
-
-    .badge-hot {
-      background-color: #d9453a;
-      color: #fff;
-      font-size: 0.65rem;
+    .wine-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.8rem;
       font-weight: 800;
-      padding: 2px 7px;
-      border-radius: 12px;
-      margin-left: 0.3rem;
-      letter-spacing: 0.5px;
-      display: inline-block;
-      transform: translateY(-1px);
+      color: #1a1110;
+      line-height: 1.15;
+      margin-bottom: 8px;
+      text-transform: uppercase;
     }
 
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      background-color: #1a1a1a;
-      min-width: 190px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 4px;
-      padding: 0.5rem 0;
-      margin-top: 1.5rem;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      max-height: 400px;
-      overflow-y: auto;
+    .wine-subtitle {
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #634f37;
+      letter-spacing: 1.5px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
     }
 
-    .dropdown-content::-webkit-scrollbar { width: 6px; }
-    .dropdown-content::-webkit-scrollbar-track { background: transparent; }
-    .dropdown-content::-webkit-scrollbar-thumb { background: rgba(216, 178, 85, 0.5); border-radius: 3px; }
-    .dropdown-content::-webkit-scrollbar-thumb:hover { background: #d8b255; }
-    
-    .dropdown::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
-      height: 1.5rem;
-    }
-
-    .dropdown:hover .dropdown-content {
-      display: block;
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .dropdown-content li { list-style: none; }
-    .dropdown-content a {
-      padding: 0.8rem 1.2rem;
-      font-size: 0.75rem;
-      color: #ccc;
-      letter-spacing: 1px;
-    }
-
-    .dropdown-content a:hover {
-      background-color: rgba(216, 178, 85, 0.1);
-      color: #d8b255;
-    }
-
-    @media (max-width: 768px) {
-      .nav-links { gap: 1rem; overflow-x: auto; padding-bottom: 0.5rem; }
-      .top-navbar { padding: 1rem; justify-content: flex-start; }
-      .nav-links a { font-size: 0.75rem; }
-    }
-
-    .hero { 
-      text-align: center; 
-      padding: 3rem 1rem 3rem; 
-      background: radial-gradient(circle at 50% -20%, #3a1c1c 0%, #120909 60%, #070505 100%);
-      border-bottom: 1px solid rgba(216, 178, 85, 0.15); 
+    .bottle-display {
       position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      width: 100%;
+      height: 380px;
     }
 
-    .hero h1 { 
-      color: #d8b255; 
-      font-size: 2.4rem; 
-      font-family: 'Georgia', serif; 
-      text-shadow: 0 0 20px rgba(216, 178, 85, 0.3), 0 2px 10px rgba(0,0,0,0.8); 
+    .bottle-img {
+      max-height: 360px;
+      object-fit: contain;
+      filter: drop-shadow(5px 15px 15px rgba(0, 0, 0, 0.3));
+    }
+
+    /* KOLOM KANAN: FLAVOR MATRIX & TASTING NOTES */
+    .matrix-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1a1110;
+      text-align: center;
+      letter-spacing: 2px;
+      margin-bottom: 5px;
+    }
+
+    /* CUSTOM SLIDER PROFILE */
+    .profile-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .profile-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #1a1110;
+      font-family: 'Cinzel', serif;
+    }
+
+    .slider-track {
+      height: 12px;
+      background: linear-gradient(90deg, #dfd0b5 0%, #c5a059 100%);
+      border-radius: 6px;
+      position: relative;
+      border: 1px solid #b3914a;
+    }
+
+    .slider-pin {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%) rotate(45deg);
+      width: 16px;
+      height: 16px;
+      background: #8b6b28;
+      border: 2px solid #fdfbf7;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+
+    .profile-value-sub {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: #554433;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    /* TASTING DESCRIPTIONS (VISUAL, AROMA, PALATE) */
+    .notes-list {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      border-top: 1px solid #e2d2a8;
+      padding-top: 15px;
+    }
+
+    .note-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .note-icon {
+      font-size: 1.2rem;
+      color: #8b6b28;
+      line-height: 1;
+    }
+
+    .note-content h4 {
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1a1110;
       letter-spacing: 1px;
     }
-    .hero p { color: #c0b0b0; font-size: 0.95rem; margin-top: 0.5rem; text-shadow: 0 1px 5px rgba(0,0,0,0.8); }
 
-    /* CONTROLS */
-    .controls { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 1.8rem 1rem 1rem; gap: 0.8rem; }
-    input { padding: 0.65rem 1.2rem; border-radius: 20px; border: 1px solid rgba(216, 178, 85, 0.25); background: rgba(18, 11, 11, 0.75); backdrop-filter: blur(10px); color: #fff; font-size: 0.85rem; outline: none; transition: all 0.3s; }
-    input:focus { border-color: #d8b255; box-shadow: 0 0 12px rgba(216, 178, 85, 0.3); }
-    .search-input { width: 100%; max-width: 400px; }
+    .note-content p {
+      font-size: 0.82rem;
+      color: #3d3028;
+      line-height: 1.35;
+      font-style: italic;
+    }
 
-    .sort-container {
+    /* FOOD PAIRING FOOTER */
+    .pairing-section {
+      margin-top: 30px;
+      border-top: 1px solid #e2d2a8;
+      padding-top: 18px;
+      text-align: center;
+    }
+
+    .pairing-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #1a1110;
+      letter-spacing: 2px;
+      margin-bottom: 18px;
+    }
+
+    .pairing-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    .pairing-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .pairing-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #f0e6d6;
+      border: 1px solid #c5a059;
       display: flex;
       align-items: center;
-      gap: 0.6rem;
-      flex-wrap: wrap;
       justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 8px;
     }
-    .sort-btn {
-      padding: 0.45rem 1.1rem;
-      border-radius: 15px;
-      border: 1px solid rgba(216, 178, 85, 0.3);
-      background: rgba(18, 11, 11, 0.8);
-      color: #aaa;
+
+    .pairing-card h5 {
+      font-family: 'Cinzel', serif;
       font-size: 0.78rem;
       font-weight: 700;
-      cursor: pointer;
-      transition: all 0.25s ease;
-    }
-    .sort-btn:hover { border-color: #d8b255; color: #fff; }
-    .sort-btn.active {
-      background: linear-gradient(135deg, #d8b255 0%, #b89235 100%);
-      color: #0b0808;
-      border-color: #d8b255;
-      box-shadow: 0 2px 10px rgba(216, 178, 85, 0.3);
+      color: #1a1110;
+      line-height: 1.2;
+      margin-bottom: 3px;
     }
 
-    .sub-filters { display: flex; justify-content: center; margin-bottom: 2rem; gap: 0.8rem; }
-    .sub-btn { padding: 0.6rem 2rem; border-radius: 15px; border: 1px dashed rgba(216, 178, 85, 0.4); background: rgba(18, 11, 11, 0.6); backdrop-filter: blur(5px); color: #aaa; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; }
-    .sub-btn:hover { border-color: #d8b255; color: #fff; }
-    .sub-btn.active { background: rgba(216, 178, 85, 0.15); border: 1px solid #d8b255; color: #d8b255; font-weight: 700; }
-
-    .wine-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.1rem; max-width: 1400px; margin: 0 auto; padding: 0 1rem; perspective: 1000px; }
-    @media (max-width: 1200px) { .wine-grid { grid-template-columns: repeat(4, 1fr); } }
-    @media (max-width: 900px) { .wine-grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 600px) { .wine-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; } }
-    @media (max-width: 400px) { .wine-grid { grid-template-columns: 1fr; } }
-
-    .wine-card { background: rgba(18, 12, 12, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s ease-out, border-color 0.3s, box-shadow 0.3s; backdrop-filter: blur(8px); position: relative; transform-style: preserve-3d; }
-    .wine-card::before { content: ''; position: absolute; top: -100%; left: -100%; width: 300%; height: 300%; background: linear-gradient(45deg, transparent 45%, rgba(216, 178, 85, 0.12) 50%, transparent 55%); transition: transform 0.8s ease; pointer-events: none; z-index: 5; }
-    .wine-card:hover::before { transform: translate(50%, 50%); }
-    .wine-card:hover { border-color: #d8b255; box-shadow: 0 12px 30px rgba(216, 178, 85, 0.25), 0 0 15px rgba(0, 0, 0, 0.8); }
-    
-    .img-wrapper { position: relative; width: 100%; height: 175px; background: radial-gradient(circle at center, #1a0d0d 0%, #050303 100%); }
-    .wine-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
-    .wine-card:hover .wine-img { transform: scale(1.05); }
-
-    .collection-badge { position: absolute; top: 10px; left: 10px; font-weight: 800; font-size: 0.65rem; padding: 3px 8px; border-radius: 4px; z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.5); text-transform: uppercase; }
-    .badge-best { background: rgba(255, 179, 0, 0.95); color: #000; }
-    .badge-new { background: rgba(0, 230, 118, 0.95); color: #000; }
-
-    .vintage-badge { position: absolute; top: 10px; right: 10px; background: linear-gradient(135deg, #d8b255 0%, #aa8330 100%); color: #0b0808; font-weight: 800; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.6); z-index: 2; }
-    .card-content { padding: 0.95rem; display: flex; flex-direction: column; flex-grow: 1; z-index: 2; }
-    .card-title { font-size: 0.95rem; color: #fff; font-weight: 700; margin-bottom: 0.3rem; font-family: 'Georgia', serif; line-height: 1.25; }
-    .region { color: #887575; font-size: 0.75rem; margin-bottom: 0.6rem; }
-    .details { font-size: 0.75rem; color: #ccc; margin-bottom: 1rem; flex-grow: 1; line-height: 1.35; }
-    .detail-row { margin-bottom: 0.3rem; }
-    .detail-row strong { color: #d8b255; }
-
-    .action-group { display: flex; gap: 0.4rem; width: 100%; }
-    .btn-order { flex: 1; padding: 0.65rem; border-radius: 8px; border: 1px solid #d8b255; background: rgba(216, 178, 85, 0.05); color: #d8b255; font-weight: 700; font-size: 0.78rem; cursor: pointer; transition: all 0.25s ease; display: flex; align-items: center; justify-content: center; gap: 0.3rem; }
-    .btn-order:hover { background: #d8b255; color: #0b0808; box-shadow: 0 4px 15px rgba(216, 178, 85, 0.4); }
-
-    .btn-pdf-card {
-      padding: 0.65rem 0.75rem;
-      border-radius: 8px;
-      border: 1px solid #d8b255;
-      background: linear-gradient(135deg, #d8b255 0%, #b89235 100%);
-      color: #0b0808;
-      font-weight: 800;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .pairing-card p {
+      font-size: 0.72rem;
+      color: #665240;
+      font-style: italic;
     }
-    .btn-pdf-card:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(216, 178, 85, 0.4); }
 
-    footer { text-align: center; padding: 2.5rem 1rem 1rem; margin-top: 4rem; border-top: 1px solid rgba(216, 178, 85, 0.15); color: #776666; font-size: 0.85rem; }
-    footer strong { color: #d8b255; font-weight: 600; }
-
-    .fullpage-detail { display: none; position: fixed; inset: 0; background: rgba(7, 5, 5, 0.96); z-index: 9999; overflow-y: auto; padding: 2.5rem 1rem; backdrop-filter: blur(12px); }
-    .fullpage-detail.active { display: block; animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    
-    .detail-container { max-width: 950px; margin: 0 auto; background: linear-gradient(145deg, #180e0e 0%, #0d0808 100%); border: 1px solid rgba(216, 178, 85, 0.25); border-radius: 20px; padding: 2.5rem; position: relative; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.95), 0 0 50px rgba(216, 178, 85, 0.08); }
-    .btn-back { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(31, 19, 19, 0.8); border: 1px solid rgba(216, 178, 85, 0.3); color: #d8b255; padding: 0.6rem 1.2rem; border-radius: 25px; cursor: pointer; font-weight: 600; font-size: 0.85rem; margin-bottom: 2rem; transition: all 0.25s; }
-    .btn-back:hover { background: #d8b255; color: #0b0808; transform: translateX(-3px); }
-
-    .detail-layout { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 2.5rem; align-items: start; }
-    @media (max-width: 768px) { .detail-layout { grid-template-columns: 1fr; gap: 1.8rem; } .detail-container { padding: 1.5rem; } }
-
-    .detail-img-box { width: 100%; height: 440px; border-radius: 16px; overflow: hidden; background: radial-gradient(circle at center, #2e1a1b 0%, #080505 100%); position: relative; border: 1px solid rgba(216, 178, 85, 0.25); box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; }
-    .detail-img-box img { max-width: 90%; max-height: 88%; object-fit: contain; filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.8)); animation: floatBottle 4s ease-in-out infinite alternate; }
-    @keyframes floatBottle { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(-10px) scale(1.02); } }
-
-    .detail-info { display: flex; flex-direction: column; }
-    .detail-title { font-size: 2rem; color: #fff; font-family: 'Georgia', serif; font-weight: 700; margin-bottom: 0.6rem; line-height: 1.25; }
-    .badge-group { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
-    .pill-badge { display: inline-flex; align-items: center; gap: 0.4rem; padding: 5px 12px; background: rgba(216, 178, 85, 0.1); border: 1px solid rgba(216, 178, 85, 0.3); border-radius: 20px; font-size: 0.8rem; color: #d8b255; font-weight: 600; }
-
-    .info-section { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 1.2rem; margin-top: 1rem; }
-    .info-section h3 { color: #d8b255; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.9rem; display: flex; align-items: center; gap: 0.5rem; }
-    .flavor-item { display: flex; gap: 0.8rem; margin-bottom: 0.8rem; font-size: 0.88rem; line-height: 1.4; }
-    .flavor-item:last-child { margin-bottom: 0; }
-    .flavor-label { color: #887575; min-width: 120px; font-weight: 600; }
-    .flavor-value { color: #e0e0e0; flex: 1; }
-
-    /* CSS INDIKATOR TASTING METER (BODY, TANNIN, SWEETNESS, ACIDITY) */
-    .taste-meter-container { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px dashed rgba(216, 178, 85, 0.2); }
-    .taste-meter { display: flex; flex-direction: column; gap: 0.3rem; }
-    .taste-meter-header { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 600; }
-    .taste-meter-title { color: #d8b255; }
-    .taste-meter-value { color: #ccc; }
-    .taste-meter-track { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden; position: relative; }
-    .taste-meter-fill { height: 100%; background: linear-gradient(90deg, #d8b255 0%, #b89235 100%); border-radius: 3px; }
-
-    .extra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 0.3rem; }
-    .extra-card { background: linear-gradient(135deg, rgba(30, 18, 18, 0.7) 0%, rgba(15, 10, 10, 0.8) 100%); border: 1px solid #2e1a1a; padding: 0.9rem 1rem; border-radius: 10px; transition: border-color 0.2s; }
-    .extra-card:hover { border-color: rgba(216, 178, 85, 0.4); }
-    .extra-card span { display: block; font-size: 0.75rem; color: #887575; margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.5px; }
-    .extra-card strong { font-size: 0.95rem; color: #fff; font-weight: 700; }
-
-    .cta-group { display: flex; gap: 0.8rem; margin-top: 1.8rem; }
-    .btn-order-cta { flex: 2; padding: 1rem; border-radius: 10px; border: none; background: linear-gradient(135deg, #d8b255 0%, #b89235 100%); color: #0b0808; font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 6px 20px rgba(216, 178, 85, 0.25); display: flex; align-items: center; justify-content: center; gap: 0.6rem; }
-    .btn-order-cta:hover { background: linear-gradient(135deg, #e5c065 0%, #c9a042 100%); transform: translateY(-2px); box-shadow: 0 10px 25px rgba(216, 178, 85, 0.4); }
-
-    .btn-pdf-cta { flex: 1; padding: 1rem; border-radius: 10px; border: 1px solid #d8b255; background: rgba(30, 18, 18, 0.8); color: #d8b255; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
-    .btn-pdf-cta:hover { background: #d8b255; color: #0b0808; transform: translateY(-2px); }
+    @media (max-width: 650px) {
+      .content-grid { grid-template-columns: 1fr; }
+      .pairing-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+      .profile-card { padding: 20px; }
+    }
   </style>
 </head>
 <body>
 
-  <canvas id="bgCanvas"></canvas>
-
-  <div id="catalogPage">
-    
-    <!-- NAVIGATION BAR -->
-    <nav class="top-navbar">
-      <ul class="nav-links">
-        <li><a href="javascript:void(0)" onclick="resetAllFilters()">HOME</a></li>
+  <div class="profile-card">
+    <div class="outer-border">
+      <div class="inner-border">
         
-        <!-- MENU CATEGORY DENGAN DROPDOWN -->
-        <li class="dropdown">
-          <a href="javascript:void(0)">
-            CATEGORY 
-            <svg class="arrow" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-          </a>
-          <ul class="dropdown-content">
-            <li><a href="javascript:void(0)" onclick="setMainCategory('Semua')">⭐ Semua Kategori</a></li>
-            <li><a href="javascript:void(0)" onclick="setMainCategory('Vodka')">Vodka</a></li>
-            <li><a href="javascript:void(0)" onclick="setMainCategory('Gin')">Gin</a></li>
-            <li><a href="javascript:void(0)" onclick="setMainCategory('Rum')">Rum</a></li>
-            <li><a href="javascript:void(0)" onclick="setMainCategory('Tequila')">Tequila</a></li>
-            <li><a href="javascript:void(0)" onclick="setMainCategory('Liqueur')">Liqueur</a></li>
-            <li><a href="javascript:void(0)" onclick="setMainCategory('Whisky')">Whisky</a></li>
-            <li><a href="javascript:void(0)" onclick="setMainCategory('Cognac')">Cognac</a></li>
-            <li><a href="javascript:void(0)" onclick="setMainCategory('Wine')">Wine</a></li>
-            <li><a href="javascript:void(0)" onclick="setMainCategory('Soju')">Soju</a></li>
-            <li><a href="javascript:void(0)" onclick="setMainCategory('Sake')">Sake</a></li>
-            <li><a href="javascript:void(0)" onclick="setMainCategory('Baijiu')">Baijiu</a></li>
-            <li><a href="javascript:void(0)" onclick="setMainCategory('Alcopops')">Alcopops</a></li>
-            <li><a href="javascript:void(0)" onclick="setMainCategory('Beer')">Beer</a></li>
-            <li><a href="javascript:void(0)" onclick="setMainCategory('Traditional')">Traditional & Grain</a></li>
-            <li><a href="javascript:void(0)" onclick="setMainCategory('Syrup')">Syrup</a></li>
-          </ul>
-        </li>
-        
-        <!-- MENU SHOP -->
-        <li class="dropdown">
-          <a href="javascript:void(0)">
-            SHOP 
-            <svg class="arrow" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-          </a>
-          <ul class="dropdown-content">
-            <li><a href="javascript:void(0)" onclick="setShopCollection('Best Seller')">⭐ Best Sellers</a></li>
-            <li><a href="javascript:void(0)" onclick="setShopCollection('New Arrival')">✨ New Arrivals</a></li>
-            <li><a href="javascript:void(0)" onclick="setShopCollection('All Products')">🍷 All Products</a></li>
-          </ul>
-        </li>
+        <!-- Ornamen Sudut Emas -->
+        <div class="corner-ornament top-left"></div>
+        <div class="corner-ornament top-right"></div>
+        <div class="corner-ornament bottom-left"></div>
+        <div class="corner-ornament bottom-right"></div>
 
-        <li class="dropdown">
-          <a href="javascript:void(0)">
-            BRANDS 
-            <svg class="arrow" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-          </a>
-          <ul class="dropdown-content">
-            <li><a href="javascript:void(0)">Local Brands</a></li>
-            <li><a href="javascript:void(0)">Import Brands</a></li>
-            <li><a href="javascript:void(0)">Exclusive</a></li>
-          </ul>
-        </li>
+        <!-- HEADER -->
+        <header class="header">
+          <h1>Wine Tasting Profile</h1>
+          <div class="meta-info">VINTAGE: 2016 &nbsp;|&nbsp; VARIETAL: CABERNET SAUVIGNON & MERLOT</div>
+        </header>
 
-        <li><a href="javascript:void(0)">COLLECTIONS</a></li>
-        <li><a href="javascript:void(0)">OUR STORE</a></li>
-        
-        <li>
-          <a href="javascript:void(0)" class="sale">
-            SALE <span class="badge-hot">HOT</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
+        <!-- KONTEN UTAMA -->
+        <div class="content-grid">
+          
+          <!-- SISI KIRI: BOTOL & JUDUL PRODUK -->
+          <div class="bottle-section">
+            <h2 class="wine-title">Château Margaux</h2>
+            <div class="wine-subtitle">Premier Grand Cru Classé</div>
+            <div class="bottle-display">
+              <!-- Foto Botol Wine -->
+              <img src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500&q=80" alt="Château Margaux 2016" class="bottle-img">
+            </div>
+          </div>
 
-    <div class="hero">
-      <h1 id="heroTitle">🍷Kava Retail</h1>
-      <p id="heroSubtitle">Explore our curated collection of wines and spirits.</p>
-    </div>
+          <!-- SISI KANAN: FLAVOR MATRIX & DESKRIPSI RASA -->
+          <div class="matrix-section">
+            <div class="section-title">FLAVOR MATRIX CHARTS</div>
 
-    <!-- CONTROLS CONTAINER -->
-    <div class="controls">
-      <input type="text" id="searchInput" class="search-input" placeholder="Search beverage name or region..." oninput="renderWines()">
-      
-      <!-- TOMBOL SORTING -->
-      <div class="sort-container">
-        <span style="font-size: 0.78rem; color: #887575; font-weight: 600; letter-spacing: 0.5px;">URUTKAN:</span>
-        <button type="button" class="sort-btn active" id="btnSortASC" onclick="setSortOrder('ASC')">🔤 A - Z</button>
-        <button type="button" class="sort-btn" id="btnSortDESC" onclick="setSortOrder('DESC')">🔠 Z - A</button>
+            <!-- 1. BODY -->
+            <div class="profile-item">
+              <div class="profile-label-row">
+                <span>BODY</span>
+              </div>
+              <div class="slider-track">
+                <div class="slider-pin" style="left: 75%;"></div>
+              </div>
+              <div class="profile-value-sub">
+                <span>Full</span>
+                <span>High Full 7.5/10</span>
+              </div>
+            </div>
+
+            <!-- 2. TANNIN -->
+            <div class="profile-item">
+              <div class="profile-label-row">
+                <span>TANNIN</span>
+              </div>
+              <div class="slider-track">
+                <div class="slider-pin" style="left: 80%;"></div>
+              </div>
+              <div class="profile-value-sub">
+                <span>Structured</span>
+                <span>High Structured 8.0/10</span>
+              </div>
+            </div>
+
+            <!-- 3. ACIDITY -->
+            <div class="profile-item">
+              <div class="profile-label-row">
+                <span>ACIDITY</span>
+              </div>
+              <div class="slider-track">
+                <div class="slider-pin" style="left: 65%;"></div>
+              </div>
+              <div class="profile-value-sub">
+                <span>Low</span>
+                <span>Pure Balanced 6.5/10</span>
+              </div>
+            </div>
+
+            <!-- 4. SWEETNESS -->
+            <div class="profile-item">
+              <div class="profile-label-row">
+                <span>SWEETNESS</span>
+              </div>
+              <div class="slider-track">
+                <div class="slider-pin" style="left: 15%;"></div>
+              </div>
+              <div class="profile-value-sub">
+                <span>Dry</span>
+                <span>Dry 1.5/10</span>
+              </div>
+            </div>
+
+            <!-- CATATAN SENSORI (VISUAL, AROMA, PALATE) -->
+            <div class="notes-list">
+              <div class="note-item">
+                <div class="note-icon">👁️</div>
+                <div class="note-content">
+                  <h4>VISUAL</h4>
+                  <p>Deep ruby red, garnet rim</p>
+                </div>
+              </div>
+
+              <div class="note-item">
+                <div class="note-icon">🍇</div>
+                <div class="note-content">
+                  <h4>AROMA</h4>
+                  <p>Blackcurrant, violet, cedar, tobacco, spice bouquet</p>
+                </div>
+              </div>
+
+              <div class="note-item">
+                <div class="note-icon">🍷</div>
+                <div class="note-content">
+                  <h4>PALATE</h4>
+                  <p>Full-bodied, structured, black cherry, licorice, velvety tannins, elegant finish</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- FOOTER: SUGGESTED FOOD PAIRINGS -->
+        <section class="pairing-section">
+          <div class="pairing-title">SUGGESTED FOOD PAIRINGS</div>
+          <div class="pairing-grid">
+            
+            <div class="pairing-card">
+              <div class="pairing-icon">🥩</div>
+              <h5>GRILLED RED MEATS</h5>
+              <p>ribeye, lamb</p>
+            </div>
+
+            <div class="pairing-card">
+              <div class="pairing-icon">🦌</div>
+              <h5>GAME</h5>
+              <p>venison, roast duck</p>
+            </div>
+
+            <div class="pairing-card">
+              <div class="pairing-icon">🧀</div>
+              <h5>AGED CHEESES</h5>
+              <p>Cheddar, Comté</p>
+            </div>
+
+            <div class="pairing-card">
+              <div class="pairing-icon">🍫</div>
+              <h5>DARK CHOCOLATE</h5>
+              <p>truffles</p>
+            </div>
+
+          </div>
+        </section>
+
       </div>
     </div>
-
-    <!-- Sub Kategori (Local / Import) -->
-    <div class="sub-filters" id="subCategories" style="display: none;">
-      <button class="sub-btn" data-sub="Local" onclick="setSubCategory('Local', this)">🇮🇩 Local</button>
-      <button class="sub-btn" data-sub="Import" onclick="setSubCategory('Import', this)">🌍 Import</button>
-    </div>
-
-    <div class="wine-grid" id="wineGrid"></div>
-
-    <footer>
-      <p>&copy; 2026 Copyright by <strong>RETAIL SHOP</strong>. All Rights Reserved.</p>
-    </footer>
   </div>
 
-  <div id="detailView" class="fullpage-detail">
-    <div class="detail-container">
-      <button class="btn-back" onclick="closeDetail()">← Kembali ke Katalog</button>
-      <div class="detail-layout" id="detailContent"></div>
-    </div>
-  </div>
-
-  <script>
-    /* KONFIGURASI SUPABASE */
-    const SUPABASE_URL = "https://nuyowvjianxiobpzejnc.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eW93dmppYW54aW9icHplam5jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODkyMjUyOCwiZXhwIjoyMTA0NDk4NTI4fQ.-aeTfpvoGy3ICP2LMxa0vGfYggXlldnj5vtouzRm7bg";
-    
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    /* Background Canvas Engine */
-    const canvas = document.getElementById('bgCanvas');
-    const ctx = canvas.getContext('2d');
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
-    let mouse = { x: width / 2, y: height / 2, active: false };
-
-    window.addEventListener('resize', () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; });
-    window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; });
-
-    const particles = Array.from({ length: 60 }, () => ({
-      x: Math.random() * width, y: Math.random() * height, radius: Math.random() * 2.5 + 0.5,
-      alpha: Math.random() * 0.5 + 0.1, vx: (Math.random() - 0.5) * 0.4, vy: -(Math.random() * 0.4 + 0.2),
-    }));
-
-    function drawInteractiveBG() {
-      ctx.clearRect(0, 0, width, height);
-      if (mouse.active) {
-        const glowRadius = 380;
-        const gradient = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, glowRadius);
-        gradient.addColorStop(0, 'rgba(216, 178, 85, 0.08)');
-        gradient.addColorStop(0.5, 'rgba(120, 30, 30, 0.04)');
-        gradient.addColorStop(1, 'transparent');
-        ctx.fillStyle = gradient; ctx.fillRect(0, 0, width, height);
-      }
-      particles.forEach(p => {
-        p.x += p.vx; p.y += p.vy;
-        if (mouse.active) {
-          const dx = mouse.x - p.x; const dy = mouse.y - p.y; const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) { const angle = Math.atan2(dy, dx); p.x -= Math.cos(angle) * 1.5; p.y -= Math.sin(angle) * 1.5; }
-        }
-        if (p.y < -10) { p.y = height + 10; p.x = Math.random() * width; }
-        if (p.x < -10) p.x = width + 10;
-        if (p.x > width + 10) p.x = -10;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(216, 178, 85, ${p.alpha})`;
-        ctx.shadowBlur = 8; ctx.shadowColor = '#d8b255'; ctx.fill();
-      });
-      requestAnimationFrame(drawInteractiveBG);
-    }
-    drawInteractiveBG();
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-    }
-
-    let localWines = [];
-    let currentFilteredWines = [];
-    
-    let currentMainCategory = null; 
-    let currentSubCategory = null; 
-    let currentShopCollection = null; 
-    let currentSortOrder = 'ASC';
-    
-    const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whisky", "Cognac", "Soju", "Sake", "Traditional and Grain", "Baijiu", "Alcopops"];
-
-    async function fetchWinesFromSupabase() {
-      try {
-        const { data, error } = await supabaseClient
-          .from('wines')
-          .select('*');
-
-        if (error) {
-          console.error('Error fetching Supabase data:', error);
-          alert('Gagal memuat katalog: ' + error.message);
-          return;
-        }
-        if (data) {
-          localWines = data.map(w => ({
-            ...w,
-            imageUrl: w.imageUrl || w.image_url || '',
-            servingTemp: w.servingTemp || w.serving_temp || '',
-            stockStatus: w.stockStatus || w.stock_status || '',
-            storageNote: w.storageNote || w.storage_note || '',
-            collection: w.collection || 'All Products',
-            // Default nilai indikator profil rasa jika belum ada di database (Skala 0 - 100%)
-            bodyVal: w.bodyVal || w.body || 70,
-            tanninVal: w.tanninVal || w.tannin || 60,
-            sweetnessVal: w.sweetnessVal || w.sweetness || 30,
-            acidityVal: w.acidityVal || w.acidity || 65
-          }));
-          renderWines();
-        }
-      } catch (err) { console.error('Error fetching Supabase data:', err); }
-    }
-
-    function setSortOrder(order) {
-      currentSortOrder = order;
-      document.getElementById('btnSortASC').classList.toggle('active', order === 'ASC');
-      document.getElementById('btnSortDESC').classList.toggle('active', order === 'DESC');
-      renderWines();
-    }
-
-    function resetAllFilters() {
-      currentMainCategory = null;
-      currentSubCategory = null;
-      currentShopCollection = null;
-      document.getElementById('searchInput').value = '';
-      document.getElementById('subCategories').style.display = 'none';
-      document.getElementById('heroTitle').innerHTML = '🍷 Retail';
-      document.getElementById('heroSubtitle').innerHTML = 'Explore our curated collection of wines and spirits.';
-      renderWines();
-    }
-
-    function setShopCollection(collectionName) {
-      currentShopCollection = collectionName;
-      
-      currentMainCategory = null; 
-      currentSubCategory = null; 
-      document.getElementById('subCategories').style.display = 'none'; 
-      document.getElementById('searchInput').value = '';
-
-      if (collectionName === 'Best Seller') {
-        document.getElementById('heroTitle').innerHTML = '⭐ Best Sellers';
-        document.getElementById('heroSubtitle').innerHTML = 'Produk unggulan dan paling diminati oleh pelanggan kami.';
-      } else if (collectionName === 'New Arrival') {
-        document.getElementById('heroTitle').innerHTML = '✨ New Arrivals';
-        document.getElementById('heroSubtitle').innerHTML = 'Koleksi eksklusif terbaru yang baru saja tiba.';
-      } else {
-        document.getElementById('heroTitle').innerHTML = '🍷 All Products';
-        document.getElementById('heroSubtitle').innerHTML = 'Jelajahi seluruh koleksi minuman kami dari A-Z.';
-      }
-
-      renderWines();
-    }
-
-    function setMainCategory(category) {
-      currentMainCategory = category;
-      currentSubCategory = null;
-      currentShopCollection = null;
-
-      document.getElementById('heroTitle').innerHTML = '🍷 ' + (category === 'Semua' ? 'Retail Catalogue' : category);
-      document.getElementById('heroSubtitle').innerHTML = 'Explore our curated collection of wines and spirits.';
-
-      const subContainer = document.getElementById('subCategories');
-      
-      if (category === 'Semua') {
-        subContainer.style.display = 'none'; 
-        currentSubCategory = 'Semua'; 
-      } else {
-        subContainer.style.display = 'flex'; 
-        document.querySelectorAll('#subCategories .sub-btn').forEach(btn => btn.classList.remove('active'));
-      }
-
-      renderWines(); 
-    }
-
-    function setSubCategory(subType, btnElement) {
-      currentSubCategory = subType;
-      
-      document.querySelectorAll('#subCategories .sub-btn').forEach(btn => btn.classList.remove('active'));
-      btnElement.classList.add('active');
-
-      renderWines(); 
-    }
-
-    function renderWines() {
-      const grid = document.getElementById('wineGrid');
-      const search = document.getElementById('searchInput').value.toLowerCase();
-
-      if (!currentMainCategory && !currentShopCollection && !search) {
-        grid.innerHTML = `
-          <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem;">
-            <div style="font-size: 3.5rem; margin-bottom: 1rem; opacity: 0.8;">🍷</div>
-            <h2 style="color: #d8b255; font-size: 1.5rem; margin-bottom: 0.5rem; font-family: 'Georgia', serif;">WELCOME TO KAVA</h2>
-            <p style="color: #887575; font-size: 1rem;">Never Miss Our Products</p>
-          </div>
-        `;
-        return;
-      }
-
-      if (currentMainCategory && currentMainCategory !== 'Semua' && !currentSubCategory && !search) {
-        grid.innerHTML = `
-          <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem;">
-            <div style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.8;">👇</div>
-            <h2 style="color: #d8b255; font-size: 1.3rem; margin-bottom: 0.5rem; font-family: 'Georgia', serif;">Pilih Tipe ${currentMainCategory}</h2>
-            <p style="color: #887575; font-size: 1rem;">Silakan pilih <strong>Local</strong> atau <strong>Import</strong> untuk menampilkan produk.</p>
-          </div>
-        `;
-        return;
-      }
-
-      currentFilteredWines = localWines.filter(wine => {
-        let matchesSearch = true;
-        if (search) {
-          matchesSearch = (wine.name && wine.name.toLowerCase().includes(search)) || 
-                          (wine.region && wine.region.toLowerCase().includes(search));
-        }
-
-        let matchesMain = true;
-        if (currentMainCategory && currentMainCategory !== 'Semua') {
-          matchesMain = wine.type && wine.type.toLowerCase().includes(currentMainCategory.toLowerCase());
-        }
-
-        let matchesSub = true;
-        if (currentMainCategory && currentMainCategory !== 'Semua' && currentSubCategory && currentSubCategory !== 'Semua') {
-          matchesSub = wine.type && wine.type.toLowerCase().includes(currentSubCategory.toLowerCase());
-        }
-
-        let matchesShopCollection = true;
-        if (currentShopCollection && currentShopCollection !== 'All Products') {
-          matchesShopCollection = wine.collection === currentShopCollection;
-        }
-
-        return matchesSearch && matchesMain && matchesSub && matchesShopCollection;
-      });
-
-      currentFilteredWines.sort((a, b) => {
-        const nameA = a.name || '';
-        const nameB = b.name || '';
-        if (currentSortOrder === 'ASC') {
-          return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
-        } else {
-          return nameB.localeCompare(nameA, undefined, { numeric: true, sensitivity: 'base' });
-        }
-      });
-
-      if (currentFilteredWines.length === 0) {
-        grid.innerHTML = `
-          <div style="grid-column: 1/-1; text-align: center; padding: 4rem 0;">
-            <p style="color: #888; font-size: 1.1rem;">Oops, tidak ada produk yang tersedia untuk filter ini.</p>
-          </div>
-        `;
-        return;
-      }
-
-      grid.innerHTML = currentFilteredWines.map((wine, idx) => {
-        const isSpirit = spiritTypes.some(spirit => wine.type && wine.type.includes(spirit));
-        
-        let collectionBadgeHtml = '';
-        if (wine.collection === 'Best Seller') {
-          collectionBadgeHtml = `<span class="collection-badge badge-best">⭐ Best Seller</span>`;
-        } else if (wine.collection === 'New Arrival') {
-          collectionBadgeHtml = `<span class="collection-badge badge-new">✨ New</span>`;
-        }
-
-        return `
-          <div class="wine-card" onclick="openDetail(${idx})" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
-            <div class="img-wrapper">
-              ${collectionBadgeHtml}
-              <img src="${wine.imageUrl || 'https://via.placeholder.com/300x190?text=No+Image'}" class="wine-img" onerror="this.src='https://via.placeholder.com/300x190?text=No+Image'">
-              <span class="vintage-badge">${escapeHtml(wine.vintage) || '-'}</span>
-            </div>
-            <div class="card-content">
-              <div class="card-title">${escapeHtml(wine.name)}</div>
-              <div class="region">📍 ${escapeHtml(wine.region)} • ${escapeHtml(wine.type)}</div>
-              <div class="details">
-                <div class="detail-row"><strong>${isSpirit ? 'Base Grain' : 'Varietal'}:</strong> ${escapeHtml(wine.varietal) || '-'}</div>
-                <div class="detail-row"><strong>Notes:</strong> ${escapeHtml(wine.notes) || '-'}</div>
-                <div class="detail-row"><strong>${isSpirit ? 'Serving' : 'Pairing'}:</strong> ${escapeHtml(wine.pairing) || '-'}</div>
-              </div>
-              
-              <div class="action-group">
-                <button class="btn-order" onclick="event.stopPropagation(); inquireWineByIdx(${idx})">
-                  💬 Order
-                </button>
-                <button class="btn-pdf-card" title="Download PDF Item Ini" onclick="event.stopPropagation(); downloadSingleWinePDF(${idx})">
-                  📄 PDF
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function handleTilt(e, card) {
-      const rect = card.getBoundingClientRect(); const x = e.clientX - rect.left - rect.width / 2; const y = e.clientY - rect.top - rect.height / 2;
-      card.style.transform = `perspective(1000px) rotateX(${(-y / rect.height) * 10}deg) rotateY(${(x / rect.width) * 10}deg) translateY(-5px)`;
-    }
-    function resetTilt(card) { card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)`; }
-
-    function openDetail(index) {
-      const wine = currentFilteredWines[index];
-      if (!wine) return;
-      const isSpirit = spiritTypes.some(spirit => wine.type && wine.type.includes(spirit));
-
-      document.getElementById('detailContent').innerHTML = `
-        <div class="detail-img-box">
-          <img src="${wine.imageUrl || 'https://via.placeholder.com/500x380?text=No+Image'}" onerror="this.src='https://via.placeholder.com/500x380?text=No+Image'">
-          <span class="vintage-badge" style="font-size: 0.85rem; padding: 5px 12px; top: 15px; right: 15px;">${escapeHtml(wine.vintage) || '-'}</span>
-        </div>
-        <div class="detail-info">
-          <div class="detail-title">${escapeHtml(wine.name)}</div>
-          <div class="badge-group">
-            <span class="pill-badge">📍 ${escapeHtml(wine.region) || 'Origin Unknown'}</span>
-            <span class="pill-badge">🍷 ${escapeHtml(wine.type) || 'Beverage'}</span>
-            ${wine.collection !== 'All Products' && wine.collection ? `<span class="pill-badge" style="border-color:#ffb300; color:#ffb300;">🔥 ${escapeHtml(wine.collection)}</span>` : ''}
-          </div>
-          <div class="info-section">
-            <h3>✨ Karakteristik & Profil Rasa</h3>
-            <div class="flavor-item"><div class="flavor-label">${isSpirit ? '🍇 Base Ingredient' : '🍇 Varietal / Grape'}</div><div class="flavor-value">${escapeHtml(wine.varietal) || '-'}</div></div>
-            <div class="flavor-item"><div class="flavor-label">📝 Tasting Notes</div><div class="flavor-value">${escapeHtml(wine.notes) || '-'}</div></div>
-            <div class="flavor-item"><div class="flavor-label">${isSpirit ? '🍹 Serving Style' : '🥩 Food Pairing'}</div><div class="flavor-value">${escapeHtml(wine.pairing) || '-'}</div></div>
-            
-            <!-- INDIKATOR TASTING METER (BODY, TANNIN, SWEETNESS, ACIDITY) -->
-            <div class="taste-meter-container">
-              <div class="taste-meter">
-                <div class="taste-meter-header"><span class="taste-meter-title">Body</span><span class="taste-meter-value">${wine.bodyVal}%</span></div>
-                <div class="taste-meter-track"><div class="taste-meter-fill" style="width: ${wine.bodyVal}%;"></div></div>
-              </div>
-              <div class="taste-meter">
-                <div class="taste-meter-header"><span class="taste-meter-title">Tannin</span><span class="taste-meter-value">${wine.tanninVal}%</span></div>
-                <div class="taste-meter-track"><div class="taste-meter-fill" style="width: ${wine.tanninVal}%;"></div></div>
-              </div>
-              <div class="taste-meter">
-                <div class="taste-meter-header"><span class="taste-meter-title">Sweetness</span><span class="taste-meter-value">${wine.sweetnessVal}%</span></div>
-                <div class="taste-meter-track"><div class="taste-meter-fill" style="width: ${wine.sweetnessVal}%;"></div></div>
-              </div>
-              <div class="taste-meter">
-                <div class="taste-meter-header"><span class="taste-meter-title">Acidity</span><span class="taste-meter-value">${wine.acidityVal}%</span></div>
-                <div class="taste-meter-track"><div class="taste-meter-fill" style="width: ${wine.acidityVal}%;"></div></div>
-              </div>
-            </div>
-          </div>
-          <div class="info-section">
-            <h3>⚙️ Informasi Tambahan</h3>
-            <div class="extra-grid">
-              <div class="extra-card"><span>Alcohol (ABV)</span><strong>${escapeHtml(wine.abv) || '-'}</strong></div>
-              <div class="extra-card"><span>${isSpirit ? 'Serving Style' : 'Suhu Penyajian'}</span><strong>${escapeHtml(wine.servingTemp) || '-'}</strong></div>
-              <div class="extra-card"><span>Status Stok</span><strong>${escapeHtml(wine.stockStatus) || 'Tersedia'}</strong></div>
-              <div class="extra-card"><span>${isSpirit ? 'Cask / Barrel Type' : 'Storage Note'}</span><strong>${escapeHtml(wine.storageNote) || '-'}</strong></div>
-            </div>
-          </div>
-          <div class="cta-group">
-            <button class="btn-order-cta" onclick="inquireWineByIdx(${index})">💬 Pesan / Konsultasi via WhatsApp</button>
-            <button class="btn-pdf-cta" onclick="downloadSingleWinePDF(${index})">📄 Download PDF</button>
-          </div>
-        </div>
-      `;
-      document.getElementById('detailView').classList.add('active');
-      window.scrollTo(0, 0);
-    }
-
-    function closeDetail() { document.getElementById('detailView').classList.remove('active'); }
-
-    function inquireWineByIdx(index) {
-      const wine = currentFilteredWines[index];
-      if (!wine) return;
-      const message = `Halo, saya tertarik dengan minuman: ${wine.name} (${wine.vintage || '-'}). Boleh minta info pemesanan?`;
-      window.open(`https://wa.me/6285691563814?text=${encodeURIComponent(message)}`, '_blank');
-    }
-
-    /* ========================================================================= */
-    /* HELPER KONVERSI URL GAMBAR KE BASE64 (MENGHINDARI BLOKIR CORS)            */
-    /* ========================================================================= */
-    function urlToBase64(url) {
-      return new Promise((resolve) => {
-        if (!url) { resolve(null); return; }
-        const img = new Image();
-        img.crossOrigin = 'Anonymous';
-        img.onload = () => {
-          try {
-            const canvas = document.createElement('canvas');
-            canvas.width = img.naturalWidth || img.width;
-            canvas.height = img.naturalHeight || img.height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
-            const dataURL = canvas.toDataURL('image/png');
-            resolve(dataURL);
-          } catch (e) {
-            console.warn("CORS Canvas Export Error:", e);
-            resolve(null);
-          }
-        };
-        img.onerror = () => resolve(null);
-        img.src = url;
-      });
-    }
-
-    /* ========================================================================= */
-    /* GENERASI PDF PRESISI 100% PERSIS INFOGRAFIK BOTTLE INFOGRAPHIC            */
-    /* ========================================================================= */
-    async function downloadSingleWinePDF(index) {
-      const wine = currentFilteredWines[index];
-      if (!wine) {
-        alert('Produk tidak ditemukan!');
-        return;
-      }
-
-      // Konversi gambar terlebih dahulu ke Base64
-      let imageBase64 = null;
-      if (wine.imageUrl) {
-        imageBase64 = await urlToBase64(wine.imageUrl);
-      }
-      const imgSrc = imageBase64 || wine.imageUrl || 'https://via.placeholder.com/300x500?text=No+Image';
-
-      // Indikator Tasting Profile Bar (Body, Tannin, Sweetness, Acidity)
-      const bars = [
-        { left: 'Light', right: 'Bold', percent: wine.bodyVal || 70, active: true },
-        { left: 'Smooth', right: 'Tannin', percent: wine.tanninVal || 60, active: true },
-        { left: 'Dry', right: 'Sweet', percent: wine.sweetnessVal || 30, active: true },
-        { left: 'Soft', right: 'Acidic', percent: wine.acidityVal || 65, active: true }
-      ];
-
-      const barRowsHtml = bars.map(b => `
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-size: 12px; color: #222;">
-          <span style="width: 60px; font-weight: 500;">${b.left}</span>
-          <div style="flex: 1; height: 10px; background: #F8F5EE; border-radius: 5px; margin: 0 15px; position: relative; border: ${b.active ? 'none' : '1px solid #EADBDF'};">
-            ${b.active ? `<div style="position: absolute; left: ${b.percent}%; top: 0; width: 60px; height: 10px; background: #E0E000; border-radius: 5px; transform: translateX(-50%);"></div>` : ''}
-          </div>
-          <span style="width: 80px; text-align: right; font-weight: bold;">${b.right}</span>
-        </div>
-      `).join('');
-
-      // Flavor SVG Icons & Items
-      const flavorIcons = [
-        { emoji: '🍏', name: 'Green apple' },
-        { emoji: '🍋', name: 'Lemon' },
-        { emoji: '🍯', name: 'Honey' },
-        { emoji: '🥜', name: 'Nutty' },
-        { emoji: '🍞', name: 'Toasty notes' }
-      ];
-
-      const flavorItemsHtml = flavorIcons.map(f => `
-        <div style="text-align: center; width: 65px;">
-          <div style="width: 42px; height: 42px; border-radius: 50%; border: 1px solid #7CB342; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-            ${f.emoji}
-          </div>
-          <span style="font-size: 9px; color: #333; font-weight: 600; display: block; line-height: 1.1;">${f.name}</span>
-        </div>
-      `).join('');
-
-      // Food Pairing Items
-      const foodItems = [
-        { emoji: '🦐', name: 'Seafood' },
-        { emoji: '🦀', name: 'Asian cuisines' },
-        { emoji: '🌶️', name: 'Spicy cuisine' },
-        { emoji: '🧀', name: 'Cheese' }
-      ];
-
-      const foodItemsHtml = foodItems.map(f => `
-        <div style="text-align: center; width: 70px;">
-          <div style="width: 50px; height: 50px; border-radius: 50%; overflow: hidden; margin: 0 auto 6px; border: 1px solid #DDD; background: #FFF8F0; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 2px 5px rgba(0,0,0,0.08);">
-            ${f.emoji}
-          </div>
-          <span style="font-size: 9.5px; color: #333; font-weight: 600; display: block;">${f.name}</span>
-        </div>
-      `).join('');
-
-      // Buat container terisolasi secara kasatmata untuk perekaman Canvas
-      const wrapper = document.createElement('div');
-      wrapper.style.position = 'fixed';
-      wrapper.style.top = '0';
-      wrapper.style.left = '0';
-      wrapper.style.width = '100vw';
-      wrapper.style.height = '100vh';
-      wrapper.style.backgroundColor = 'rgba(0,0,0,0.85)';
-      wrapper.style.zIndex = '99999';
-      wrapper.style.display = 'flex';
-      wrapper.style.alignItems = 'center';
-      wrapper.style.justifyContent = 'center';
-
-      const container = document.createElement('div');
-      container.id = 'pdf-infographic-target';
-      container.style.width = '920px';
-      container.style.height = '520px';
-      container.style.backgroundColor = '#ffffff';
-      container.style.color = '#222222';
-      container.style.boxSizing = 'border-box';
-      container.style.display = 'flex';
-      container.style.flexDirection = 'column';
-      container.style.fontFamily = 'Arial, sans-serif';
-      container.style.overflow = 'hidden';
-      container.style.boxShadow = '0 0 30px rgba(0,0,0,0.5)';
-
-      container.innerHTML = `
-        <!-- BORDER BANNER MERAH ATAS -->
-        <div style="height: 10px; background-color: #A21C2B; width: 100%;"></div>
-
-        <!-- AREA UTAMA INFOGRAFIK -->
-        <div style="flex: 1; padding: 25px 35px 20px; display: flex; gap: 40px; position: relative;">
-          
-          <!-- SISI KIRI: BOTOL WINE & ALCOHOL -->
-          <div style="width: 250px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
-            <div style="flex: 1; display: flex; align-items: center; justify-content: center; width: 100%;">
-              <img src="${imgSrc}" style="max-height: 400px; max-width: 100%; object-fit: contain;">
-            </div>
-            <div style="font-size: 15px; font-weight: bold; color: #111111; margin-top: 10px; text-align: center;">
-              Alcohol <span style="font-weight: normal;">${escapeHtml(wine.abv) || '10 -13.5%'}</span>
-            </div>
-          </div>
-
-          <!-- SISI KANAN: DETAIL INFOGRAFIK -->
-          <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
-            
-            <!-- HEADING NAMA WINE -->
-            <div>
-              <h1 style="font-family: Georgia, serif; font-size: 40px; color: #111111; margin: 0 0 12px 0; font-weight: bold; line-height: 1.1;">
-                ${escapeHtml(wine.name)}
-              </h1>
-
-              <!-- FLAVORS SECTION -->
-              <div style="margin-bottom: 12px;">
-                <h3 style="font-size: 11px; font-weight: bold; color: #333; margin: 0 0 8px 0; letter-spacing: 0.5px; text-transform: uppercase;">FLAVORS</h3>
-                <div style="display: flex; gap: 10px;">
-                  ${flavorItemsHtml}
-                </div>
-              </div>
-
-              <!-- DESKRIPSI WINE -->
-              <p style="font-size: 10.5px; color: #222222; line-height: 1.45; margin: 0 0 15px 0;">
-                ${escapeHtml(wine.notes) || `${escapeHtml(wine.name)} wines are typically medium to full-bodied, showcasing a rich, silky texture that can be almost oily. The flavor profile evolves with age, transitioning from fresh citrus and stone fruit notes in younger wines to deeper, complex flavors of honey and nuts in aged versions.`}
-              </p>
-            </div>
-
-            <!-- TASTING PROFILE & FOOD PAIRING (SIDE BY SIDE) -->
-            <div style="display: flex; gap: 35px; align-items: flex-end;">
-              
-              <!-- TASTING PROFILE SLIDERS (BODY, TANNIN, SWEETNESS, ACIDITY) -->
-              <div style="flex: 1.1;">
-                <h3 style="font-size: 11px; font-weight: bold; color: #333; margin: 0 0 10px 0; letter-spacing: 0.5px; text-transform: uppercase;">TASTING PROFILE</h3>
-                ${barRowsHtml}
-              </div>
-
-              <!-- FOOD PAIRING CIRCLES -->
-              <div style="flex: 1;">
-                <h3 style="font-size: 11px; font-weight: bold; color: #333; margin: 0 0 10px 0; letter-spacing: 0.5px; text-transform: uppercase;">FOOD PAIRING</h3>
-                <div style="display: flex; gap: 8px; justify-content: space-between;">
-                  ${foodItemsHtml}
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-      `;
-
-      wrapper.appendChild(container);
-      document.body.appendChild(wrapper);
-
-      // Tunggu jeda render 300ms
-      await new Promise(resolve => setTimeout(resolve, 300));
-
-      const cleanName = (wine.name || 'Wine').replace(/[^a-zA-Z0-9]/g, '_');
-      const opt = {
-        margin: 0,
-        filename: `${cleanName}_Infographic.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
-      };
-
-      try {
-        await html2pdf().set(opt).from(container).save();
-      } catch (err) {
-        console.error('Error membuat PDF:', err);
-        alert('Gagal mengunduh PDF: ' + err.message);
-      } finally {
-        document.body.removeChild(wrapper);
-      }
-    }
-
-    fetchWinesFromSupabase();
-
-    supabaseClient
-      .channel('public:wines')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'wines' }, (payload) => {
-          console.log('Perubahan Data terdeteksi:', payload);
-          fetchWinesFromSupabase();
-      }).subscribe();
-
-  </script>
 </body>
 </html>
