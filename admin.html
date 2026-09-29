@@ -54,14 +54,9 @@
     .btn-group { display: flex; gap: 0.8rem; margin-top: 1.2rem; flex-wrap: wrap; }
     .btn-gold { padding: 0.75rem 1.8rem; border-radius: 10px; border: none; background: linear-gradient(135deg, #d8b255 0%, #b89235 100%); color: #0b0808; font-weight: 800; font-size: 0.9rem; cursor: pointer; }
     .btn-gold:hover { background: linear-gradient(135deg, #e5c065 0%, #c9a042 100%); }
-    .btn-gold:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-secondary { padding: 0.75rem 1.5rem; border-radius: 10px; border: 1px solid rgba(216, 178, 85, 0.3); background: transparent; color: #d8b255; font-weight: 600; cursor: pointer; }
-    
     .btn-danger { padding: 0.75rem 1.5rem; border-radius: 10px; border: none; background: linear-gradient(135deg, #e53935 0%, #b71c1c 100%); color: #fff; font-weight: 800; font-size: 0.9rem; cursor: pointer; }
-    .btn-danger:hover { background: linear-gradient(135deg, #ef5350 0%, #c62828 100%); }
-
     .btn-success { padding: 0.75rem 1.5rem; border-radius: 10px; border: none; background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); color: #fff; font-weight: 800; font-size: 0.9rem; cursor: pointer; }
-    .btn-success:hover { background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%); }
 
     .image-preview-container { display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem; }
     .image-preview-box { width: 70px; height: 70px; border-radius: 10px; border: 1px dashed rgba(216, 178, 85, 0.4); background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -75,8 +70,6 @@
 
     .btn-sm-edit { padding: 0.4rem 0.8rem; border-radius: 6px; border: 1px solid #d8b255; background: transparent; color: #d8b255; cursor: pointer; }
     .btn-sm-del { padding: 0.4rem 0.8rem; border-radius: 6px; border: 1px solid #e53935; background: transparent; color: #e53935; cursor: pointer; }
-
-    .badge-collection { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold; background: rgba(216, 178, 85, 0.2); color: #d8b255; }
 
     .folder-log-box {
       margin-top: 1rem; padding: 0.8rem 1rem; background: rgba(10, 5, 5, 0.9);
@@ -157,11 +150,11 @@
         <div class="form-grid">
           <div class="form-group">
             <label>Nama Minuman *</label>
-            <input type="text" id="wineName" required placeholder="Contoh: CHATEAU HAUT MADRAC">
+            <input type="text" id="wineName" required placeholder="Contoh: CHATEAU MARGAUX 2016">
           </div>
           <div class="form-group">
             <label>Vintage (Tahun)</label>
-            <input type="text" id="wineVintage" placeholder="Contoh: 2021 atau NV">
+            <input type="text" id="wineVintage" placeholder="Contoh: 2016 atau NV">
           </div>
           <div class="form-group">
             <label>Kategori (Type) *</label>
@@ -181,15 +174,15 @@
           </div>
           <div class="form-group">
             <label>Wilayah (Region)</label>
-            <input type="text" id="wineRegion" placeholder="Contoh: France">
+            <input type="text" id="wineRegion" placeholder="Contoh: Bordeaux, France">
           </div>
           <div class="form-group">
             <label>Varietal / Grape</label>
-            <input type="text" id="wineVarietal" placeholder="Contoh: Bordeaux Blend">
+            <input type="text" id="wineVarietal" placeholder="Contoh: Cabernet Sauvignon & Merlot">
           </div>
           <div class="form-group">
             <label>Alcohol (ABV)</label>
-            <input type="text" id="wineAbv" placeholder="Contoh: 13-14%">
+            <input type="text" id="wineAbv" placeholder="Contoh: 13.5%">
           </div>
           <div class="form-group">
             <label>Suhu Penyajian</label>
@@ -213,7 +206,7 @@
             </select>
           </div>
 
-          <!-- SECTION KHUSUS: SINKRONISASI TASTING METER (PROFIL RASA) -->
+          <!-- SECTION METRICS TASTING MATRIX -->
           <div class="section-divider">📊 INDICATOR TASTING MATRIX (0 - 100%)</div>
 
           <div class="form-group">
@@ -233,6 +226,24 @@
             <input type="number" id="wineSweetness" min="0" max="100" value="20" placeholder="0 - 100">
           </div>
 
+          <!-- SECTION BARU: VISUAL, AROMA, PALATE SENSORI -->
+          <div class="section-divider">🍷 SENSORY TASTING NOTES (VISUAL, AROMA, PALATE)</div>
+
+          <div class="form-group full-width">
+            <label>👁️ Visual (Tampilan Warna)</label>
+            <input type="text" id="wineVisual" placeholder="Contoh: Deep ruby red, garnet rim">
+          </div>
+
+          <div class="form-group full-width">
+            <label>🍇 Aroma (Noses / Bouquet)</label>
+            <input type="text" id="wineAroma" placeholder="Contoh: Blackcurrant, violet, cedar, tobacco, spice bouquet">
+          </div>
+
+          <div class="form-group full-width">
+            <label>🍷 Palate (Rasa di Mulut / Tekstur)</label>
+            <textarea id="winePalate" placeholder="Contoh: Full-bodied, structured, black cherry, licorice, velvety tannins, elegant finish"></textarea>
+          </div>
+
           <div class="form-group full-width">
             <label>📸 Upload Foto Produk (Supabase Cloud Storage)</label>
             <input type="file" id="wineImageFile" accept="image/*" onchange="previewUploadedImage(event)">
@@ -249,16 +260,16 @@
           </div>
 
           <div class="form-group full-width">
-            <label>Tasting Notes</label>
-            <textarea id="wineNotes" placeholder="Deskripsi rasa..."></textarea>
+            <label>General Notes (Catatan Tambahan)</label>
+            <textarea id="wineNotes" placeholder="Deskripsi umum..."></textarea>
           </div>
           <div class="form-group full-width">
             <label>Food Pairing</label>
-            <input type="text" id="winePairing" placeholder="Contoh: Roast Beef, Lamb">
+            <input type="text" id="winePairing" placeholder="Contoh: Ribeye, lamb, aged cheeses">
           </div>
           <div class="form-group full-width">
             <label>Storage Note</label>
-            <input type="text" id="wineStorageNote" placeholder="Contoh: Simpan miring">
+            <input type="text" id="wineStorageNote" placeholder="Contoh: Simpan miring di tempat sejuk">
           </div>
         </div>
         <div class="btn-group">
@@ -288,7 +299,7 @@
               <th>Vintage</th>
               <th>Kategori</th>
               <th>Wilayah</th>
-              <th>Matrix Rasa</th>
+              <th>Visual / Aroma</th>
               <th>Stok</th>
               <th>Aksi</th>
             </tr>
@@ -405,18 +416,14 @@
         return;
       }
 
-      let successCount = 0;
-      let failCount = 0;
+      let successCount = 0, failCount = 0;
 
       for (const file of imageFiles) {
         const pathParts = file.webkitRelativePath.split('/');
         let productName = '';
 
-        if (pathParts.length >= 3) {
-          productName = pathParts[pathParts.length - 2].trim();
-        } else if (pathParts.length === 2) {
-          productName = file.name.replace(/\.[^/.]+$/, "").trim();
-        }
+        if (pathParts.length >= 3) productName = pathParts[pathParts.length - 2].trim();
+        else if (pathParts.length === 2) productName = file.name.replace(/\.[^/.]+$/, "").trim();
 
         if (!productName) continue;
 
@@ -433,18 +440,12 @@
           const { data: publicUrlData } = supabaseClient.storage.from(bucketName).getPublicUrl(fileName);
           const publicUrl = publicUrlData.publicUrl;
 
-          const { error: dbErr } = await supabaseClient
-            .from('wines')
-            .update({ imageUrl: publicUrl })
-            .eq('name', productName);
-
+          const { error: dbErr } = await supabaseClient.from('wines').update({ imageUrl: publicUrl }).eq('name', productName);
           if (dbErr) throw dbErr;
 
           addFolderLog(`SUCCESS: Foto untuk "${productName}" berhasil di-match & update!`, '#4CAF50');
           successCount++;
-
         } catch (err) {
-          console.error(err);
           addFolderLog(`ERROR [${productName}]: ${err.message}`, '#ef5350');
           failCount++;
         }
@@ -463,8 +464,6 @@
         if (!error && data) {
           adminWines = data;
           renderAdminTable();
-        } else if (error) {
-          console.error('Error fetching data:', error.message);
         }
       } catch (err) { console.error('Error loading Supabase data:', err); }
     }
@@ -480,11 +479,6 @@
       }
 
       tbody.innerHTML = filtered.map((w) => {
-        const bodyV = w.bodyVal || w.body || 75;
-        const tanV = w.tanninVal || w.tannin || 80;
-        const acidV = w.acidityVal || w.acidity || 65;
-        const sweetV = w.sweetnessVal || w.sweetness || 20;
-
         return `
         <tr>
           <td><img src="${w.imageUrl || 'https://via.placeholder.com/45'}" class="thumb-img" onerror="this.src='https://via.placeholder.com/45'"></td>
@@ -494,7 +488,8 @@
           <td>${escapeHtml(w.region) || '-'}</td>
           <td>
             <div style="font-size:0.75rem; color:#bbb; line-height:1.2;">
-              B:${bodyV}% | T:${tanV}%<br>A:${acidV}% | S:${sweetV}%
+              👁️ ${escapeHtml(w.visual) || 'Deep ruby red'}<br>
+              🍇 ${escapeHtml(w.aroma) || 'Blackcurrant bouquet'}
             </div>
           </td>
           <td><span style="color:${w.stockStatus && w.stockStatus.includes('Habis') ? '#e53935' : '#4CAF50'}">${escapeHtml(w.stockStatus) || 'In Stock'}</span></td>
@@ -523,11 +518,15 @@
       document.getElementById('wineStockStatus').value = w.stockStatus || 'In Stock';
       document.getElementById('wineCollection').value = w.collection || 'All Products';
 
-      // SINKRONISASI VALUE PROFIL RASA
       document.getElementById('wineBody').value = w.bodyVal || w.body || 75;
       document.getElementById('wineTannin').value = w.tanninVal || w.tannin || 80;
       document.getElementById('wineAcidity').value = w.acidityVal || w.acidity || 65;
       document.getElementById('wineSweetness').value = w.sweetnessVal || w.sweetness || 20;
+
+      // SET FIELD SENSORI (VISUAL, AROMA, PALATE)
+      document.getElementById('wineVisual').value = w.visual || '';
+      document.getElementById('wineAroma').value = w.aroma || '';
+      document.getElementById('winePalate').value = w.palate || '';
 
       document.getElementById('wineImageUrl').value = w.imageUrl || '';
       document.getElementById('imgPreview').src = w.imageUrl || 'https://via.placeholder.com/70?text=Preview';
@@ -561,11 +560,8 @@
 
       if (selectedFileForUpload) {
         const uploadedUrl = await uploadImageToSupabase(selectedFileForUpload);
-        if (uploadedUrl) {
-          imageUrl = uploadedUrl;
-        } else {
-          return;
-        }
+        if (uploadedUrl) imageUrl = uploadedUrl;
+        else return;
       }
 
       const wineData = {
@@ -578,11 +574,16 @@
         servingTemp: document.getElementById('wineServingTemp').value,
         stockStatus: document.getElementById('wineStockStatus').value,
         collection: document.getElementById('wineCollection').value,
-        // SINKRONISASI DATA INDIKATOR RASA KE SUPABASE
         bodyVal: parseInt(document.getElementById('wineBody').value) || 75,
         tanninVal: parseInt(document.getElementById('wineTannin').value) || 80,
         acidityVal: parseInt(document.getElementById('wineAcidity').value) || 65,
         sweetnessVal: parseInt(document.getElementById('wineSweetness').value) || 20,
+        
+        // FIELD BARU SENSORI
+        visual: document.getElementById('wineVisual').value,
+        aroma: document.getElementById('wineAroma').value,
+        palate: document.getElementById('winePalate').value,
+
         imageUrl: imageUrl,
         notes: document.getElementById('wineNotes').value,
         pairing: document.getElementById('winePairing').value,
@@ -620,16 +621,12 @@
       if (!confirm('🚨 PERINGATAN BAHAYA! 🚨\n\nApakah Anda yakin ingin MENGHAPUS SEMUA SKU/DATA MINUMAN dari database?')) return;
       if (!confirm('Tindakan ini TIDAK DAPAT DIBATALKAN. Anda benar-benar yakin?')) return;
 
-      const { error } = await supabaseClient
-        .from('wines')
-        .delete()
-        .not('id', 'is', null);
-
-      if (error) {
-        alert('Gagal menghapus semua data: ' + error.message);
-      } else {
+      const { error } = await supabaseClient.from('wines').delete().not('id', 'is', null);
+      if (!error) {
         alert('Semua data SKU berhasil dikosongkan!');
         loadAdminData();
+      } else {
+        alert('Gagal menghapus semua data: ' + error.message);
       }
     }
 
@@ -645,9 +642,7 @@
       for (let R = range.s.r; R <= range.e.r; ++R) {
         for (let C = range.s.c; C <= range.e.c; ++C) {
           const address = XLSX.utils.encode_cell({ r: R, c: C });
-          if (!worksheet[address]) {
-            worksheet[address] = { t: 's', v: '' };
-          }
+          if (!worksheet[address]) worksheet[address] = { t: 's', v: '' };
           worksheet[address].s = worksheet[address].s || {};
           worksheet[address].s.border = borderStyle;
 
@@ -660,10 +655,7 @@
     }
 
     function exportDataToExcel() {
-      if (!adminWines || adminWines.length === 0) {
-        alert("Oops, tidak ada data katalog yang bisa di-export!");
-        return;
-      }
+      if (!adminWines || adminWines.length === 0) return alert("Tidak ada data katalog yang bisa di-export!");
 
       const exportData = adminWines.map(w => ({
         "FOTO": w.imageUrl || '',
@@ -672,15 +664,17 @@
         "KATEGORI": w.type || '',
         "WILAYAH": w.region || '-',
         "KOLEKSI SHOP": w.collection || 'All Products',
-        "BODY (%)": w.bodyVal || w.body || 75,
-        "TANNIN (%)": w.tanninVal || w.tannin || 80,
-        "ACIDITY (%)": w.acidityVal || w.acidity || 65,
-        "SWEETNESS (%)": w.sweetnessVal || w.sweetness || 20,
+        "BODY (%)": w.bodyVal || 75,
+        "TANNIN (%)": w.tanninVal || 80,
+        "ACIDITY (%)": w.acidityVal || 65,
+        "SWEETNESS (%)": w.sweetnessVal || 20,
+        "VISUAL": w.visual || '-',
+        "AROMA": w.aroma || '-',
+        "PALATE": w.palate || '-',
         "VARIETAL": w.varietal || '-',
         "ABV": w.abv || '-',
         "SUHU PENYAJIAN": w.servingTemp || '-',
         "STATUS STOK": w.stockStatus || 'In Stock',
-        "TASTING NOTES": w.notes || '-',
         "FOOD PAIRING": w.pairing || '-',
         "STORAGE NOTE": w.storageNote || '-'
       }));
@@ -689,45 +683,43 @@
       worksheet['!cols'] = [
         { wch: 45 }, { wch: 35 }, { wch: 10 }, { wch: 18 }, { wch: 25 }, { wch: 15 }, 
         { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
-        { wch: 25 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 40 }, { wch: 35 }, { wch: 25 }
+        { wch: 25 }, { wch: 30 }, { wch: 40 }, { wch: 25 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 35 }, { wch: 25 }
       ];
 
       applyStyles(worksheet);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Data_Katalog");
-      
-      const dateStr = new Date().toISOString().split('T')[0];
-      XLSX.writeFile(workbook, `Export_Katalog_Minuman_${dateStr}.xlsx`);
+      XLSX.writeFile(workbook, `Export_Katalog_Minuman_${new Date().toISOString().split('T')[0]}.xlsx`);
     }
 
     function downloadTemplate() {
-      const templateData = [
-        {
-          "FOTO": "",
-          "NAMA MINUMAN": "CHATEAU MARGAUX 2016",
-          "VINTAGE": "2016",
-          "KATEGORI": "Import Wine",
-          "WILAYAH": "Bordeaux, France",
-          "KOLEKSI SHOP": "Best Seller", 
-          "BODY (%)": 75,
-          "TANNIN (%)": 80,
-          "ACIDITY (%)": 65,
-          "SWEETNESS (%)": 20,
-          "VARIETAL": "Cabernet Sauvignon & Merlot",
-          "ABV": "13.5%",
-          "SUHU PENYAJIAN": "16°C - 18°C",
-          "STATUS STOK": "In Stock",
-          "TASTING NOTES": "Blackcurrant, violet, cedar, spice bouquet",
-          "FOOD PAIRING": "Ribeye, lamb, aged cheeses",
-          "STORAGE NOTE": "Simpan miring di tempat sejuk"
-        }
-      ];
+      const templateData = [{
+        "FOTO": "",
+        "NAMA MINUMAN": "CHATEAU MARGAUX 2016",
+        "VINTAGE": "2016",
+        "KATEGORI": "Import Wine",
+        "WILAYAH": "Bordeaux, France",
+        "KOLEKSI SHOP": "Best Seller", 
+        "BODY (%)": 75,
+        "TANNIN (%)": 80,
+        "ACIDITY (%)": 65,
+        "SWEETNESS (%)": 20,
+        "VISUAL": "Deep ruby red, garnet rim",
+        "AROMA": "Blackcurrant, violet, cedar, tobacco, spice bouquet",
+        "PALATE": "Full-bodied, structured, black cherry, licorice, velvety tannins, elegant finish",
+        "VARIETAL": "Cabernet Sauvignon & Merlot",
+        "ABV": "13.5%",
+        "SUHU PENYAJIAN": "16°C - 18°C",
+        "STATUS STOK": "In Stock",
+        "FOOD PAIRING": "Ribeye, lamb, aged cheeses",
+        "STORAGE NOTE": "Simpan miring di tempat sejuk"
+      }];
 
       const worksheet = XLSX.utils.json_to_sheet(templateData);
       worksheet['!cols'] = [
         { wch: 15 }, { wch: 30 }, { wch: 10 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, 
         { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
-        { wch: 25 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 40 }, { wch: 35 }, { wch: 25 } 
+        { wch: 25 }, { wch: 30 }, { wch: 40 }, { wch: 25 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 35 }, { wch: 25 } 
       ];
 
       applyStyles(worksheet);
@@ -757,6 +749,9 @@
           tanninVal: parseInt(row["TANNIN (%)"]) || 80,
           acidityVal: parseInt(row["ACIDITY (%)"]) || 65,
           sweetnessVal: parseInt(row["SWEETNESS (%)"]) || 20,
+          visual: row["VISUAL"] || row.Visual || row.visual || '-',
+          aroma: row["AROMA"] || row.Aroma || row.aroma || '-',
+          palate: row["PALATE"] || row.Palate || row.palate || '-',
           varietal: row["VARIETAL"] || row.Varietal || row.varietal || '-',
           abv: row["ABV"] || row.ABV || row.abv || '-',
           servingTemp: row["SUHU PENYAJIAN"] || row.ServingTemp || row.servingTemp || '-',
@@ -770,7 +765,6 @@
         if (validData.length === 0) return alert('Tidak ada data valid yang ditemukan di file!');
 
         const { error } = await supabaseClient.from('wines').insert(validData);
-        
         if (!error) {
           alert(`Berhasil mengimpor ${validData.length} produk ke Supabase!`);
           document.getElementById('excelFileInput').value = ""; 
