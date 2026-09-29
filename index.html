@@ -11,7 +11,7 @@
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- html2pdf.js untuk Ekspor PDF Presisi -->
+  <!-- html2pdf.js SDK -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
@@ -766,7 +766,7 @@
     }
 
     /* ========================================================================= */
-    /* GENERASI PDF PRESISI 100% MUAT DI DALAM HALAMAN A4 LANDSCAPE             */
+    /* GENERASI PDF PRESISI 100% PERSIS DENGAN INFOGRAFIK BOTTLE INFOGRAPHIC      */
     /* ========================================================================= */
     async function downloadSingleWinePDF(index) {
       const wine = currentFilteredWines[index];
@@ -775,132 +775,160 @@
         return;
       }
 
-      // Konversi gambar terlebih dahulu
+      // Konversi gambar terlebih dahulu ke Base64
       let imageBase64 = null;
       if (wine.imageUrl) {
         imageBase64 = await urlToBase64(wine.imageUrl);
       }
       const imgSrc = imageBase64 || wine.imageUrl || 'https://via.placeholder.com/300x500?text=No+Image';
 
-      // Buat container HTML sementara di dalam viewport dengan z-index rendah
-      const container = document.createElement('div');
-      container.id = 'temp-pdf-container';
-      container.style.position = 'fixed';
-      container.style.top = '0';
-      container.style.left = '0';
-      container.style.width = '1000px';
-      container.style.height = '560px';
-      container.style.zIndex = '-9999';
-      container.style.opacity = '0.99';
-      container.style.backgroundColor = '#ffffff';
-      container.style.color = '#222222';
-      container.style.padding = '30px 35px';
-      container.style.boxSizing = 'border-box';
-      container.style.display = 'flex';
-      container.style.gap = '30px';
-      container.style.fontFamily = 'Arial, sans-serif';
-
-      const isSpirit = spiritTypes.some(spirit => wine.type && wine.type.includes(spirit));
-
       // Indikator Tasting Profile Bar
       const bars = [
-        { left: 'Light', right: 'Bold', percent: 65 },
-        { left: 'Smooth', right: 'Tannin', percent: 50 },
-        { left: 'Dry', right: 'Sweet', percent: 35 },
-        { left: 'Soft', right: 'Acidic', percent: 60 }
+        { left: 'Light', right: 'Bold', percent: 65, active: true },
+        { left: 'Smooth', right: '**0 Tannin', percent: 0, active: false },
+        { left: 'Dry', right: 'Sweet', percent: 65, active: true },
+        { left: 'Soft', right: 'Acidic', percent: 65, active: true }
       ];
 
       const barRowsHtml = bars.map(b => `
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px; font-size: 11px;">
-          <span style="width: 50px; color: #222;">${b.left}</span>
-          <div style="flex: 1; height: 6px; background: #EADBDF; border-radius: 3px; margin: 0 10px; position: relative;">
-            <div style="position: absolute; left: ${b.percent}%; top: -3px; width: 20px; height: 12px; background: #8C233D; border-radius: 6px; transform: translateX(-50%);"></div>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-size: 12px; color: #222;">
+          <span style="width: 60px; font-weight: 500;">${b.left}</span>
+          <div style="flex: 1; height: 10px; background: #F8F5EE; border-radius: 5px; margin: 0 15px; position: relative; border: ${b.active ? 'none' : '1px solid #EADBDF'};">
+            ${b.active ? `<div style="position: absolute; left: ${b.percent}%; top: 0; width: 60px; height: 10px; background: #E0E000; border-radius: 5px; transform: translateX(-50%);"></div>` : ''}
           </div>
-          <span style="width: 50px; text-align: right; color: #222;">${b.right}</span>
+          <span style="width: 80px; text-align: right; font-weight: ${b.right.includes('*') ? 'bold' : '500'};">${b.right}</span>
         </div>
       `).join('');
 
-      container.innerHTML = `
-        <!-- SISI KIRI: FOTO BOTOL -->
-        <div style="width: 210px; display: flex; align-items: center; justify-content: center; height: 100%;">
-          <img src="${imgSrc}" style="max-height: 480px; max-width: 100%; object-fit: contain;">
-        </div>
+      // Flavor SVG Icons & Items
+      const flavorIcons = [
+        { emoji: '🍏', name: 'Green apple' },
+        { emoji: '🍋', name: 'Lemon' },
+        { emoji: '🍯', name: 'Honey' },
+        { emoji: '🥜', name: 'Nutty' },
+        { emoji: '🍞', name: 'Toasty notes' }
+      ];
 
-        <!-- SISI KANAN: KONTEN INFOGRAFIS -->
-        <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+      const flavorItemsHtml = flavorIcons.map(f => `
+        <div style="text-align: center; width: 65px;">
+          <div style="width: 42px; height: 42px; border-radius: 50%; border: 1px solid #7CB342; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+            ${f.emoji}
+          </div>
+          <span style="font-size: 9px; color: #333; font-weight: 600; display: block; line-height: 1.1;">${f.name}</span>
+        </div>
+      `).join('');
+
+      // Food Pairing Items
+      const foodItems = [
+        { emoji: '🦐', name: 'Seafood' },
+        { emoji: '🦀', name: 'Asian cuisines' },
+        { emoji: '🌶️', name: 'Spicy cuisine' },
+        { emoji: '🧀', name: 'Cheese' }
+      ];
+
+      const foodItemsHtml = foodItems.map(f => `
+        <div style="text-align: center; width: 70px;">
+          <div style="width: 50px; height: 50px; border-radius: 50%; overflow: hidden; margin: 0 auto 6px; border: 1px solid #DDD; background: #FFF8F0; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 2px 5px rgba(0,0,0,0.08);">
+            ${f.emoji}
+          </div>
+          <span style="font-size: 9.5px; color: #333; font-weight: 600; display: block;">${f.name}</span>
+        </div>
+      `).join('');
+
+      // Buat container terisolasi secara kasatmata untuk perekaman Canvas
+      const wrapper = document.createElement('div');
+      wrapper.style.position = 'fixed';
+      wrapper.style.top = '0';
+      wrapper.style.left = '0';
+      wrapper.style.width = '100vw';
+      wrapper.style.height = '100vh';
+      wrapper.style.backgroundColor = 'rgba(0,0,0,0.85)';
+      wrapper.style.zIndex = '99999';
+      wrapper.style.display = 'flex';
+      wrapper.style.alignItems = 'center';
+      wrapper.style.justifyContent = 'center';
+
+      const container = document.createElement('div');
+      container.id = 'pdf-infographic-target';
+      container.style.width = '920px';
+      container.style.height = '520px';
+      container.style.backgroundColor = '#ffffff';
+      container.style.color = '#222222';
+      container.style.boxSizing = 'border-box';
+      container.style.display = 'flex';
+      container.style.flexDirection = 'column';
+      container.style.fontFamily = 'Arial, sans-serif';
+      container.style.overflow = 'hidden';
+      container.style.boxShadow = '0 0 30px rgba(0,0,0,0.5)';
+
+      container.innerHTML = `
+        <!-- BORDER BANNER MERAH ATAS -->
+        <div style="height: 10px; background-color: #A21C2B; width: 100%;"></div>
+
+        <!-- AREA UTAMA INFOGRAFIK -->
+        <div style="flex: 1; padding: 25px 35px 20px; display: flex; gap: 40px; position: relative;">
           
-          <!-- HEADER ATAS: NAMA & DESKRIPSI -->
-          <div style="display: flex; justify-content: space-between; gap: 20px; align-items: flex-start;">
-            <div style="flex: 1.2;">
-              <h1 style="font-family: Georgia, serif; font-size: 24px; color: #4A1525; margin: 0 0 5px 0; font-weight: bold; line-height: 1.2;">
-                ${escapeHtml(wine.name)} ${wine.vintage ? '(' + escapeHtml(wine.vintage) + ')' : ''}
-              </h1>
+          <!-- SISI KIRI: BOTOL WINE & ALCOHOL -->
+          <div style="width: 250px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
+            <div style="flex: 1; display: flex; align-items: center; justify-content: center; width: 100%;">
+              <img src="${imgSrc}" style="max-height: 400px; max-width: 100%; object-fit: contain;">
             </div>
-            <div style="flex: 1; font-size: 10px; color: #333333; line-height: 1.4; text-align: left;">
-              ${escapeHtml(wine.notes) || 'A fine selection with a balanced flavor profile, rich aromas, and a smooth finish. Perfect for special occasions.'}
+            <div style="font-size: 15px; font-weight: bold; color: #111111; margin-top: 10px; text-align: center;">
+              Alcohol <span style="font-weight: normal;">${escapeHtml(wine.abv) || '10 -13.5%'}</span>
             </div>
           </div>
 
-          <!-- TENGAH: FLAVORS, TASTING PROFILE, FOOD PAIRING -->
-          <div style="display: flex; gap: 25px; margin-top: 5px;">
+          <!-- SISI KANAN: DETAIL INFOGRAFIK -->
+          <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
             
-            <!-- MID-LEFT: FLAVORS & TASTING PROFILE -->
-            <div style="flex: 1.1;">
+            <!-- HEADING NAMA WINE -->
+            <div>
+              <h1 style="font-family: Georgia, serif; font-size: 40px; color: #111111; margin: 0 0 12px 0; font-weight: bold; line-height: 1.1;">
+                ${escapeHtml(wine.name)}
+              </h1>
+
+              <!-- FLAVORS SECTION -->
               <div style="margin-bottom: 12px;">
-                <h3 style="font-size: 11px; font-weight: bold; color: #222222; margin: 0 0 4px 0; letter-spacing: 0.5px;">FLAVORS</h3>
-                <p style="font-size: 10.5px; color: #666666; margin: 0;">🍇 ${escapeHtml(wine.varietal) || 'Dark fruit, Spice, Oak notes'}</p>
+                <h3 style="font-size: 11px; font-weight: bold; color: #333; margin: 0 0 8px 0; letter-spacing: 0.5px; text-transform: uppercase;">FLAVORS</h3>
+                <div style="display: flex; gap: 10px;">
+                  ${flavorItemsHtml}
+                </div>
               </div>
 
-              <div>
-                <h3 style="font-size: 11px; font-weight: bold; color: #222222; margin: 0 0 8px 0; letter-spacing: 0.5px;">TASTING PROFILE</h3>
-                ${barRowsHtml}
-              </div>
-            </div>
-
-            <!-- MID-RIGHT: FOOD PAIRING -->
-            <div style="flex: 1;">
-              <h3 style="font-size: 11px; font-weight: bold; color: #222222; margin: 0 0 6px 0; letter-spacing: 0.5px;">FOOD PAIRING</h3>
-              <p style="font-size: 10.5px; color: #222222; margin: 0 0 8px 0; line-height: 1.3;">🍽️ ${escapeHtml(wine.pairing) || 'Grilled meats, cheeses, roasted cuisine'}</p>
-              <p style="font-size: 10px; color: #444444; margin: 0; line-height: 1.35;">
-                <strong>Food Ideas:</strong> Excellent companion to grilled meats, roasted vegetables, and rich cuisine. Pairs exceptionally well with aged cheeses.
+              <!-- DESKRIPSI WINE -->
+              <p style="font-size: 10.5px; color: #222222; line-height: 1.45; margin: 0 0 15px 0;">
+                ${escapeHtml(wine.notes) || `${escapeHtml(wine.name)} wines are typically medium to full-bodied, showcasing a rich, silky texture that can be almost oily. The flavor profile evolves with age, transitioning from fresh citrus and stone fruit notes in younger wines to deeper, complex flavors of honey and nuts in aged versions.`}
               </p>
             </div>
 
-          </div>
-
-          <!-- KARTU BAWAH (3 CARDS SEIMBANG) -->
-          <div style="display: flex; gap: 15px; margin-top: 5px;">
-            <!-- CARD 1: ALCOHOL -->
-            <div style="flex: 1; border-radius: 6px; overflow: hidden; border: 1px solid #D0C0B8;">
-              <div style="background: #8C5335; color: #ffffff; text-align: center; font-size: 11px; font-weight: bold; padding: 5px 0;">Alcohol</div>
-              <div style="background: #ffffff; text-align: center; font-size: 14px; font-weight: bold; color: #4A1525; padding: 10px 0;">
-                ${escapeHtml(wine.abv) || '13.5 - 14.5%'}
+            <!-- TASTING PROFILE & FOOD PAIRING (SIDE BY SIDE) -->
+            <div style="display: flex; gap: 35px; align-items: flex-end;">
+              
+              <!-- TASTING PROFILE SLIDERS -->
+              <div style="flex: 1.1;">
+                <h3 style="font-size: 11px; font-weight: bold; color: #333; margin: 0 0 10px 0; letter-spacing: 0.5px; text-transform: uppercase;">TASTING PROFILE</h3>
+                ${barRowsHtml}
               </div>
+
+              <!-- FOOD PAIRING CIRCLES -->
+              <div style="flex: 1;">
+                <h3 style="font-size: 11px; font-weight: bold; color: #333; margin: 0 0 10px 0; letter-spacing: 0.5px; text-transform: uppercase;">FOOD PAIRING</h3>
+                <div style="display: flex; gap: 8px; justify-content: space-between;">
+                  ${foodItemsHtml}
+                </div>
+              </div>
+
             </div>
 
-            <!-- CARD 2: MAJOR REGIONS -->
-            <div style="flex: 1; border-radius: 6px; overflow: hidden; border: 1px solid #B0C0E0;">
-              <div style="background: #2B4380; color: #ffffff; text-align: center; font-size: 11px; font-weight: bold; padding: 5px 0;">Major Regions</div>
-              <div style="background: #ffffff; text-align: center; font-size: 12px; font-weight: bold; color: #2B4380; padding: 10px 0;">
-                ${escapeHtml(wine.region) || 'Origin Unknown'}
-              </div>
-            </div>
-
-            <!-- CARD 3: COLOUR / TYPE -->
-            <div style="flex: 1; border-radius: 6px; overflow: hidden; border: 1px solid #D0A0B0;">
-              <div style="background: #5C1224; color: #ffffff; text-align: center; font-size: 11px; font-weight: bold; padding: 5px 0;">Colour</div>
-              <div style="background: #ffffff; text-align: center; font-size: 12px; font-weight: bold; color: #5C1224; padding: 10px 0;">
-                ${escapeHtml(wine.type) || 'Beverage'}
-              </div>
-            </div>
           </div>
 
         </div>
       `;
 
-      document.body.appendChild(container);
+      wrapper.appendChild(container);
+      document.body.appendChild(wrapper);
 
-      // Beri jeda 300ms agar elemen ter-render sempurna
+      // Tunggu jeda render 300ms
       await new Promise(resolve => setTimeout(resolve, 300));
 
       const cleanName = (wine.name || 'Wine').replace(/[^a-zA-Z0-9]/g, '_');
@@ -908,7 +936,7 @@
         margin: 0,
         filename: `${cleanName}_Infographic.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 1000 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
         jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
       };
 
@@ -918,7 +946,7 @@
         console.error('Error membuat PDF:', err);
         alert('Gagal mengunduh PDF: ' + err.message);
       } finally {
-        document.body.removeChild(container);
+        document.body.removeChild(wrapper);
       }
     }
 
