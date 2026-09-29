@@ -10,7 +10,6 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     
-    /* Background CSS Murni (Ringan & Bebas Loading Berputar) */
     body { 
       background: radial-gradient(circle at 50% -20%, #2a1414 0%, #070505 80%);
       color: #e0e0e0; 
@@ -49,6 +48,8 @@
 
     input, select, textarea { padding: 0.75rem 1rem; border-radius: 10px; border: 1px solid rgba(216, 178, 85, 0.25); background: rgba(12, 8, 8, 0.8); color: #fff; font-size: 0.88rem; outline: none; }
     input[type="file"] { padding: 0.5rem; background: rgba(30, 18, 18, 0.6); cursor: pointer; }
+
+    .section-divider { grid-column: 1 / -1; margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px dashed rgba(216, 178, 85, 0.3); font-size: 0.85rem; color: #d8b255; font-weight: 700; }
 
     .btn-group { display: flex; gap: 0.8rem; margin-top: 1.2rem; flex-wrap: wrap; }
     .btn-gold { padding: 0.75rem 1.8rem; border-radius: 10px; border: none; background: linear-gradient(135deg, #d8b255 0%, #b89235 100%); color: #0b0808; font-weight: 800; font-size: 0.9rem; cursor: pointer; }
@@ -130,7 +131,7 @@
       </div>
     </div>
 
-    <!-- INJECT FOLDER FOTO (FITUR BARU) -->
+    <!-- INJECT FOLDER FOTO -->
     <div class="admin-card">
       <h2>📁 Inject Foto Produk Massal (Folder Auto-Match)</h2>
       <p style="font-size: 0.83rem; color: #aaa; margin-bottom: 1rem;">
@@ -148,7 +149,7 @@
       <div class="folder-log-box" id="folderLogBox">> Siap memproses folder foto...</div>
     </div>
 
-    <!-- FORM WINE -->
+    <!-- FORM WINE / BEVERAGE -->
     <div class="admin-card">
       <h2 id="formTitle">✨ Tambah Minuman Baru</h2>
       <form id="wineForm" onsubmit="saveWine(event)">
@@ -212,6 +213,26 @@
             </select>
           </div>
 
+          <!-- SECTION KHUSUS: SINKRONISASI TASTING METER (PROFIL RASA) -->
+          <div class="section-divider">📊 INDICATOR TASTING MATRIX (0 - 100%)</div>
+
+          <div class="form-group">
+            <label>Body (%)</label>
+            <input type="number" id="wineBody" min="0" max="100" value="75" placeholder="0 - 100">
+          </div>
+          <div class="form-group">
+            <label>Tannin (%)</label>
+            <input type="number" id="wineTannin" min="0" max="100" value="80" placeholder="0 - 100">
+          </div>
+          <div class="form-group">
+            <label>Acidity (%)</label>
+            <input type="number" id="wineAcidity" min="0" max="100" value="65" placeholder="0 - 100">
+          </div>
+          <div class="form-group">
+            <label>Sweetness (%)</label>
+            <input type="number" id="wineSweetness" min="0" max="100" value="20" placeholder="0 - 100">
+          </div>
+
           <div class="form-group full-width">
             <label>📸 Upload Foto Produk (Supabase Cloud Storage)</label>
             <input type="file" id="wineImageFile" accept="image/*" onchange="previewUploadedImage(event)">
@@ -267,7 +288,7 @@
               <th>Vintage</th>
               <th>Kategori</th>
               <th>Wilayah</th>
-              <th>Menu Shop</th>
+              <th>Matrix Rasa</th>
               <th>Stok</th>
               <th>Aksi</th>
             </tr>
@@ -342,8 +363,8 @@
     async function uploadImageToSupabase(file) {
       const fileExt = file.name.split('.').pop();
       const fileName = `bottle_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
-      
       const bucketName = 'bottle-images';
+      
       const { data, error } = await supabaseClient.storage.from(bucketName).upload(fileName, file);
 
       if (error) {
@@ -354,7 +375,6 @@
       return publicUrlData.publicUrl;
     }
 
-    /* FUNGSI INJECT FOLDER FOTO (AUTO-MATCH NAMA) */
     function addFolderLog(text, color = '#bbb') {
       const logBox = document.getElementById('folderLogBox');
       const div = document.createElement('div');
@@ -407,15 +427,12 @@
           const fileName = `bottle_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
           const bucketName = 'bottle-images';
 
-          // 1. Upload foto ke Storage
           const { error: uploadErr } = await supabaseClient.storage.from(bucketName).upload(fileName, file, { upsert: true });
           if (uploadErr) throw uploadErr;
 
-          // 2. Ambil Public URL
           const { data: publicUrlData } = supabaseClient.storage.from(bucketName).getPublicUrl(fileName);
           const publicUrl = publicUrlData.publicUrl;
 
-          // 3. Update URL Foto di Database berdasarkan nama produk
           const { error: dbErr } = await supabaseClient
             .from('wines')
             .update({ imageUrl: publicUrl })
@@ -435,7 +452,7 @@
 
       addFolderLog(`Selesai! Berhasil: ${successCount}, Gagal: ${failCount}`, '#d8b255');
       btn.disabled = false;
-      loadAdminData(); // Refresh tabel setelah selesai
+      loadAdminData();
     }
 
     let adminWines = [];
@@ -463,10 +480,10 @@
       }
 
       tbody.innerHTML = filtered.map((w) => {
-        let collectionBadge = '-';
-        if (w.collection === 'Best Seller') collectionBadge = '<span class="badge-collection" style="color:#ffb300; background:rgba(255, 179, 0, 0.2)">⭐ Best Seller</span>';
-        else if (w.collection === 'New Arrival') collectionBadge = '<span class="badge-collection" style="color:#00e676; background:rgba(0, 230, 118, 0.2)">✨ New Arrival</span>';
-        else collectionBadge = '<span style="font-size:0.8rem; color:#888;">All Products</span>';
+        const bodyV = w.bodyVal || w.body || 75;
+        const tanV = w.tanninVal || w.tannin || 80;
+        const acidV = w.acidityVal || w.acidity || 65;
+        const sweetV = w.sweetnessVal || w.sweetness || 20;
 
         return `
         <tr>
@@ -475,7 +492,11 @@
           <td>${escapeHtml(w.vintage) || '-'}</td>
           <td>${escapeHtml(w.type) || '-'}</td>
           <td>${escapeHtml(w.region) || '-'}</td>
-          <td>${collectionBadge}</td>
+          <td>
+            <div style="font-size:0.75rem; color:#bbb; line-height:1.2;">
+              B:${bodyV}% | T:${tanV}%<br>A:${acidV}% | S:${sweetV}%
+            </div>
+          </td>
           <td><span style="color:${w.stockStatus && w.stockStatus.includes('Habis') ? '#e53935' : '#4CAF50'}">${escapeHtml(w.stockStatus) || 'In Stock'}</span></td>
           <td>
             <div class="action-btns" style="display:flex; gap:5px;">
@@ -500,8 +521,13 @@
       document.getElementById('wineAbv').value = w.abv || '';
       document.getElementById('wineServingTemp').value = w.servingTemp || '';
       document.getElementById('wineStockStatus').value = w.stockStatus || 'In Stock';
-      
       document.getElementById('wineCollection').value = w.collection || 'All Products';
+
+      // SINKRONISASI VALUE PROFIL RASA
+      document.getElementById('wineBody').value = w.bodyVal || w.body || 75;
+      document.getElementById('wineTannin').value = w.tanninVal || w.tannin || 80;
+      document.getElementById('wineAcidity').value = w.acidityVal || w.acidity || 65;
+      document.getElementById('wineSweetness').value = w.sweetnessVal || w.sweetness || 20;
 
       document.getElementById('wineImageUrl').value = w.imageUrl || '';
       document.getElementById('imgPreview').src = w.imageUrl || 'https://via.placeholder.com/70?text=Preview';
@@ -520,6 +546,10 @@
       document.getElementById('wineForm').reset();
       selectedFileForUpload = null;
       document.getElementById('imgPreview').src = 'https://via.placeholder.com/70?text=Preview';
+      document.getElementById('wineBody').value = 75;
+      document.getElementById('wineTannin').value = 80;
+      document.getElementById('wineAcidity').value = 65;
+      document.getElementById('wineSweetness').value = 20;
       document.getElementById('formTitle').innerText = '✨ Tambah Minuman Baru';
       document.getElementById('btnSaveWine').innerText = '➕ Simpan Ke Supabase';
     }
@@ -548,6 +578,11 @@
         servingTemp: document.getElementById('wineServingTemp').value,
         stockStatus: document.getElementById('wineStockStatus').value,
         collection: document.getElementById('wineCollection').value,
+        // SINKRONISASI DATA INDIKATOR RASA KE SUPABASE
+        bodyVal: parseInt(document.getElementById('wineBody').value) || 75,
+        tanninVal: parseInt(document.getElementById('wineTannin').value) || 80,
+        acidityVal: parseInt(document.getElementById('wineAcidity').value) || 65,
+        sweetnessVal: parseInt(document.getElementById('wineSweetness').value) || 20,
         imageUrl: imageUrl,
         notes: document.getElementById('wineNotes').value,
         pairing: document.getElementById('winePairing').value,
@@ -637,6 +672,10 @@
         "KATEGORI": w.type || '',
         "WILAYAH": w.region || '-',
         "KOLEKSI SHOP": w.collection || 'All Products',
+        "BODY (%)": w.bodyVal || w.body || 75,
+        "TANNIN (%)": w.tanninVal || w.tannin || 80,
+        "ACIDITY (%)": w.acidityVal || w.acidity || 65,
+        "SWEETNESS (%)": w.sweetnessVal || w.sweetness || 20,
         "VARIETAL": w.varietal || '-',
         "ABV": w.abv || '-',
         "SUHU PENYAJIAN": w.servingTemp || '-',
@@ -649,6 +688,7 @@
       const worksheet = XLSX.utils.json_to_sheet(exportData);
       worksheet['!cols'] = [
         { wch: 45 }, { wch: 35 }, { wch: 10 }, { wch: 18 }, { wch: 25 }, { wch: 15 }, 
+        { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
         { wch: 25 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 40 }, { wch: 35 }, { wch: 25 }
       ];
 
@@ -664,24 +704,29 @@
       const templateData = [
         {
           "FOTO": "",
-          "NAMA MINUMAN": "MASET RIOJA TEMPRANILLO",
-          "VINTAGE": "2022",
+          "NAMA MINUMAN": "CHATEAU MARGAUX 2016",
+          "VINTAGE": "2016",
           "KATEGORI": "Import Wine",
-          "WILAYAH": "Rioja DOCa, Spain",
+          "WILAYAH": "Bordeaux, France",
           "KOLEKSI SHOP": "Best Seller", 
-          "VARIETAL": "Tempranillo",
-          "ABV": "13%",
+          "BODY (%)": 75,
+          "TANNIN (%)": 80,
+          "ACIDITY (%)": 65,
+          "SWEETNESS (%)": 20,
+          "VARIETAL": "Cabernet Sauvignon & Merlot",
+          "ABV": "13.5%",
           "SUHU PENYAJIAN": "16°C - 18°C",
           "STATUS STOK": "In Stock",
-          "TASTING NOTES": "-",
-          "FOOD PAIRING": "-",
-          "STORAGE NOTE": "-"
+          "TASTING NOTES": "Blackcurrant, violet, cedar, spice bouquet",
+          "FOOD PAIRING": "Ribeye, lamb, aged cheeses",
+          "STORAGE NOTE": "Simpan miring di tempat sejuk"
         }
       ];
 
       const worksheet = XLSX.utils.json_to_sheet(templateData);
       worksheet['!cols'] = [
         { wch: 15 }, { wch: 30 }, { wch: 10 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, 
+        { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
         { wch: 25 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 40 }, { wch: 35 }, { wch: 25 } 
       ];
 
@@ -708,6 +753,10 @@
           type: row["KATEGORI"] || row.Type || row.type || 'Import Wine',
           region: row["WILAYAH"] || row.Region || row.region || '-',
           collection: row["KOLEKSI SHOP"] || row.Collection || row.collection || 'All Products',
+          bodyVal: parseInt(row["BODY (%)"]) || 75,
+          tanninVal: parseInt(row["TANNIN (%)"]) || 80,
+          acidityVal: parseInt(row["ACIDITY (%)"]) || 65,
+          sweetnessVal: parseInt(row["SWEETNESS (%)"]) || 20,
           varietal: row["VARIETAL"] || row.Varietal || row.varietal || '-',
           abv: row["ABV"] || row.ABV || row.abv || '-',
           servingTemp: row["SUHU PENYAJIAN"] || row.ServingTemp || row.servingTemp || '-',
