@@ -1624,7 +1624,7 @@
             <div class="m-matrix-title-v2">${t.flavorTitle}</div>
 
             <div class="m-meter-card">
-              <div class="m-bar-label-v2"><span>BODY</span><span class="score-badge">${wine.bodyVal / 10} / 10 🏋️‍♂️</span></div>
+              <div class="m-bar-label-v2"><span>BODY</span><span class="score-badge">${wine.bodyVal / 10} / 10 🏋️‍♂️️</span></div>
               <div class="m-bar-track-v2"><div class="m-bar-fill-v2" style="width: ${wine.bodyVal}%;"></div></div>
             </div>
 
@@ -1743,18 +1743,19 @@
           <button class="chip-btn" onclick="handleChipClick('Accord Vin et Viande')">🥩 Accord Mets-Vins</button>
         `;
       } else if (currentLanguage === 'id') {
-        appendChatBubble("Halo dan selamat datang! Saya adalah <strong>Pakar Minuman AI Kava</strong>. Tanyakan apa saja tentang resep racikan cocktail, kalkulator kebutuhan pesta, rekomendasi wine, beer, sake, atau soju! 🍷🍸🍺✨", "ai");
+        appendChatBubble("Halo dan selamat datang! Saya adalah <strong>Konsultan AI Kava Retail</strong>. Tanyakan apa saja tentang pilihan minuman santai, resep cocktail, kalkulator pesta, rekomendasi wine & steak, atau stok katalog! 🍷🍸🍺✨", "ai");
         chips.innerHTML = `
+          <button class="chip-btn" onclick="handleChipClick('Party santai minum apa?')">🎉 Party Santai</button>
           <button class="chip-btn" onclick="handleChipClick('Resep Racikan Cocktail')">🍸 Cocktails & Mixers</button>
-          <button class="chip-btn" onclick="handleChipClick('Pesta untuk 20 orang')">🎉 Kalkulator Pesta</button>
+          <button class="chip-btn" onclick="handleChipClick('Hitung pesta untuk 30 orang')">🧮 Hitung Botol Pesta</button>
           <button class="chip-btn" onclick="handleChipClick('Rekomendasi Wine & Steak')">🥩 Wine & Steak Pairing</button>
         `;
       } else {
-        appendChatBubble("Hello & welcome! I am your <strong>Kava Beverages Expert AI</strong>. Ask me anything about cocktail mixers, party planning, or wine pairing! 🍷🍸🍺✨", "ai");
+        appendChatBubble("Hello & welcome! I am your <strong>Kava Beverages AI Consultant</strong>. Ask me anything about chill party drinks, cocktail recipes, or wine pairings! 🍷🍸🍺✨", "ai");
         chips.innerHTML = `
+          <button class="chip-btn" onclick="handleChipClick('Chill party recommendations')">🎉 Casual Party</button>
           <button class="chip-btn" onclick="handleChipClick('Cocktail & Mixers Recipes')">🍸 Cocktail & Mixers</button>
-          <button class="chip-btn" onclick="handleChipClick('Party for 20 guests')">🎉 Party Calculator</button>
-          <button class="chip-btn" onclick="handleChipClick('Wine & Steak Pairing Guide')">🥩 Wine Pairing</button>
+          <button class="chip-btn" onclick="handleChipClick('Calculate bottles for 30 guests')">🧮 Party Calculator</button>
         `;
       }
     }
@@ -1795,12 +1796,11 @@
     }
 
     /* ========================================================================= */
-    /* 🤖 STATEFUL AI CHATBOT ENGINE (BEBAS PERCAKAPAN & PINTAR)               */
+    /* 🤖 STATEFUL AI CONSULTANT ENGINE (SOLUSI 2 FIXED & FLEXIBLE)            */
     /* ========================================================================= */
     let aiChatState = {
-      step: null,          // 'awaiting_guest_count', dll.
-      lastIntent: null,    // 'party', 'search', 'cocktail', 'pairing'
-      lastQuery: ''
+      step: null,          // 'awaiting_guest_count'
+      lastIntent: null     // 'party', 'search', 'cocktail', 'pairing'
     };
 
     function processUserAiMessage(userText) {
@@ -1809,14 +1809,45 @@
       const lower = cleanText.toLowerCase();
       let response = "";
 
-      // Ekstraksi Angka (jika ada)
+      // Extrak Angka jika ada
       const numberMatch = lower.match(/\b\d+\b/);
       const extractedNumber = numberMatch ? parseInt(numberMatch[0]) : null;
 
-      // 1. CEK KONTEKS: Jika AI sedang menunggu Jumlah Tamu Pesta
-      if (aiChatState.step === 'awaiting_guest_count' || (aiChatState.lastIntent === 'party' && extractedNumber)) {
+      // Cek apakah pertanyaan bersifat kualitatif / tanya rekomendasi suasana
+      const isQualitative = ['santai', 'chill', 'casual', 'rekomendasi', 'saran', 'pilih', 'minum apa', 'cocok', 'apa', 'kenapa', 'bagaimana', 'harus'].some(k => lower.includes(k));
+      if (isQualitative) {
+        aiChatState.step = null; // Reset state agar tidak terjebak loop pertanyaan jumlah tamu
+      }
+
+      // 1. PESTA SANTAI / CHILL PARTY (Perbaikan Bug Utama Screenshots)
+      if ((lower.includes('party') || lower.includes('pesta') || lower.includes('acara')) && (lower.includes('santai') || lower.includes('chill') || lower.includes('casual') || lower.includes('minum apa') || lower.includes('pilih apa'))) {
+        aiChatState.step = null;
+        aiChatState.lastIntent = 'casual_party';
+
+        const casualWines = localWines.filter(w => {
+          const t = (w.type || '').toLowerCase();
+          return t.includes('beer') || t.includes('soju') || t.includes('alcopops') || t.includes('gin') || t.includes('prosecco') || t.includes('wine');
+        }).slice(0, 3);
+
+        let recList = casualWines.map(w => `• <a href="javascript:void(0)" onclick="openDetailBySlug('${w.slug}'); closeAiModal();" style="color:var(--gold-primary); font-weight:bold; text-decoration:underline;">${escapeHtml(w.name)}</a> (${escapeHtml(w.type)})`).join('<br>');
+        if (!recList) recList = "• Zonin Prosecco Brut<br>• Gin / Vodka untuk Gin & Tonic segar<br>• Cold Beer / Soju";
+
+        response = currentLanguage === 'id'
+          ? `🍷 <strong>Rekomendasi Minuman untuk Party Santai / Chill:</strong><br>` +
+            `Untuk acara yang rileks dan santai, hindari wine yang terlalu pekat. Pilihan terbaik adalah minuman yang segar, ringan, dan bikin suasana cair:<br><br>` +
+            `1. <strong>Sparkling Wine / Prosecco</strong>: Segar, bergelembung, dan bikin suasana makin meriah.<br>` +
+            `2. <strong>Gin & Tonic / Highball</strong>: Cocktail ringan yang sangat *refreshing*.<br>` +
+            `3. <strong>Soju / Cold Beer</strong>: Sangat cocok untuk nongkrong santai kasual bersama teman.<br><br>` +
+            `💡 <strong>Pilihan Produk di Katalog Kava:</strong><br>${recList}`
+          : `🍷 <strong>Drinks for a Casual / Chill Party:</strong><br>For relaxed vibes, choose refreshing and light drinks like Sparkling Wine, Gin & Tonic, or Cold Beers.<br><br>💡 <strong>Suggested Catalog SKUs:</strong><br>${recList}`;
+
+        setTimeout(() => appendChatBubble(response, 'ai'), 350);
+        return;
+      }
+
+      // 2. JIKA SEDANG MENUNGGU JUMLAH TAMU PESTA (State Awaiting Guest Count)
+      if (aiChatState.step === 'awaiting_guest_count' || (aiChatState.lastIntent === 'party' && extractedNumber && !isQualitative)) {
         let guestCount = extractedNumber;
-        
         if (!guestCount) {
           if (lower.includes('sepuluh')) guestCount = 10;
           else if (lower.includes('dua puluh')) guestCount = 20;
@@ -1837,60 +1868,47 @@
           const wines = localWines.filter(w => w.type && w.type.toLowerCase().includes('wine')).slice(0, 2);
           
           let recList = spirits.concat(wines).map(w => `• <a href="javascript:void(0)" onclick="openDetailBySlug('${w.slug}'); closeAiModal();" style="color:var(--gold-primary); font-weight:bold; text-decoration:underline;">${escapeHtml(w.name)}</a> (${escapeHtml(w.type)})`).join('<br>');
-          if (!recList) recList = "• 1800 Reposado Tequila<br>• 19 Crimes Red Blend";
 
-          if (currentLanguage === 'id') {
-            response = `🎉 <strong>Kalkulator Pesta (${guestCount} Tamu)</strong>:<br>` +
-                       `• Est. Total Kebutuhan: <strong>${totalBottles} Botol</strong> (750ml)<br>` +
-                       `• Kombinasi Ideal: <strong>${spiritBottles} Spirits/Tequila</strong> + <strong>${wineBottles} Wine</strong><br><br>` +
-                       `💡 <strong>Rekomendasi dari Stok Katalog Kava:</strong><br>${recList}<br><br>` +
-                       `<em>Klik nama produk di atas untuk melihat detail profil 3D-nya! Ada tipe minuman lain yang kamu cari?</em>`;
-          } else {
-            response = `🎉 <strong>Party Estimate (${guestCount} Guests)</strong>:<br>` +
-                       `• Total Bottles: <strong>${totalBottles} Bottles</strong> (750ml)<br>` +
-                       `• Recommended Mix: <strong>${spiritBottles} Spirits</strong> + <strong>${wineBottles} Wines</strong><br><br>` +
-                       `💡 <strong>Recommended Catalog SKUs:</strong><br>${recList}`;
-          }
+          response = currentLanguage === 'id'
+            ? `🎉 <strong>Kalkulator Pesta (${guestCount} Tamu)</strong>:<br>` +
+              `• Est. Kebutuhan Botol: <strong>${totalBottles} Botol</strong> (750ml)<br>` +
+              `• Kombinasi Ideal: <strong>${spiritBottles} Spirits/Tequila</strong> + <strong>${wineBottles} Wine</strong><br><br>` +
+              `💡 <strong>Rekomendasi dari Stok Katalog Kava:</strong><br>${recList}<br><br>` +
+              `<em>Klik nama produk di atas untuk melihat detail profil 3D-nya!</em>`
+            : `🎉 <strong>Party Calculation (${guestCount} Guests)</strong>:<br>• Total Bottles: <strong>${totalBottles} Bottles</strong>.<br><br>💡 <strong>Suggested Items:</strong><br>${recList}`;
 
           setTimeout(() => appendChatBubble(response, 'ai'), 350);
           return;
         }
       }
 
-      // 2. SAPAAN & CHIT-CHAT SANTAI
-      const isGreeting = ['hai', 'hi', 'halo', 'hello', 'pagi', 'siang', 'sore', 'malam', 'ping', 'p', 'test', 'siapa kamu', 'bro', 'min', 'admin'].some(g => lower === g || lower.startsWith(g + ' ') || lower.endsWith(' ' + g));
+      // 3. SAPAAN & CHIT-CHAT
+      const isGreeting = ['hai', 'hi', 'halo', 'hello', 'pagi', 'siang', 'sore', 'malam', 'ping', 'p', 'test', 'bro', 'min'].some(g => lower === g || lower.startsWith(g + ' ') || lower.endsWith(' ' + g));
       if (isGreeting) {
         aiChatState.step = null;
-        if (currentLanguage === 'id') {
-          response = `Halo! 👋 Saya adalah <strong>Pakar Minuman AI Kava</strong>. Saya bisa bantu kamu dengan:<br>` +
-                     `• <strong>Kalkulator Botol Pesta</strong> 🎉 (contoh: <em>"Acara 30 tamu"</em> / <em>"Mau buat party"</em>)<br>` +
-                     `• <strong>Racikan Cocktail & Mixers</strong> 🍸 (contoh: <em>"Cara racik Tequila"</em>)<br>` +
-                     `• <strong>Rekomendasi & Food Pairing</strong> 🥩 (contoh: <em>"Wine pasangan steak"</em>)<br>` +
-                     `• <strong>Cari Produk di Katalog</strong> 🍷 (contoh: <em>"Tequila Reposado"</em>)<br><br>` +
-                     `Apa yang ingin kamu tanyakan hari ini?`;
-        } else {
-          response = `Hello! 👋 I am your <strong>Kava Beverages AI Expert</strong>. How can I help you today?`;
-        }
+        response = currentLanguage === 'id'
+          ? `Halo! 👋 Saya Konsultan AI Kava Retail. Ada yang bisa saya bantu? Kamu bisa tanya:<br>` +
+            `• <strong>Rekomendasi Suasana Acara</strong> 🍷 (contoh: <em>"Party santai minum apa?"</em>)<br>` +
+            `• <strong>Kalkulator Botol Pesta</strong> 🎉 (contoh: <em>"Hitung pesta 30 orang"</em>)<br>` +
+            `• <strong>Racikan Cocktail & Mixer</strong> 🍸 (contoh: <em>"Cara racik Tequila / Paloma"</em>)<br>` +
+            `• <strong>Food Pairing</strong> 🥩 (contoh: <em>"Wine pasangan steak"</em>)`
+          : `Hello! 👋 How can I assist you with wines, spirits, or party planning today?`;
         setTimeout(() => appendChatBubble(response, 'ai'), 350);
         return;
       }
 
-      // 3. UCAPAN TERIMA KASIH & PENUTUP
-      if (['terima kasih', 'makasih', 'thanks', 'thank you', 'ok', 'oke', 'sip', 'mantap', 'siap', 'cool', 'good'].some(k => lower === k || lower.startsWith(k + ' '))) {
+      // 4. TERIMA KASIH & PENUTUP
+      if (['terima kasih', 'makasih', 'thanks', 'thank you', 'ok', 'oke', 'sip', 'mantap', 'siap'].some(k => lower.includes(k))) {
         aiChatState.step = null;
-        response = currentLanguage === 'id' 
-          ? "Sama-sama! 🍷 Jika ada pertanyaan lain seputar racikan, rasa, atau stok minuman, tinggal ketik saja ya!"
-          : "You're welcome! 🍷 Let me know if you need anything else!";
+        response = currentLanguage === 'id' ? "Sama-sama! 🍷 Jika ada pertanyaan lain seputar minuman atau stok di katalog, silakan tanyakan kapan saja!" : "You're welcome! Enjoy your drinks! 🍷";
         setTimeout(() => appendChatBubble(response, 'ai'), 350);
         return;
       }
 
-      // 4. INTENT: PESTA / PARTY / EVENT
-      if (['party', 'pesta', 'acara', 'gathering', 'ulang tahun', 'birthday', 'event', 'nikahan', 'wedding', 'selebrasi'].some(k => lower.includes(k))) {
+      // 5. KALKULATOR PESTA ANGKAN / UMUM
+      if (['party', 'pesta', 'acara', 'gathering', 'event', 'wedding'].some(k => lower.includes(k))) {
         if (extractedNumber) {
           aiChatState.step = null;
-          aiChatState.lastIntent = 'party';
-          
           const guestCount = extractedNumber;
           const totalBottles = Math.ceil(guestCount / 3.5);
           const spiritBottles = Math.ceil(totalBottles * 0.6);
@@ -1898,140 +1916,73 @@
 
           const spirits = localWines.filter(w => spiritTypes.some(s => w.type && w.type.toLowerCase().includes(s.toLowerCase()))).slice(0, 2);
           const wines = localWines.filter(w => w.type && w.type.toLowerCase().includes('wine')).slice(0, 2);
-          
-          let recList = spirits.concat(wines).map(w => `• <a href="javascript:void(0)" onclick="openDetailBySlug('${w.slug}'); closeAiModal();" style="color:var(--gold-primary); font-weight:bold; text-decoration:underline;">${escapeHtml(w.name)}</a> (${escapeHtml(w.type)})`).join('<br>');
+          let recList = spirits.concat(wines).map(w => `• <a href="javascript:void(0)" onclick="openDetailBySlug('${w.slug}'); closeAiModal();" style="color:var(--gold-primary); font-weight:bold; text-decoration:underline;">${escapeHtml(w.name)}</a>`).join('<br>');
 
-          response = currentLanguage === 'id'
-            ? `🎉 <strong>Kalkulator Pesta untuk ${guestCount} Tamu</strong>:<br>• Total Kebutuhan Botol: <strong>${totalBottles} Botol</strong> (750ml).<br>• Kombinasi Ideal: <strong>${spiritBottles} Spirits/Tequila</strong> + <strong>${wineBottles} Wine</strong>.<br><br>💡 <strong>Rekomendasi dari Stok Katalog:</strong><br>${recList}`
-            : `🎉 <strong>Party Calculation for ${guestCount} Guests</strong>:<br>• Total Bottles: <strong>${totalBottles} Bottles</strong>.<br><br>💡 <strong>Suggested Items:</strong><br>${recList}`;
+          response = `🎉 <strong>Kalkulator Pesta untuk ${guestCount} Tamu</strong>:<br>• Est. Kebutuhan: <strong>${totalBottles} Botol</strong> (750ml)<br>• Kombinasi Ideal: <strong>${spiritBottles} Spirits</strong> + <strong>${wineBottles} Wine</strong><br><br>💡 <strong>Rekomendasi Stok Katalog:</strong><br>${recList}`;
         } else {
           aiChatState.step = 'awaiting_guest_count';
           aiChatState.lastIntent = 'party';
-          response = currentLanguage === 'id'
-            ? "🎉 Siap! Saya bantu hitungkan kebutuhan botol untuk acara kamu.<br><br>Boleh tahu <strong>berapa estimasi jumlah tamu</strong> yang akan hadir? (Contoh: ketik <em>30 orang</em> atau <em>50 tamu</em>)"
-            : "🎉 Awesome! How many <strong>guests</strong> are you expecting at your party? (e.g., type <em>30 guests</em>)";
+          response = "🎉 Boleh tahu <strong>berapa estimasi jumlah tamu</strong> yang akan hadir di acara kamu? (Contoh: ketik <em>30 orang</em> atau <em>50 tamu</em>)";
         }
         setTimeout(() => appendChatBubble(response, 'ai'), 350);
         return;
       }
 
-      // 5. INTENT: COCKTAIL RECIPES & MIXERS
-      if (['cocktail', 'racikan', 'mixer', 'campuran', 'margarita', 'paloma', 'tonic', 'highball', 'resepi', 'resep', 'cara minum'].some(k => lower.includes(k))) {
+      // 6. COCKTAIL / RACIKAN / MIXER
+      if (['cocktail', 'racikan', 'mixer', 'campuran', 'margarita', 'paloma', 'tonic', 'highball', 'resep'].some(k => lower.includes(k))) {
         aiChatState.step = null;
-        aiChatState.lastIntent = 'cocktail';
-        
-        response = currentLanguage === 'id'
-          ? `🍸 <strong>Panduan Racikan & Mixer Populer:</strong><br>` +
-            `• <strong>Tequila (Paloma)</strong>: 50ml Tequila + Grapefruit Soda / Jus Jeruk + Perasan Lime.<br>` +
-            `• <strong>Classic Margarita</strong>: 50ml Tequila + 25ml Triple Sec + 25ml Lime Juice.<br>` +
-            `• <strong>Gin & Tonic</strong>: 50ml Gin + 120ml Premium Tonic Water + Irisan Lemon.<br>` +
-            `• <strong>Whiskey Highball</strong>: 50ml Whiskey + Soda Water / Ginger Ale + Es Batu.<br>` +
-            `• <strong>Vodka Cranberry</strong>: 50ml Vodka + 100ml Cranberry Juice.<br><br>` +
-            `<em>Punya botol tertentu di rumah? Sebutkan nama botolnya, biar saya racikkan!</em>`
-          : `🍸 <strong>Popular Cocktail & Mixer Guide:</strong><br>• <strong>Paloma</strong>: Tequila + Grapefruit Soda + Lime.<br>• <strong>G&T</strong>: Gin + Tonic Water + Fresh Lime.`;
-        
+        response = `🍸 <strong>Panduan Racikan Cocktail & Mixer Kava:</strong><br>` +
+                   `• <strong>Tequila (Paloma)</strong>: 50ml Tequila + Grapefruit Soda + Perasan Lime.<br>` +
+                   `• <strong>Classic Margarita</strong>: 50ml Tequila + 25ml Triple Sec + 25ml Lime Juice.<br>` +
+                   `• <strong>Gin & Tonic</strong>: 50ml Gin + 120ml Premium Tonic Water + Irisan Lime.<br>` +
+                   `• <strong>Whiskey Highball</strong>: 50ml Whiskey + Soda Water / Ginger Ale + Es.<br><br>` +
+                   `<em>Tanyakan nama botol spesifik jika ingin resep khusus!</em>`;
         setTimeout(() => appendChatBubble(response, 'ai'), 350);
         return;
       }
 
-      // 6. INTENT: FOOD PAIRING
-      if (['steak', 'daging', 'makanan', 'makan', 'pairing', 'pasangan', 'keju', 'cheese', 'seafood', 'ikan', 'sushi', 'pasta'].some(k => lower.includes(k))) {
+      // 7. FOOD PAIRING
+      if (['steak', 'daging', 'seafood', 'ikan', 'sushi', 'pairing', 'pasangan', 'keju', 'makanan'].some(k => lower.includes(k))) {
         aiChatState.step = null;
-        aiChatState.lastIntent = 'pairing';
-        
-        if (lower.includes('steak') || lower.includes('daging') || lower.includes('sapi')) {
+        if (lower.includes('steak') || lower.includes('daging')) {
           const redWines = localWines.filter(w => w.type && w.type.toLowerCase().includes('wine')).slice(0, 3);
           let wineList = redWines.map(w => `• <a href="javascript:void(0)" onclick="openDetailBySlug('${w.slug}'); closeAiModal();" style="color:var(--gold-primary); font-weight:bold; text-decoration:underline;">${escapeHtml(w.name)}</a>`).join('<br>');
           
-          response = currentLanguage === 'id'
-            ? `🥩 <strong>Pasangan Wine untuk Steak & Daging Merah:</strong><br>` +
-              `Daging merah berlemak tinggi sangat cocok disandingkan dengan <strong>Red Wine (Full-Bodied)</strong> yang memiliki kandungan Tannin mantap untuk melunakkan gurihnya daging.<br><br>` +
-              `💡 <strong>Pilihan Produk di Katalog Kava:</strong><br>${wineList || '• 19 Crimes Red Blend / Shiraz'}`
-            : `🥩 <strong>Steak Pairing Guide:</strong> Red Wines with structured tannins pair best with rich meats.`;
-        } else if (lower.includes('seafood') || lower.includes('ikan') || lower.includes('sushi')) {
-          response = currentLanguage === 'id'
-            ? `🍣 <strong>Pasangan untuk Seafood & Sushi:</strong><br>` +
-              `Sangat disarankan menikmati <strong>Sake, White Wine, atau Dry Gin / Vodka</strong> karena karakternya yang segar dan bersih, menghilangkan rasa amis tanpa menutupi kelembutan daging ikan.`
-            : `🍣 <strong>Seafood Pairing:</strong> Sake or White Wine pairs crisp and fresh with seafood.`;
+          response = `🥩 <strong>Pasangan Wine untuk Steak & Daging Merah:</strong><br>` +
+                     `Red Wine (Full-Bodied) sangat cocok disandingkan dengan steak karena Tannin-nya melunakkan lemak gurih daging.<br><br>` +
+                     `💡 <strong>Pilihan di Katalog Kava:</strong><br>${wineList || '• 19 Crimes Red Blend / Shiraz'}`;
         } else {
-          response = currentLanguage === 'id'
-            ? `🍽️ <strong>Saran Paduan Makanan (Food Pairing):</strong><br>` +
-              `• <strong>Daging Merah / Steak</strong>: Red Wine (Shiraz, Cabernet Sauvignon)<br>` +
-              `• <strong>Daging Unggas / Pasta Creamy</strong>: Light Wine / Chardonnay / Lager Beer<br>` +
-              `• <strong>Seafood & Japanese Food</strong>: Sake, Soju, atau Dry Gin`
-            : `🍽️ <strong>Food Pairing:</strong> Red Wine for Steaks, Sake for Seafood, Beer for Salty Snacks.`;
+          response = `🍽️ <strong>Saran Paduan Makanan (Food Pairing):</strong><br>` +
+                     `• <strong>Daging Merah / Steak</strong>: Red Wine (Shiraz, Cabernet)<br>` +
+                     `• <strong>Seafood & Sushi</strong>: Sake, Soju, White Wine, atau Dry Gin<br>` +
+                     `• <strong>Cemilan / Snack Santai</strong>: Cold Beer atau Sparkling Wine`;
         }
         setTimeout(() => appendChatBubble(response, 'ai'), 350);
         return;
       }
 
-      // 7. INTENT: HADIAH & REKOMENDASI EKSEKUTIF
-      if (['hadiah', 'kado', 'bos', 'executive', 'mewah', 'luxury', 'terbaik', 'best seller', 'populer', 'rekomendasi'].some(k => lower.includes(k))) {
-        aiChatState.step = null;
-        
-        const bestSellers = localWines.filter(w => w.collection === 'Best Seller' || (w.notes && w.notes.toLowerCase().includes('premium'))).slice(0, 3);
-        let recList = bestSellers.map(w => `• <a href="javascript:void(0)" onclick="openDetailBySlug('${w.slug}'); closeAiModal();" style="color:var(--gold-primary); font-weight:bold; text-decoration:underline;">${escapeHtml(w.name)}</a> (${escapeHtml(w.type)})`).join('<br>');
-        if (!recList) recList = "• 1800 Reposado Tequila 750ml<br>• 19 Crimes Red Blend";
-
-        response = currentLanguage === 'id'
-          ? `🎁 <strong>Rekomendasi Hadiah & Best Seller Mewah:</strong><br>` +
-            `Berikut pilihan favorit koleksi Kava Retail yang sangat cocok untuk hadiah relasi, bos, maupun perayaan spesial:<br><br>${recList}`
-          : `🎁 <strong>Executive Gifts & Best Sellers:</strong><br>${recList}`;
-
-        setTimeout(() => appendChatBubble(response, 'ai'), 350);
-        return;
-      }
-
-      // 8. PENCARIAN DIREK PRODUK DI KATALOG
+      // 8. PENCARIAN KATALOG BERDASARKAN KATA KUNCI
       const matched = localWines.filter(w => {
-        const wName = String(w.name || '').toLowerCase();
-        const wType = String(w.type || '').toLowerCase();
-        const wRegion = String(w.region || '').toLowerCase();
-        const wNotes = String(w.notes || '').toLowerCase();
-        const wVarietal = String(w.varietal || '').toLowerCase();
-        return wName.includes(lower) || wType.includes(lower) || wRegion.includes(lower) || wNotes.includes(lower) || wVarietal.includes(lower);
+        const str = (w.name + ' ' + w.type + ' ' + w.notes + ' ' + w.region + ' ' + w.varietal).toLowerCase();
+        return str.includes(lower);
       });
 
       if (matched.length > 0) {
         aiChatState.step = null;
         const listStr = matched.slice(0, 4).map(w => `• <a href="javascript:void(0)" onclick="openDetailBySlug('${w.slug}'); closeAiModal();" style="color:var(--gold-primary); font-weight:bold; text-decoration:underline;">${escapeHtml(w.name)}</a> (${escapeHtml(w.type)})`).join('<br>');
         
-        response = currentLanguage === 'id'
-          ? `🔎 <strong>Ditemukan ${matched.length} pilihan produk yang cocok di katalog:</strong><br>${listStr}<br><br><em>Klik nama minuman di atas untuk langsung melihat detail profil 3D & catatan aromanya!</em>`
-          : `🔎 <strong>Found ${matched.length} matching item(s):</strong><br>${listStr}`;
-
+        response = `🔎 <strong>Ditemukan ${matched.length} pilihan yang cocok di katalog:</strong><br>${listStr}<br><br><em>Klik nama produk di atas untuk melihat detail profil 3D-nya!</em>`;
         setTimeout(() => appendChatBubble(response, 'ai'), 350);
         return;
       }
 
-      // 9. PENGETAHUAN UMUM SOMMELIER & CHATBOT FALLBACK RESPON
+      // 9. FALLBACK RESPONS KONSULTAN BEBAS
       aiChatState.step = null;
-      
-      if (lower.includes('apa beda') || lower.includes('bedanya') || lower.includes('difference')) {
-        response = currentLanguage === 'id'
-          ? `🍷 <strong>Pengetahuan Sommelier Kava:</strong><br>` +
-            `• <strong>Wine Merah vs Putih</strong>: Red wine difermentasi bersama kulit anggur (memberikan warna & tannin), sedangkan White wine tanpa kulit (rasa lebih asam segar).<br>` +
-            `• <strong>Tequila Reposado vs Blanco</strong>: Reposado dimatangkan di tong kayu ek minimal 2 bulan (warna keemasan & lebih lembut), sedangkan Blanco langsung dikemas bening (rasa agave murni tajam).`
-          : `🍷 <strong>Sommelier Knowledge:</strong> Red wine gets tannins from grape skins; Tequila Reposado is oak-aged while Blanco is unaged.`;
-      }
-      else if (lower.includes('pusing') || lower.includes('hangover') || lower.includes('mabuk')) {
-        response = currentLanguage === 'id'
-          ? `💡 <strong>Tips Menikmati Minuman Tanpa Hangover Parah:</strong><br>` +
-            `1. Minum air putih 1 gelas untuk setiap 1 sloki/gelas alkohol.<br>` +
-            `2. Pilih spirit murni 100% Agave (seperti 1800 Tequila) atau spirit berkualitas tinggi tanpa campuran pemanis buatan berlebih.<br>` +
-            `3. Hindari mencampur terlalu banyak jenis alkohol berbeda dalam satu malam.`
-          : `💡 Drink water between drinks and stick to 100% pure agave or high quality spirits!`;
-      }
-      else {
-        response = currentLanguage === 'id'
-          ? `✨ Saya siap membantu seputar minuman! Kamu bisa tanyakan:<br>` +
-            `• <em>"Acara pesta untuk 30 orang"</em><br>` +
-            `• <em>"Cara bikin Margarita / racikan Tequila"</em><br>` +
-            `• <em>"Rekomendasi minuman untuk hadiah"</em><br>` +
-            `• <em>"Wine yang cocok dengan steak"</em><br>` +
-            `• Atau sebutkan nama minuman seperti <em>"Tequila"</em>, <em>"Shiraz"</em>, <em>"Vodka"</em>.`
-          : `✨ Ask me anything about party bottle counts, cocktail mixers, food pairings, or specific catalog brands!`;
-      }
+      response = `✨ Sebagai konsultan minuman Kava, saya sarankan kamu mencoba koleksi **Sparkling Wine**, **Gin & Tonic**, atau **Tequila 100% Agave** untuk suasana yang menyenangkan!<br><br>` +
+                 `Coba tanyakan hal lain seperti:<br>` +
+                 `• <em>"Rekomendasi untuk party santai"</em><br>` +
+                 `• <em>"Berapa botol untuk 20 orang?"</em><br>` +
+                 `• <em>"Cara racik cocktail mudah"</em>`;
 
       setTimeout(() => appendChatBubble(response, 'ai'), 350);
     }
