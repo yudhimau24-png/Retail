@@ -298,7 +298,7 @@
     .m-wine-name-v2 { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 800; color: #ffffff; line-height: 1.25; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px; }
     .m-wine-origin-v2 { font-size: 0.88rem; color: var(--gold-primary); font-weight: 600; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 6px; }
 
-    /* ================= ULTRA-ADVANCED 3D MOTION MEDIA BOX ================= */
+    /* ================= DYNAMIC MOVING BACKGROUND & POP-FORWARD 3D BOTTLE ================= */
     .m-media-box {
       position: relative;
       width: 100%;
@@ -311,23 +311,39 @@
       justify-content: center;
       overflow: hidden;
       box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
-      perspective: 1000px;
+      perspective: 1200px;
       transition: all 0.5s ease;
     }
 
+    /* Animasi Latar Belakang Bergerak & Berganti Warna secara Real-time */
     .m-media-box.motion-active {
-      background: radial-gradient(circle at center, rgba(243, 208, 130, 0.4) 0%, rgba(140, 20, 45, 0.6) 55%, rgba(5, 2, 4, 0.98) 100%);
+      animation: dynamicBgShift 6s ease-in-out infinite alternate;
       border-color: var(--gold-primary);
-      box-shadow: 0 0 40px rgba(243, 208, 130, 0.5), inset 0 0 60px rgba(243, 208, 130, 0.3);
+      box-shadow: 0 0 50px rgba(243, 208, 130, 0.6), inset 0 0 70px rgba(243, 208, 130, 0.35);
+    }
+
+    @keyframes dynamicBgShift {
+      0% {
+        background: radial-gradient(circle at 30% 30%, rgba(243, 208, 130, 0.55) 0%, rgba(140, 20, 45, 0.7) 55%, rgba(5, 2, 4, 0.98) 100%);
+      }
+      33% {
+        background: radial-gradient(circle at 70% 60%, rgba(255, 180, 80, 0.55) 0%, rgba(100, 15, 60, 0.8) 60%, rgba(5, 2, 4, 0.98) 100%);
+      }
+      66% {
+        background: radial-gradient(circle at 40% 80%, rgba(216, 178, 85, 0.6) 0%, rgba(80, 10, 50, 0.75) 55%, rgba(5, 2, 4, 0.98) 100%);
+      }
+      100% {
+        background: radial-gradient(circle at 30% 30%, rgba(243, 208, 130, 0.55) 0%, rgba(140, 20, 45, 0.7) 55%, rgba(5, 2, 4, 0.98) 100%);
+      }
     }
 
     /* Ambient Pulsing Aura Glow */
     .aura-ring {
       position: absolute;
-      width: 230px;
-      height: 230px;
+      width: 240px;
+      height: 240px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(243, 208, 130, 0.6) 0%, rgba(255, 77, 77, 0.3) 50%, transparent 75%);
+      background: radial-gradient(circle, rgba(243, 208, 130, 0.7) 0%, rgba(255, 77, 77, 0.4) 50%, transparent 75%);
       filter: blur(25px);
       animation: pulseAura 2s ease-in-out infinite alternate;
       display: none;
@@ -335,7 +351,7 @@
     }
     @keyframes pulseAura {
       0% { transform: scale(0.85); opacity: 0.5; }
-      100% { transform: scale(1.35); opacity: 1; filter: blur(35px); }
+      100% { transform: scale(1.4); opacity: 1; filter: blur(35px); }
     }
 
     /* Multi-layered Rotating Light Rays */
@@ -346,15 +362,15 @@
       background: conic-gradient(
         from 0deg, 
         transparent 0deg, 
-        rgba(243, 208, 130, 0.25) 20deg, 
+        rgba(243, 208, 130, 0.3) 20deg, 
         transparent 40deg, 
-        rgba(255, 215, 0, 0.3) 70deg, 
+        rgba(255, 215, 0, 0.35) 70deg, 
         transparent 90deg, 
-        rgba(243, 208, 130, 0.25) 140deg, 
+        rgba(243, 208, 130, 0.3) 140deg, 
         transparent 170deg, 
-        rgba(255, 215, 0, 0.35) 220deg, 
+        rgba(255, 215, 0, 0.4) 220deg, 
         transparent 250deg, 
-        rgba(243, 208, 130, 0.2) 310deg, 
+        rgba(243, 208, 130, 0.25) 310deg, 
         transparent 340deg
       );
       animation: rotateRay 9s linear infinite;
@@ -375,7 +391,7 @@
       left: -100%;
       width: 60%;
       height: 300%;
-      background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.45) 50%, transparent 100%);
+      background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.5) 50%, transparent 100%);
       transform: rotate(25deg);
       animation: shimmerSweep 3.2s infinite;
       pointer-events: none;
@@ -400,15 +416,21 @@
     }
     @keyframes bottleFloat { 0% { transform: translateY(0px); } 100% { transform: translateY(-8px); } }
 
+    /* ANIMASI BOTOL MAJU KE DEPAN (3D POP-FORWARD MOTION) */
     .m-bottle-img-v2.motion-active {
-      animation: super3DMotion 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate !important;
-      filter: drop-shadow(0 20px 45px rgba(243, 208, 130, 0.8)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.9));
+      animation: popForward3D 3.5s cubic-bezier(0.34, 1.56, 0.64, 1) infinite alternate !important;
+      filter: drop-shadow(0 30px 50px rgba(243, 208, 130, 0.9)) drop-shadow(0 0 35px rgba(255, 255, 255, 0.95));
     }
-    @keyframes super3DMotion {
-      0% { transform: translateY(0px) scale(1) rotate(0deg); }
-      33% { transform: translateY(-16px) scale(1.09) rotate(2.5deg); }
-      66% { transform: translateY(-4px) scale(1.04) rotate(-2.5deg); }
-      100% { transform: translateY(-12px) scale(1.07) rotate(1.5deg); }
+    @keyframes popForward3D {
+      0% {
+        transform: translateZ(10px) translateY(5px) scale(1.02) rotate(0deg);
+      }
+      50% {
+        transform: translateZ(100px) translateY(-22px) scale(1.24) rotate(3deg);
+      }
+      100% {
+        transform: translateZ(60px) translateY(-10px) scale(1.15) rotate(-2deg);
+      }
     }
 
     .m-bottle-video {
@@ -1033,7 +1055,7 @@
             <div class="m-matrix-title-v2">FLAVOR MATRIX CHARTS</div>
 
             <div class="m-meter-card">
-              <div class="m-bar-label-v2"><span>BODY</span><span class="score-badge">${wine.bodyVal / 10} / 10 🏋️‍♂️</span></div>
+              <div class="m-bar-label-v2"><span>BODY</span><span class="score-badge">${wine.bodyVal / 10} / 10 🏋️‍♂️️</span></div>
               <div class="m-bar-track-v2"><div class="m-bar-fill-v2" style="width: ${wine.bodyVal}%;"></div></div>
             </div>
 
@@ -1096,7 +1118,7 @@
       window.history.pushState({ path: newUrl }, '', newUrl);
     }
 
-    /* ================= FITUR 3D PARALLAX MOUSE MOVE ================= */
+    /* ================= FITUR 3D PARALLAX MOUSE MOVE (POP FORWARD EXTRA) ================= */
     function handleMouseMove(e) {
       const box = document.getElementById('mediaBox');
       const img = document.getElementById('mediaImage');
@@ -1109,7 +1131,7 @@
       const rotateX = (-y / rect.height) * 25;
       const rotateY = (x / rect.width) * 25;
 
-      img.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.1) translateY(-10px)`;
+      img.style.transform = `perspective(1000px) translateZ(80px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.22) translateY(-15px)`;
     }
 
     function handleMouseLeave() {
@@ -1212,7 +1234,7 @@
 
     let dustInterval = null;
 
-    /* SWITCH MEDIA (ULTRA 3D CINEMATIC MOTION + GOLD DUST SPARKLES) */
+    /* SWITCH MEDIA (DYNAMIC MOVING BG + DYNAMIC POP-FORWARD 3D BOTTLE) */
     function switchMedia(type) {
       const box = document.getElementById('mediaBox');
       const img = document.getElementById('mediaImage');
