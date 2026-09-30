@@ -1096,7 +1096,6 @@
       <ul class="nav-links">
         <li><a href="javascript:void(0)" onclick="resetAllFilters()">HOME</a></li>
         
-        <!-- MENU CATEGORY DROPDOWN LENGKAP -->
         <li class="dropdown">
           <a href="javascript:void(0)">
             CATEGORY <svg viewBox="0 0 24 24" style="width:10px; height:10px; fill:none; stroke:currentColor; stroke-width:2;"><path d="M6 9l6 6 6-6"/></svg>
@@ -1121,7 +1120,6 @@
           </ul>
         </li>
         
-        <!-- MENU SHOP -->
         <li class="dropdown">
           <a href="javascript:void(0)">
             SHOP <svg viewBox="0 0 24 24" style="width:10px; height:10px; fill:none; stroke:currentColor; stroke-width:2;"><path d="M6 9l6 6 6-6"/></svg>
@@ -1197,14 +1195,10 @@
       <p class="subtitle" id="lblAiSubtitle">Interactive Assistant for All Beverages: Mixers, Cocktails, Pairing, Beer, Sake, Soju & Party Planning</p>
 
       <!-- CHAT MESSAGES HISTORY CONTAINER -->
-      <div class="ai-chat-history" id="aiChatHistory">
-        <!-- Initial Chat Message via JavaScript -->
-      </div>
+      <div class="ai-chat-history" id="aiChatHistory"></div>
 
       <!-- QUICK SUGGESTION CHIPS -->
-      <div class="ai-quick-chips" id="aiChipsContainer">
-        <!-- Quick chips dynamic via JS -->
-      </div>
+      <div class="ai-quick-chips" id="aiChipsContainer"></div>
 
       <!-- INPUT BAR FOR CUSTOM USER MESSAGES -->
       <form class="ai-input-bar" onsubmit="handleUserAiSubmit(event)">
@@ -1236,78 +1230,60 @@
   </div>
 
   <script>
-    /* KONFIGURASI SUPABASE */
+    /* ========================================================================= */
+    /* 🛡️ ANTI-BLANK SYSTEM & SUPABASE INITIALIZATION                            */
+    /* ========================================================================= */
+    let supabaseClient = null;
     const SUPABASE_URL = "https://nuyowvjianxiobpzejnc.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eW93dmppYW54aW9icHplam5jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODkyMjUyOCwiZXhwIjoyMTA0NDk4NTI4fQ.-aeTfpvoGy3ICP2LMxa0vGfYggXlldnj5vtouzRm7bg";
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+    try {
+      if (typeof supabase !== 'undefined') {
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      } else {
+        console.warn("Supabase SDK gagal dimuat. Beralih ke Data Sampel.");
+      }
+    } catch (e) {
+      console.error("Supabase Error:", e);
+    }
 
     /* GLOBAL STATE LANGUAGE: 'en' | 'fr' | 'id' */
     let currentLanguage = 'en';
 
-    /* SAMPLE FALLBACK DATA (DIPAKAI AGAR HALAMAN TIDAK PERNAH BLANK SAMA SEKALI) */
+    /* SAMPLE FALLBACK DATA (Dipakai agar UI katalog tidak pernah kosong) */
     const sampleWinesFallback = [
       {
-        id: "1",
-        slug: "1800-reposado-750-ml",
-        name: "1800 REPOSADO 750 ML",
-        vintage: "NV",
-        type: "Import Tequila",
-        region: "Mexico",
-        varietal: "100% Blue Agave",
-        abv: "38%",
-        servingTemp: "Room Temperature",
-        stockStatus: "In Stock",
-        collection: "Best Seller",
+        id: "1", slug: "1800-reposado-750-ml", name: "1800 REPOSADO 750 ML", vintage: "NV",
+        type: "Import Tequila", region: "Mexico", varietal: "100% Blue Agave", abv: "38%",
+        servingTemp: "Room Temperature", stockStatus: "In Stock", collection: "Best Seller",
         imageUrl: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500&q=80",
         bodyVal: 75, tanninVal: 80, acidityVal: 65, sweetnessVal: 20,
-        visual: "Crystal clear, bright clarity",
-        aroma: "Clean, neutral, subtle rice grain sweetness",
+        visual: "Crystal clear, bright clarity", aroma: "Clean, neutral, subtle rice grain sweetness",
         palate: "Smooth and crisp, light sweetness, clean subtle finish",
-        notes: "Crafted from authentic 100% Blue Agave in Mexico, delivering crisp herbaceous purity and smooth traditional Mexican spirit heritage.",
-        pairing: "Grilled meats, tacos, Mexican cuisine",
-        storageNote: "Store upright, cool, dark"
+        notes: "Crafted from authentic 100% Blue Agave in Mexico.",
+        pairing: "Grilled meats, tacos, Mexican cuisine", storageNote: "Store upright, cool, dark"
       },
       {
-        id: "2",
-        slug: "19-crimes-red-blend-750-ml",
-        name: "19 CRIMES RED BLEND 750 ML",
-        vintage: "NV",
-        type: "Import Wine",
-        region: "South Australia",
-        varietal: "Red Blend",
-        abv: "13.5%",
-        servingTemp: "16-18°C",
-        stockStatus: "In Stock",
-        collection: "Best Seller",
+        id: "2", slug: "19-crimes-red-blend-750-ml", name: "19 CRIMES RED BLEND 750 ML", vintage: "NV",
+        type: "Import Wine", region: "South Australia", varietal: "Red Blend", abv: "13.5%",
+        servingTemp: "16-18°C", stockStatus: "In Stock", collection: "Best Seller",
         imageUrl: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500&q=80",
         bodyVal: 85, tanninVal: 75, acidityVal: 60, sweetnessVal: 30,
-        visual: "Deep ruby red, garnet rim",
-        aroma: "Blackcurrant, violet, cedar, spice bouquet",
+        visual: "Deep ruby red, garnet rim", aroma: "Blackcurrant, violet, cedar, spice bouquet",
         palate: "Full-bodied, structured, velvety tannins, elegant finish",
-        notes: "A premium, expertly crafted Import Wine from South Australia (Red Blend), delivering authentic regional character and superb food pairing versatility.",
-        pairing: "Grilled meats, cheeses, rich cuisine",
-        storageNote: "Store horizontal, cool dark"
+        notes: "A premium, expertly crafted Import Wine from South Australia.",
+        pairing: "Grilled meats, cheeses, rich cuisine", storageNote: "Store horizontal, cool dark"
       },
       {
-        id: "3",
-        slug: "19-crimes-shiraz-750-ml",
-        name: "19 CRIMES SHIRAZ 750 ML",
-        vintage: "NV",
-        type: "Import Wine",
-        region: "South Australia",
-        varietal: "Shiraz",
-        abv: "14%",
-        servingTemp: "16-18°C",
-        stockStatus: "In Stock",
-        collection: "All Products",
+        id: "3", slug: "19-crimes-shiraz-750-ml", name: "19 CRIMES SHIRAZ 750 ML", vintage: "NV",
+        type: "Import Wine", region: "South Australia", varietal: "Shiraz", abv: "14%",
+        servingTemp: "16-18°C", stockStatus: "In Stock", collection: "All Products",
         imageUrl: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500&q=80",
         bodyVal: 90, tanninVal: 85, acidityVal: 55, sweetnessVal: 25,
-        visual: "Deep ruby red, garnet rim",
-        aroma: "Sweet wild clover honey, toasted oak, vanilla bean",
-        palate: "Smooth liqueur mouthfeel, honeyed sweetness, gentle warm finish",
-        notes: "A bold, full-bodied red wine from South Australia with rich tannins and deep structure, crafting an exceptional pairing for premium grilled meats.",
-        pairing: "Premium grilled meats, aged steaks",
-        storageNote: "Store horizontal, cool dark"
+        visual: "Deep ruby red, garnet rim", aroma: "Sweet wild clover honey, toasted oak",
+        palate: "Smooth liqueur mouthfeel, honeyed sweetness",
+        notes: "A bold, full-bodied red wine from South Australia.",
+        pairing: "Premium grilled meats, aged steaks", storageNote: "Store horizontal, cool dark"
       }
     ];
 
@@ -1324,191 +1300,35 @@
 
     const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whisky", "Cognac", "Soju", "Sake", "Traditional and Grain", "Baijiu", "Alcopops"];
 
-    /* KAMUS TRANSLASI TEKS MULTILINGUAL */
-    const i18n = {
-      en: {
-        headerTitle: "MASTER SOMMELIER PROFILE",
-        flavorTitle: "FLAVOR MATRIX CHARTS",
-        pairingTitle: "SUGGESTED FOOD PAIRINGS",
-        reviewsTitle: "CUSTOMER REVIEWS",
-        writeReviewLabel: "Write Your Review:",
-        btnSubmitReview: "💬 Submit Review",
-        btnWa: "💬 WhatsApp Order / Inquire",
-        btnAudio: "🔊 Listen Profile (English)",
-        btnPdf: "📄 Download PDF",
-        btnFoto: "📸 Bottle Photo",
-        btnMotion: "🎥 Motion Mode 3D",
-        labelAbv: "ALCOHOL (ABV)",
-        labelServing: "SERVING TEMP",
-        labelStock: "STOCK STATUS",
-        labelVisual: "VISUAL",
-        labelAroma: "AROMA",
-        labelPalate: "PALATE",
-        labelNotes: "NOTES",
-        labelStorage: "STORAGE",
-        lblAiFloat: "Ask Beverages Expert AI",
-        lblAiSubtitle: "Interactive Assistant for All Beverages: Mixers, Cocktails, Pairing, Beer, Sake, Soju & Party Planning",
-        placeholderInput: "Ask anything (e.g. Tequila mixers, party 20 guests)...",
-        placeholderName: "Your Name (e.g. Alex S.)",
-        placeholderComment: "Write your review about this beverage...",
-        vibeTitle: "What's the vibe of this drink?",
-        vibeChill: "🍷 Chill Out",
-        vibeParty: "🔥 Party Mode",
-        vibeAutoBuy: "😍 Auto Buy",
-        vibeDizzy: "🤪 Mind Blowing",
-        btnSend: "Send 🚀"
-      },
-      fr: {
-        headerTitle: "PROFIL DU MAÎTRE SOMMELIER",
-        flavorTitle: "GRAPHIQUE DE LA MATRICE DES SAVEURS",
-        pairingTitle: "ACCORDS METS ET BOISSONS SUGGÉRÉS",
-        reviewsTitle: "AVIS DES CLIENTS",
-        writeReviewLabel: "Écrivez Votre Avis :",
-        btnSubmitReview: "💬 Soumettre l'Avis",
-        btnWa: "💬 Commander via WhatsApp",
-        btnAudio: "🔊 Écouter le Profil (Français)",
-        btnPdf: "📄 Télécharger le PDF",
-        btnFoto: "📸 Photo de Bouteille",
-        btnMotion: "🎥 Mode Motion 3D",
-        labelAbv: "ALCOOL (ABV)",
-        labelServing: "TEMP. DE SERVICE",
-        labelStock: "STATUT DU STOCK",
-        labelVisual: "VISUEL",
-        labelAroma: "ARÔME",
-        labelPalate: "PALAIS",
-        labelNotes: "NOTES",
-        labelStorage: "CONSERVATION",
-        lblAiFloat: "Demander à l'IA Sommelier",
-        lblAiSubtitle: "Assistant Interactif : Cocktails, Accords, Bières, Saké, Soju & Fêtes",
-        placeholderInput: "Posez votre question (ex. Mixeurs Tequila, fête 20 personnes)...",
-        placeholderName: "Votre Nom (ex. Alex S.)",
-        placeholderComment: "Écrivez votre avis sur cette boisson...",
-        vibeTitle: "Quelle est l'ambiance de cette boisson ?",
-        vibeChill: "🍷 Détente",
-        vibeParty: "🔥 Mode Fête",
-        vibeAutoBuy: "😍 Achat Immédiat",
-        vibeDizzy: "🤪 Enivrant",
-        btnSend: "Envoyer 🚀"
-      },
-      id: {
-        headerTitle: "PROFIL MASTER SOMMELIER",
-        flavorTitle: "DIAGRAM MATRIKS RASA",
-        pairingTitle: "SARAN PADUAN MAKANAN",
-        reviewsTitle: "ULASAN PELANGGAN",
-        writeReviewLabel: "Tulis Ulasan Anda:",
-        btnSubmitReview: "💬 Kirim Ulasan",
-        btnWa: "💬 WhatsApp Order / Inquire",
-        btnAudio: "🔊 Dengarkan Profil (Indonesia)",
-        btnPdf: "📄 Unduh PDF",
-        btnFoto: "📸 Foto Botol",
-        btnMotion: "🎥 Motion Mode 3D",
-        labelAbv: "ALKOHOL (ABV)",
-        labelServing: "SUHU PENYAJIAN",
-        labelStock: "STATUS STOK",
-        labelVisual: "VISUAL",
-        labelAroma: "AROMA",
-        labelPalate: "PALATE",
-        labelNotes: "NOTES",
-        labelStorage: "PENYIMPANAN",
-        lblAiFloat: "Tanya AI Sommelier",
-        lblAiSubtitle: "Asisten Interaktif : Mixers, Cocktail, Pairing, Bir, Sake, Soju & Pesta",
-        placeholderInput: "Tanyakan apa saja (contoh: racikan Tequila, pesta 20 tamu)...",
-        placeholderName: "Nama Anda (Contoh: Alex S.)",
-        placeholderComment: "Tulis pendapat kamu tentang minuman ini...",
-        vibeTitle: "Bagaimana Vibe Minuman Ini?",
-        vibeChill: "🍷 Chill Aja",
-        vibeParty: "🔥 Party Mode",
-        vibeAutoBuy: "😍 Auto Buy",
-        vibeDizzy: "🤪 Pusing Nikmat",
-        btnSend: "Kirim 🚀"
-      }
-    };
-
-    /* PENERJEMAH OTOMATIS TEKS SENSORI DINAMIS */
-    function getTranslatedSensory(text, lang) {
-      if (!text || text === '-' || text === 'null' || text === 'undefined') return '-';
-      
-      const strText = String(text);
-      if (lang === 'en') return strText;
-
-      const lower = strText.toLowerCase().trim();
-
-      if (lower.includes('crystal clear') || lower.includes('bright clarity') || lower.includes('jernih')) {
-        if (lang === 'fr') return "Limpide et cristal, clarté brillante";
-        if (lang === 'id') return "Sangat jernih, kejernihan berkilau";
-      }
-      if (lower.includes('deep ruby') || lower.includes('garnet') || lower.includes('rubi')) {
-        if (lang === 'fr') return "Rouge rubis profond, reflet grenat";
-        if (lang === 'id') return "Merah rubi pekat, kilau garnet";
-      }
-      if (lower.includes('golden amber') || lower.includes('warm glow') || lower.includes('amber')) {
-        if (lang === 'fr') return "Ambre doré avec un éclat chaleureux";
-        if (lang === 'id') return "Kuning amber keemasan dengan pendaran hangat";
-      }
-
-      if (lower.includes('clean, neutral') || lower.includes('rice grain')) {
-        if (lang === 'fr') return "Propre, neutre, douceur subtile de grain de riz";
-        if (lang === 'id') return "Bersih, netral, keharuman manis bulir beras yang lembut";
-      }
-      if (lower.includes('blackcurrant') || lower.includes('violet') || lower.includes('cedar')) {
-        if (lang === 'fr') return "Cassis, violette, cèdre, bouquet d'épices";
-        if (lang === 'id') return "Aroma blackcurrant, bunga violet, kayu cedar, dan rempah";
-      }
-
-      if (lower.includes('smooth and crisp') || lower.includes('subtle finish')) {
-        if (lang === 'fr') return "Doux et frais, légère douceur, finale propre et subtile";
-        if (lang === 'id') return "Halus dan segar, rasa manis ringan, sentuhan akhir bersih";
-      }
-
-      if (lower.includes('blue agave') || lower.includes('crafted from')) {
-        if (lang === 'fr') return "Fabriqué à partir d'authentique 100% Agave Bleu du Mexique, offrant une pureté herbacée fraîche.";
-        if (lang === 'id') return "Dibuat dari 100% Blue Agave asli Meksiko, menghadirkan kemurnian herba yang segar.";
-      }
-
-      if (lower.includes('store upright') || lower.includes('upright')) {
-        if (lang === 'fr') return "Conserver debout, dans un endroit frais et sombre";
-        if (lang === 'id') return "Simpan berdiri tegak, di tempat sejuk dan gelap";
-      }
-      if (lower.includes('store horizontal') || lower.includes('horizontal')) {
-        if (lang === 'fr') return "Conserver horizontalement, au frais et à l'abri de la lumière";
-        if (lang === 'id') return "Simpan mendatar/miring, di tempat sejuk dan gelap";
-      }
-
-      return strText;
+    function useFallbackData() {
+      localWines = [...sampleWinesFallback];
+      renderWines();
     }
-
-    /* Background Canvas Particle */
-    const canvas = document.getElementById('bgCanvas');
-    const ctx = canvas.getContext('2d');
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
-
-    window.addEventListener('resize', () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; });
-
-    const particles = Array.from({ length: 60 }, () => ({
-      x: Math.random() * width, y: Math.random() * height, radius: Math.random() * 2.5 + 0.5,
-      alpha: Math.random() * 0.5 + 0.1, vx: (Math.random() - 0.5) * 0.4, vy: -(Math.random() * 0.4 + 0.2),
-    }));
-
-    function drawInteractiveBG() {
-      ctx.clearRect(0, 0, width, height);
-      particles.forEach(p => {
-        p.x += p.vx; p.y += p.vy;
-        if (p.y < -10) { p.y = height + 10; p.x = Math.random() * width; }
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(243, 208, 130, ${p.alpha})`; ctx.fill();
-      });
-      requestAnimationFrame(drawInteractiveBG);
-    }
-    drawInteractiveBG();
 
     async function fetchWinesFromSupabase() {
+      const grid = document.getElementById('wineGrid');
       try {
+        if (!supabaseClient) {
+          console.warn("Koneksi Supabase gagal. Menampilkan data fallback.");
+          localWines = [...sampleWinesFallback];
+          renderWines();
+          return;
+        }
+
         const { data, error } = await supabaseClient.from('wines').select('*');
+        
+        if (error) {
+          console.error("Gagal menarik data database:", error.message);
+          localWines = [...sampleWinesFallback];
+          renderWines();
+          return;
+        }
+
         if (data && data.length > 0) {
           localWines = data.map(w => ({
             ...w,
             slug: w.slug || (w.name ? String(w.name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : ''),
-            imageUrl: w.imageUrl || w.image_url || 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500&q=80',
+            imageUrl: w.imageUrl || w.image_url || w.imageurl || 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500&q=80',
             videoUrl: w.videoUrl || w.video_url || '',
             servingTemp: w.servingTemp || w.serving_temp || '16-18°C',
             stockStatus: w.stockStatus || w.stock_status || 'Tersedia',
@@ -1525,10 +1345,117 @@
             pairing: String(w.pairing || w.food_pairing || 'Grilled meats, cheeses, rich cuisine')
           }));
           renderWines();
+
+          const urlParams = new URLSearchParams(window.location.search);
+          const productSlug = urlParams.get('product');
+          if (productSlug) openDetailBySlug(productSlug);
+        } else {
+          // Jika Supabase KOSONG / TERBLOKIR RLS
+          grid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem;">
+              <h2 style="color: #d8b255; font-size: 1.5rem; margin-bottom:1rem;">Katalog Kosong</h2>
+              <p style="color: #a1a1aa; font-size: 0.9rem;">Belum ada data wine yang di-upload dari Admin.</p>
+              <button onclick="useFallbackData()" style="margin-top:1.5rem; padding:10px 20px; background:var(--gold-primary); color:#000; border-radius:10px; cursor:pointer; font-weight:bold; border:none; transition:0.3s;">Tampilkan Data Sampel Sementara</button>
+            </div>
+          `;
         }
       } catch (err) { 
-        console.error("Fetch Error:", err); 
+        console.error("Fetch Crash:", err);
+        localWines = [...sampleWinesFallback];
+        renderWines();
       }
+    }
+
+    // Eksekusi Langsung agar halaman tidak pernah Blank
+    document.addEventListener('DOMContentLoaded', () => {
+      initAiChatGreeting();
+      document.getElementById('wineGrid').innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 4rem 0;"><h2 style="color: var(--gold-primary);">Memuat Katalog... ⏳</h2></div>`;
+      fetchWinesFromSupabase();
+    });
+
+    /* ========================================================================= */
+    /* KAMUS TRANSLASI TEKS MULTILINGUAL */
+    /* ========================================================================= */
+    const i18n = {
+      en: {
+        headerTitle: "MASTER SOMMELIER PROFILE", flavorTitle: "FLAVOR MATRIX CHARTS", pairingTitle: "SUGGESTED FOOD PAIRINGS",
+        reviewsTitle: "CUSTOMER REVIEWS", writeReviewLabel: "Write Your Review:", btnSubmitReview: "💬 Submit Review",
+        btnWa: "💬 WhatsApp Order / Inquire", btnAudio: "🔊 Listen Profile (English)", btnPdf: "📄 Download PDF",
+        btnFoto: "📸 Bottle Photo", btnMotion: "🎥 Motion Mode 3D", labelAbv: "ALCOHOL (ABV)", labelServing: "SERVING TEMP",
+        labelStock: "STOCK STATUS", labelVisual: "VISUAL", labelAroma: "AROMA", labelPalate: "PALATE", labelNotes: "NOTES",
+        labelStorage: "STORAGE", lblAiFloat: "Ask Beverages Expert AI", lblAiSubtitle: "Interactive Assistant for All Beverages: Mixers, Cocktails, Pairing, Beer, Sake, Soju & Party Planning",
+        placeholderInput: "Ask anything (e.g. Tequila mixers, party 20 guests)...", placeholderName: "Your Name (e.g. Alex S.)",
+        placeholderComment: "Write your review about this beverage...", vibeTitle: "What's the vibe of this drink?",
+        vibeChill: "🍷 Chill Out", vibeParty: "🔥 Party Mode", vibeAutoBuy: "😍 Auto Buy", vibeDizzy: "🤪 Mind Blowing", btnSend: "Send 🚀"
+      },
+      fr: {
+        headerTitle: "PROFIL DU MAÎTRE SOMMELIER", flavorTitle: "GRAPHIQUE DE LA MATRICE DES SAVEURS", pairingTitle: "ACCORDS METS ET BOISSONS SUGGÉRÉS",
+        reviewsTitle: "AVIS DES CLIENTS", writeReviewLabel: "Écrivez Votre Avis :", btnSubmitReview: "💬 Soumettre l'Avis",
+        btnWa: "💬 Commander via WhatsApp", btnAudio: "🔊 Écouter le Profil (Français)", btnPdf: "📄 Télécharger le PDF",
+        btnFoto: "📸 Photo de Bouteille", btnMotion: "🎥 Mode Motion 3D", labelAbv: "ALCOOL (ABV)", labelServing: "TEMP. DE SERVICE",
+        labelStock: "STATUT DU STOCK", labelVisual: "VISUEL", labelAroma: "ARÔME", labelPalate: "PALAIS", labelNotes: "NOTES",
+        labelStorage: "CONSERVATION", lblAiFloat: "Demander à l'IA Sommelier", lblAiSubtitle: "Assistant Interactif : Cocktails, Accords, Bières, Saké, Soju & Fêtes",
+        placeholderInput: "Posez votre question (ex. Mixeurs Tequila, fête 20 personnes)...", placeholderName: "Votre Nom (ex. Alex S.)",
+        placeholderComment: "Écrivez votre avis sur cette boisson...", vibeTitle: "Quelle est l'ambiance de cette boisson ?",
+        vibeChill: "🍷 Détente", vibeParty: "🔥 Mode Fête", vibeAutoBuy: "😍 Achat Immédiat", vibeDizzy: "🤪 Enivrant", btnSend: "Envoyer 🚀"
+      },
+      id: {
+        headerTitle: "PROFIL MASTER SOMMELIER", flavorTitle: "DIAGRAM MATRIKS RASA", pairingTitle: "SARAN PADUAN MAKANAN",
+        reviewsTitle: "ULASAN PELANGGAN", writeReviewLabel: "Tulis Ulasan Anda:", btnSubmitReview: "💬 Kirim Ulasan",
+        btnWa: "💬 WhatsApp Order / Inquire", btnAudio: "🔊 Dengarkan Profil (Indonesia)", btnPdf: "📄 Unduh PDF",
+        btnFoto: "📸 Foto Botol", btnMotion: "🎥 Motion Mode 3D", labelAbv: "ALKOHOL (ABV)", labelServing: "SUHU PENYAJIAN",
+        labelStock: "STATUS STOK", labelVisual: "VISUAL", labelAroma: "AROMA", labelPalate: "PALATE", labelNotes: "NOTES",
+        labelStorage: "PENYIMPANAN", lblAiFloat: "Tanya AI Sommelier", lblAiSubtitle: "Asisten Interaktif : Mixers, Cocktail, Pairing, Bir, Sake, Soju & Pesta",
+        placeholderInput: "Tanyakan apa saja (contoh: racikan Tequila, pesta 20 tamu)...", placeholderName: "Nama Anda (Contoh: Alex S.)",
+        placeholderComment: "Tulis pendapat kamu tentang minuman ini...", vibeTitle: "Bagaimana Vibe Minuman Ini?",
+        vibeChill: "🍷 Chill Aja", vibeParty: "🔥 Party Mode", vibeAutoBuy: "😍 Auto Buy", vibeDizzy: "🤪 Pusing Nikmat", btnSend: "Kirim 🚀"
+      }
+    };
+
+    /* PENERJEMAH OTOMATIS TEKS SENSORI DINAMIS (SAFE NON-CRASH TYPE CHECKING) */
+    function getTranslatedSensory(text, lang) {
+      if (!text || text === '-' || text === 'null' || text === 'undefined') return '-';
+      const strText = String(text);
+      if (lang === 'en') return strText;
+      const lower = strText.toLowerCase().trim();
+
+      if (lower.includes('crystal clear') || lower.includes('bright clarity') || lower.includes('jernih')) {
+        if (lang === 'fr') return "Limpide et cristal, clarté brillante";
+        if (lang === 'id') return "Sangat jernih, kejernihan berkilau";
+      }
+      if (lower.includes('deep ruby') || lower.includes('garnet') || lower.includes('rubi')) {
+        if (lang === 'fr') return "Rouge rubis profond, reflet grenat";
+        if (lang === 'id') return "Merah rubi pekat, kilau garnet";
+      }
+      if (lower.includes('golden amber') || lower.includes('warm glow') || lower.includes('amber')) {
+        if (lang === 'fr') return "Ambre doré avec un éclat chaleureux";
+        if (lang === 'id') return "Kuning amber keemasan dengan pendaran hangat";
+      }
+      if (lower.includes('clean, neutral') || lower.includes('rice grain')) {
+        if (lang === 'fr') return "Propre, neutre, douceur subtile de grain de riz";
+        if (lang === 'id') return "Bersih, netral, keharuman manis bulir beras yang lembut";
+      }
+      if (lower.includes('blackcurrant') || lower.includes('violet') || lower.includes('cedar')) {
+        if (lang === 'fr') return "Cassis, violette, cèdre, bouquet d'épices";
+        if (lang === 'id') return "Aroma blackcurrant, bunga violet, kayu cedar, dan rempah";
+      }
+      if (lower.includes('smooth and crisp') || lower.includes('subtle finish')) {
+        if (lang === 'fr') return "Doux et frais, légère douceur, finale propre et subtile";
+        if (lang === 'id') return "Halus dan segar, rasa manis ringan, sentuhan akhir bersih";
+      }
+      if (lower.includes('blue agave') || lower.includes('crafted from')) {
+        if (lang === 'fr') return "Fabriqué à partir d'authentique 100% Agave Bleu du Mexique, offrant une pureté herbacée fraîche.";
+        if (lang === 'id') return "Dibuat dari 100% Blue Agave asli Meksiko, menghadirkan kemurnian herba yang segar.";
+      }
+      if (lower.includes('store upright') || lower.includes('upright')) {
+        if (lang === 'fr') return "Conserver debout, dans un endroit frais et sombre";
+        if (lang === 'id') return "Simpan berdiri tegak, di tempat sejuk dan gelap";
+      }
+      if (lower.includes('store horizontal') || lower.includes('horizontal')) {
+        if (lang === 'fr') return "Conserver horizontalement, au frais et à l'abri de la lumière";
+        if (lang === 'id') return "Simpan mendatar/miring, di tempat sejuk dan gelap";
+      }
+      return strText;
     }
 
     function setSortOrder(order) {
@@ -1573,7 +1500,6 @@
     function renderWines() {
       const grid = document.getElementById('wineGrid');
       if (!grid) return;
-
       const search = document.getElementById('searchInput').value.toLowerCase();
 
       currentFilteredWines = localWines.filter(wine => {
@@ -1859,7 +1785,6 @@
 
     function processUserAiMessage(userText) {
       appendChatBubble(escapeHtml(userText), 'user');
-
       const lower = userText.toLowerCase();
       let response = "";
 
@@ -1877,41 +1802,20 @@
         if (!recNames) recNames = "1800 Reposado Tequila & 19 Crimes Red Blend";
 
         if (currentLanguage === 'fr') {
-          response = `🎉 <strong>Calculateur de Fête pour ${guestCount} Invités</strong>:<br>` +
-            `• Quantité Totale Requise : <strong>${totalBottles} Bouteilles</strong> (750ml).<br>` +
-            `• Répartition Suggérée : <strong>${spiritBottles} Spiritueux/Tequila</strong> + <strong>${wineBottles} Bouteilles de Vin</strong>.<br>` +
-            `• Recommandations du Catalogue : <em>${recNames}</em>.`;
+          response = `🎉 <strong>Calculateur de Fête pour ${guestCount} Invités</strong>:<br>• Quantité Totale Requise : <strong>${totalBottles} Bouteilles</strong> (750ml).<br>• Répartition Suggérée : <strong>${spiritBottles} Spiritueux/Tequila</strong> + <strong>${wineBottles} Bouteilles de Vin</strong>.<br>• Recommandations du Catalogue : <em>${recNames}</em>.`;
         } else if (currentLanguage === 'id') {
-          response = `🎉 <strong>Kalkulator Pesta untuk ${guestCount} Tamu</strong>:<br>` +
-            `• Total Kebutuhan Botol: <strong>${totalBottles} Botol</strong> (750ml).<br>` +
-            `• Kombinasi Ideal: <strong>${spiritBottles} Botol Tequila/Spirits</strong> + <strong>${wineBottles} Botol Wine</strong>.<br>` +
-            `• Rekomendasi Stok: <em>${recNames}</em>.`;
+          response = `🎉 <strong>Kalkulator Pesta untuk ${guestCount} Tamu</strong>:<br>• Total Kebutuhan Botol: <strong>${totalBottles} Botol</strong> (750ml).<br>• Kombinasi Ideal: <strong>${spiritBottles} Botol Tequila/Spirits</strong> + <strong>${wineBottles} Botol Wine</strong>.<br>• Rekomendasi Stok: <em>${recNames}</em>.`;
         } else {
-          response = `🎉 <strong>Party Calculation for ${guestCount} Guests</strong>:<br>` +
-            `• Total Bottle Requirement: <strong>${totalBottles} Bottles</strong> (750ml).<br>` +
-            `• Recommended Mix: <strong>${spiritBottles} Spirits/Tequila Bottles</strong> + <strong>${wineBottles} Wine Bottles</strong>.<br>` +
-            `• Suggested Catalog Items: <em>${recNames}</em>.`;
+          response = `🎉 <strong>Party Calculation for ${guestCount} Guests</strong>:<br>• Total Bottle Requirement: <strong>${totalBottles} Bottles</strong> (750ml).<br>• Recommended Mix: <strong>${spiritBottles} Spirits/Tequila Bottles</strong> + <strong>${wineBottles} Wine Bottles</strong>.<br>• Suggested Catalog Items: <em>${recNames}</em>.`;
         }
       } 
       else if (lower.includes('mixer') || lower.includes('cocktail') || lower.includes('campur') || lower.includes('tequila') || lower.includes('vodka') || lower.includes('whiskey') || lower.includes('gin') || lower.includes('rum')) {
         if (currentLanguage === 'fr') {
-          response = `🍸 <strong>Guide des Cocktails & Mixeurs Kava</strong>:<br>` +
-            `• <strong>Tequila (1800 Reposado)</strong> : Mélanger avec du Soda Pamplemousse (Paloma) ou Jus de Citron Vert.<br>` +
-            `• <strong>Vodka / Gin</strong> : Mélanger avec du Tonic Premium et un quartier de citron vert.<br>` +
-            `• <strong>Bourbon / Whisky</strong> : À déguster pur avec des glaçons ou avec du Ginger Ale.<br>` +
-            `• <strong>Vin Rouge</strong> : À déguster pur à 16-18°C avec une viande rouge.`;
+          response = `🍸 <strong>Guide des Cocktails & Mixeurs Kava</strong>:<br>• <strong>Tequila (1800 Reposado)</strong> : Mélanger avec du Soda Pamplemousse (Paloma) ou Jus de Citron Vert.<br>• <strong>Vodka / Gin</strong> : Mélanger avec du Tonic Premium et un quartier de citron vert.<br>• <strong>Bourbon / Whisky</strong> : À déguster pur avec des glaçons ou avec du Ginger Ale.<br>• <strong>Vin Rouge</strong> : À déguster pur à 16-18°C avec une viande rouge.`;
         } else if (currentLanguage === 'id') {
-          response = `🍸 <strong>Panduan Cocktails & Mixers Kava</strong>:<br>` +
-            `• <strong>Tequila (1800 Reposado)</strong>: Campur Grapefruit Soda (Paloma) atau Lime + Triple Sec (Margarita).<br>` +
-            `• <strong>Vodka / Gin</strong>: Campur dengan Tonic Water segar + Irisan Jeruk Nipis.<br>` +
-            `• <strong>Whiskey / Bourbon</strong>: Diminum On-The-Rocks atau campur Ginger Ale.<br>` +
-            `• <strong>Red Wine</strong>: Paling nikmat diminum murni di suhu 16-18°C bersama steak daging.`;
+          response = `🍸 <strong>Panduan Cocktails & Mixers Kava</strong>:<br>• <strong>Tequila (1800 Reposado)</strong>: Campur Grapefruit Soda (Paloma) atau Lime + Triple Sec (Margarita).<br>• <strong>Vodka / Gin</strong>: Campur dengan Tonic Water segar + Irisan Jeruk Nipis.<br>• <strong>Whiskey / Bourbon</strong>: Diminum On-The-Rocks atau campur Ginger Ale.<br>• <strong>Red Wine</strong>: Paling nikmat diminum murni di suhu 16-18°C bersama steak daging.`;
         } else {
-          response = `🍸 <strong>Beverages Expert Cocktail & Mixers Guide</strong>:<br>` +
-            `• <strong>Tequila (1800 Reposado)</strong>: Pair with Grapefruit Soda (Paloma) or Lime + Triple Sec (Margarita).<br>` +
-            `• <strong>Vodka / Gin</strong>: Mix with Premium Tonic Water, Lime Juice, or Cranberry.<br>` +
-            `• <strong>Bourbon / Whiskey</strong>: Ideal On-The-Rocks, or mixed with Ginger Ale.<br>` +
-            `• <strong>Red Wine</strong>: Best enjoyed neat at 16-18°C alongside grilled steaks.`;
+          response = `🍸 <strong>Beverages Expert Cocktail & Mixers Guide</strong>:<br>• <strong>Tequila (1800 Reposado)</strong>: Pair with Grapefruit Soda (Paloma) or Lime + Triple Sec (Margarita).<br>• <strong>Vodka / Gin</strong>: Mix with Premium Tonic Water, Lime Juice, or Cranberry.<br>• <strong>Bourbon / Whiskey</strong>: Ideal On-The-Rocks, or mixed with Ginger Ale.<br>• <strong>Red Wine</strong>: Best enjoyed neat at 16-18°C alongside grilled steaks.`;
         }
       }
       else {
@@ -2346,13 +2250,6 @@
       };
       html2pdf().set(opt).from(element).save();
     }
-
-    // EKSEKUSI LANGSUNG BEGITU DOM SIAP (ANTI-BLANK)
-    document.addEventListener('DOMContentLoaded', () => {
-      initAiChatGreeting();
-      renderWines(); // LANGSUNG TAMPILKAN PROD KETIKA DIBUKA!
-      fetchWinesFromSupabase(); // SINKRONISASI SUPABASE DI BACKGROUND
-    });
   </script>
 </body>
 </html>
