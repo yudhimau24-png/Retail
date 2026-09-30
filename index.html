@@ -255,8 +255,146 @@
     footer strong { color: var(--gold-primary); }
 
     /* ========================================================= */
-    /* ULTRA-MODERN VINTAGE SOMMELIER MODAL (OBSIDIAN GOLD V2)   */
+    /* FLOATING AI SOMMELIER WIDGET                              */
     /* ========================================================= */
+    .ai-float-btn {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-secondary) 100%);
+      color: #000;
+      padding: 14px 22px;
+      border-radius: 30px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      border: 1px solid #fff;
+      box-shadow: 0 10px 30px rgba(243, 208, 130, 0.5), 0 0 20px rgba(0, 0, 0, 0.8);
+      cursor: pointer;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: pulseAiBtn 3s infinite alternate;
+    }
+    @keyframes pulseAiBtn {
+      0% { transform: scale(1); box-shadow: 0 10px 25px rgba(243, 208, 130, 0.4); }
+      100% { transform: scale(1.06); box-shadow: 0 15px 35px rgba(243, 208, 130, 0.8); }
+    }
+    .ai-float-btn:hover {
+      transform: translateY(-4px) scale(1.08);
+      background: #ffffff;
+      color: #000;
+    }
+
+    .ai-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 1, 2, 0.88);
+      backdrop-filter: blur(18px);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+    }
+    .ai-modal-overlay.active {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .ai-card {
+      background: radial-gradient(circle at 50% 20%, rgba(243, 208, 130, 0.12) 0%, rgba(15, 8, 12, 0.98) 80%);
+      border: 1px solid var(--gold-primary);
+      border-radius: 26px;
+      width: 100%;
+      max-width: 650px;
+      padding: 30px;
+      box-shadow: 0 25px 70px rgba(0,0,0,0.95), 0 0 35px rgba(243, 208, 130, 0.25);
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .ai-card h3 {
+      font-family: 'Cinzel Decorative', serif;
+      color: var(--gold-primary);
+      font-size: 1.5rem;
+      text-align: center;
+      margin-bottom: 6px;
+      letter-spacing: 2px;
+    }
+
+    .ai-card p.subtitle {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #a1a1aa;
+      margin-bottom: 22px;
+    }
+
+    .ai-presets-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 500px) { .ai-presets-grid { grid-template-columns: 1fr; } }
+
+    .ai-btn-preset {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(243, 208, 130, 0.3);
+      border-radius: 14px;
+      padding: 12px 14px;
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ai-btn-preset:hover {
+      background: rgba(243, 208, 130, 0.18);
+      border-color: var(--gold-primary);
+      transform: translateY(-2px);
+    }
+
+    .ai-response-box {
+      background: rgba(10, 5, 8, 0.85);
+      border: 1px solid rgba(243, 208, 130, 0.25);
+      border-radius: 16px;
+      padding: 18px;
+      min-height: 140px;
+      font-size: 0.85rem;
+      line-height: 1.55;
+      color: #e4e4e7;
+      margin-bottom: 18px;
+    }
+
+    .ai-party-calc {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 15px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .ai-party-calc input {
+      width: 80px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--gold-primary);
+      border-radius: 8px;
+      padding: 6px 10px;
+      color: #fff;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    /* MODAL SOMMELIER */
     .fullpage-detail { display: none; position: fixed; inset: 0; background: rgba(3, 1, 2, 0.94); z-index: 9999; overflow-y: auto; padding: 2.5rem 1rem; backdrop-filter: blur(20px); }
     .fullpage-detail.active { display: block; animation: fadeIn 0.35s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: scale(0.97) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
@@ -298,7 +436,6 @@
     .m-wine-name-v2 { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 800; color: #ffffff; line-height: 1.25; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px; }
     .m-wine-origin-v2 { font-size: 0.88rem; color: var(--gold-primary); font-weight: 600; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 6px; }
 
-    /* ================= DYNAMIC MOVING BACKGROUND & POP-FORWARD 3D BOTTLE ================= */
     .m-media-box {
       position: relative;
       width: 100%;
@@ -462,7 +599,7 @@
       box-shadow: 0 0 12px rgba(243, 208, 130, 0.5);
     }
 
-    /* ================= FULLSCREEN LIGHTBOX 3D MOTION CONTAINER ================= */
+    /* FULLSCREEN LIGHTBOX 3D MOTION */
     .image-lightbox {
       display: none;
       position: fixed;
@@ -522,261 +659,6 @@
     .close-lightbox-btn:hover {
       transform: scale(1.2) rotate(90deg);
       color: #ff4d4d;
-    }
-
-    /* ELEMEN FUN FACT & SOMMELIER WARNING */
-    .fun-fact-card {
-      margin-top: 18px;
-      background: linear-gradient(135deg, rgba(255, 77, 77, 0.1) 0%, rgba(243, 208, 130, 0.08) 100%);
-      border: 1px dashed rgba(243, 208, 130, 0.4);
-      border-radius: 16px;
-      padding: 12px 16px;
-      text-align: left;
-      animation: pulseGlow 3s infinite alternate;
-    }
-    @keyframes pulseGlow {
-      0% { box-shadow: 0 0 5px rgba(243, 208, 130, 0.1); }
-      100% { box-shadow: 0 0 18px rgba(243, 208, 130, 0.3); }
-    }
-    .fun-fact-title {
-      font-size: 0.75rem;
-      font-weight: 800;
-      color: var(--gold-primary);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 4px;
-    }
-    .fun-fact-text {
-      font-size: 0.82rem;
-      color: #f3f4f6;
-      font-style: italic;
-      line-height: 1.4;
-    }
-
-    /* FLAVOR MATRIX CHARTS GLOWING */
-    .m-matrix-title-v2 { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 800; color: var(--gold-primary); text-align: center; letter-spacing: 3px; margin-bottom: 20px; text-transform: uppercase; }
-
-    .m-meter-card {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 12px;
-      padding: 10px 14px;
-      margin-bottom: 12px;
-    }
-
-    .m-bar-label-v2 { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; color: #e4e4e7; font-family: 'Cinzel', serif; margin-bottom: 6px; letter-spacing: 1px; }
-    .m-bar-label-v2 .score-badge { color: var(--gold-primary); font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; }
-    
-    .m-bar-track-v2 { height: 9px; background: rgba(255, 255, 255, 0.08); border-radius: 10px; position: relative; overflow: hidden; border: 1px solid rgba(243, 208, 130, 0.2); }
-    .m-bar-fill-v2 { 
-      height: 100%; 
-      background: linear-gradient(90deg, #b89235 0%, var(--gold-primary) 100%); 
-      border-radius: 10px; 
-      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
-      box-shadow: 0 0 12px rgba(243, 208, 130, 0.6); 
-    }
-
-    /* SENSORY CARDS */
-    .m-sensory-grid-v2 { margin-top: 22px; display: flex; flex-direction: column; gap: 10px; }
-    .m-sensory-item-v2 {
-      background: rgba(255, 255, 255, 0.025);
-      border: 1px solid rgba(243, 208, 130, 0.12);
-      border-left: 3px solid var(--gold-primary);
-      border-radius: 10px;
-      padding: 10px 14px;
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      transition: background 0.3s;
-    }
-    .m-sensory-item-v2:hover { background: rgba(243, 208, 130, 0.05); }
-    .m-sensory-item-v2 strong { font-family: 'Cinzel', serif; font-size: 0.75rem; color: var(--gold-primary); min-width: 85px; letter-spacing: 1px; font-weight: 700; }
-    .m-sensory-item-v2 span { font-size: 0.83rem; color: #e4e4e7; font-style: italic; line-height: 1.4; }
-
-    /* REAKSI EMOJI INTERAKTIF */
-    .emoji-reaction-box {
-      margin-top: 20px;
-      text-align: center;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 14px;
-      padding: 10px;
-    }
-    .emoji-reaction-box span {
-      display: block;
-      font-size: 0.72rem;
-      color: #a1a1aa;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 6px;
-    }
-    .emoji-btns {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .btn-emoji-react {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(243, 208, 130, 0.2);
-      color: #fff;
-      padding: 6px 12px;
-      border-radius: 12px;
-      font-size: 0.78rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-emoji-react:hover {
-      transform: scale(1.1) rotate(-3deg);
-      background: rgba(243, 208, 130, 0.2);
-      border-color: var(--gold-primary);
-    }
-
-    .floating-emoji {
-      position: fixed;
-      pointer-events: none;
-      font-size: 2rem;
-      animation: floatUp 1s ease-out forwards;
-      z-index: 10000;
-    }
-    @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0) scale(0.8); }
-      100% { opacity: 0; transform: translateY(-80px) scale(1.4); }
-    }
-
-    /* ================= SEKSI RATING & ULASAN PELANGGAN ================= */
-    .review-section {
-      margin-top: 28px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(243, 208, 130, 0.2);
-      border-radius: 18px;
-      padding: 20px;
-    }
-    .review-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 10px;
-      border-bottom: 1px solid rgba(243, 208, 130, 0.15);
-      padding-bottom: 10px;
-    }
-    .review-title {
-      font-family: 'Cinzel', serif;
-      font-size: 1.05rem;
-      color: var(--gold-primary);
-      font-weight: 800;
-      letter-spacing: 1px;
-    }
-    .review-score-summary {
-      font-size: 0.88rem;
-      color: #fff;
-      font-weight: 700;
-    }
-
-    .star-rating-input {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 12px;
-      cursor: pointer;
-    }
-    .star-icon {
-      font-size: 1.5rem;
-      color: rgba(255, 255, 255, 0.2);
-      transition: color 0.2s, transform 0.2s;
-    }
-    .star-icon.selected, .star-icon:hover {
-      color: var(--gold-primary);
-      transform: scale(1.2);
-    }
-
-    .review-form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 20px;
-      background: rgba(10, 5, 8, 0.6);
-      padding: 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(243, 208, 130, 0.15);
-    }
-    .review-form input, .review-form textarea {
-      width: 100%;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(243, 208, 130, 0.2);
-      border-radius: 8px;
-      padding: 10px 12px;
-      color: #fff;
-      font-size: 0.82rem;
-      outline: none;
-    }
-    .review-form textarea {
-      resize: vertical;
-      min-height: 60px;
-    }
-    .btn-submit-review {
-      align-self: flex-end;
-      padding: 8px 18px;
-      background: var(--gold-primary);
-      color: #000;
-      border: none;
-      border-radius: 8px;
-      font-weight: 800;
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-submit-review:hover {
-      background: var(--gold-secondary);
-      transform: translateY(-2px);
-    }
-
-    .review-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      max-height: 220px;
-      overflow-y: auto;
-      padding-right: 5px;
-    }
-    .review-list::-webkit-scrollbar { width: 4px; }
-    .review-list::-webkit-scrollbar-thumb { background: var(--gold-secondary); border-radius: 2px; }
-
-    .review-item {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 10px;
-      padding: 10px 12px;
-    }
-    .review-item-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 4px;
-    }
-    .reviewer-name {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: #fff;
-    }
-    .reviewer-stars {
-      color: var(--gold-primary);
-      font-size: 0.78rem;
-    }
-    .reviewer-comment {
-      font-size: 0.8rem;
-      color: #d1d5db;
-      font-style: italic;
-      line-height: 1.35;
-    }
-    .reviewer-date {
-      font-size: 0.65rem;
-      color: #888;
-      margin-top: 4px;
     }
 
     /* SPECS GRID (ABV, TEMP, STOK) */
@@ -964,6 +846,43 @@
     <footer>
       <p>&copy; 2026 Copyright by <strong>RETAIL SHOP</strong>. All Rights Reserved.</p>
     </footer>
+  </div>
+
+  <!-- FLOATING AI SOMMELIER BUTTON -->
+  <button class="ai-float-btn" onclick="openAiModal()">
+    🤖 <span>AI Sommelier Assistant</span>
+  </button>
+
+  <!-- MODAL KAVA AI SOMMELIER -->
+  <div id="aiSommelierModal" class="ai-modal-overlay">
+    <div class="ai-card">
+      <button class="m-btn-close-v2" onclick="closeAiModal()">✕</button>
+      <h3>🤖 KAVA AI SOMMELIER</h3>
+      <p class="subtitle">Virtual Assistant for Cocktail Mixers, Vibe Matching, & Party Planning</p>
+
+      <div class="ai-party-calc">
+        <span style="font-size: 0.8rem; color:#d8b255; font-weight:700;">🎉 Party Bottle Calculator:</span>
+        <input type="number" id="aiGuestCount" value="10" min="1" max="500">
+        <span style="font-size: 0.78rem; color:#bbb;">Tamu</span>
+        <button class="btn-submit-review" onclick="askAiSommelier('party')">Hitung SKU</button>
+      </div>
+
+      <div class="ai-presets-grid">
+        <button class="ai-btn-preset" onclick="askAiSommelier('mixer')">🍹 Mixers & Cocktail Guide</button>
+        <button class="ai-btn-preset" onclick="askAiSommelier('mood_chill')">🍷 Vibe: Chill & Relaxing</button>
+        <button class="ai-btn-preset" onclick="askAiSommelier('mood_party')">🔥 Vibe: Wild Night Party</button>
+        <button class="ai-btn-preset" onclick="askAiSommelier('gift')">🎁 Luxury Gift & Special Occasion</button>
+      </div>
+
+      <div class="ai-response-box" id="aiResponseText">
+        Halo! Saya **AI Sommelier Kava**. Pilih salah satu opsi di atas atau hitung kebutuhan party botol kamu! 🍷✨
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <button class="btn-secondary" onclick="speakAiResponse()">🔊 Dengarkan AI (Voice)</button>
+        <button class="btn-gold" onclick="closeAiModal()">Selesai & Jelajah Katalog</button>
+      </div>
+    </div>
   </div>
 
   <!-- MODAL HIGH-END LUXURY SOMMELIER PROFILE V2 -->
@@ -1343,6 +1262,84 @@
       window.history.pushState({ path: newUrl }, '', newUrl);
     }
 
+    /* ================= FITUR KAVA AI SOMMELIER ENGINE ================= */
+    function openAiModal() {
+      document.getElementById('aiSommelierModal').classList.add('active');
+    }
+
+    function closeAiModal() {
+      document.getElementById('aiSommelierModal').classList.remove('active');
+    }
+
+    let lastAiResponseText = "";
+
+    function askAiSommelier(type) {
+      const responseBox = document.getElementById('aiResponseText');
+      let text = "";
+
+      if (type === 'mixer') {
+        text = `
+          🍹 **COCKTAIL & MIXER GUIDE**:
+          • **Tequila (1800 Reposado)**: Mix dengan Grapefruit Soda (Paloma) atau Fresh Lime + Triple Sec (Margarita).
+          • **Whiskey / Bourbon**: Enak diminum Straight On-The-Rocks, atau mix dengan Ginger Ale + Dash Bitters.
+          • **Vodka / Gin**: Pair dengan Tonic Water + Slice Lime, atau Cranberry Juice untuk rasa fruity menyegarkan.
+          • **Red Wine**: Paling nikmat dinikmati murni di suhu 16-18°C bersama Dark Chocolate atau Steak.
+        `;
+      } else if (type === 'mood_chill') {
+        text = `
+          🍷 **VIBE: CHILL & RELAXING EVENING**:
+          Rekomendasi terbaik untuk bersantai selepas kerja:
+          1. **19 Crimes Red Blend / Shiraz**: Bikin suasana malam tenang & penuh obrolan hangat.
+          2. **1924 Bourbon Barrel Cabernet**: Rasa manis vanila & kayu oak yang lembut di tenggorokan.
+        `;
+      } else if (type === 'mood_party') {
+        text = `
+          🔥 **VIBE: WILD NIGHT & PARTY MODE**:
+          Pilihan terbaik untuk party rame-rame:
+          1. **1800 Reposado Tequila**: Wajib untuk Tequila Shots bareng teman-teman!
+          2. **Import Spirits / Soju**: Bikin atmosfer selebrasi semakin meriah.
+        `;
+      } else if (type === 'gift') {
+        text = `
+          🎁 **SPECIAL OCCASION & EXECUTIVE GIFT**:
+          Pilihan eksklusif dengan botol mewah untuk hadiah / ulang tahun:
+          • **1924 Bourbon Barrel Aged Series**: Tampilan botol premium & vintage vintage yang sangat bergengsi.
+          • **1800 Reposado Tequila**: Simbol kemewahan 100% Blue Agave khas Meksiko.
+        `;
+      } else if (type === 'party') {
+        const guests = parseInt(document.getElementById('aiGuestCount').value) || 10;
+        const estimatedBottles = Math.ceil(guests / 3.5); 
+        text = `
+          🎉 **PARTY CALCULATOR FOR ${guests} TAMU**:
+          • **Estimasi Kebutuhan**: Minimal **${estimatedBottles} Botol** (Ukuran 750ml).
+          • **Saran Kombinasi**: 
+            - ${Math.ceil(estimatedBottles * 0.6)} Botol Spirits/Tequila (Untuk Shots & Cocktails)
+            - ${Math.floor(estimatedBottles * 0.4)} Botol Red Wine / Chilled Wine (Untuk Welcome Drink)
+        `;
+      }
+
+      responseBox.innerHTML = text.replace(/\n/g, '<br>');
+      lastAiResponseText = text.replace(/[*•#]/g, ''); 
+    }
+
+    function speakAiResponse() {
+      if (!lastAiResponseText) {
+        lastAiResponseText = "Hello! I am Kava AI Sommelier. Please choose a option to start.";
+      }
+      
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(lastAiResponseText);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.98;
+      utterance.pitch = 0.92;
+
+      const voices = window.speechSynthesis.getVoices();
+      const englishVoice = voices.find(v => (v.lang.includes('en-US') || v.lang.includes('en-GB') || v.lang.includes('en')) && (v.name.includes('Male') || v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Daniel') || v.name.includes('George'))) || voices.find(v => v.lang.includes('en'));
+      if (englishVoice) utterance.voice = englishVoice;
+
+      window.speechSynthesis.speak(utterance);
+    }
+
     /* ================= FULLSCREEN LIGHTBOX 3D MOTION SYSTEM ================= */
     let lightboxDustInterval = null;
 
@@ -1355,7 +1352,6 @@
       lightboxImg.src = src;
       lightbox.classList.add('active');
 
-      // Partikel Debu Emas Berkilau untuk Lightbox
       clearInterval(lightboxDustInterval);
       lightboxDustInterval = setInterval(() => {
         if (!lightbox.classList.contains('active')) return;
@@ -1384,7 +1380,6 @@
       }
     }
 
-    /* 3D Parallax Motion Khusus untuk Foto Raksasa di Lightbox */
     function handleLightboxMouseMove(e) {
       const box = document.getElementById('lightboxBox');
       const img = document.getElementById('lightboxImg');
