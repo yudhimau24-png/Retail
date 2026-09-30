@@ -1344,29 +1344,31 @@
       }
     };
 
-    /* PENERJEMAH OTOMATIS TEKS SENSORI DINAMIS DATABASE */
+    /* PENERJEMAH OTOMATIS TEKS SENSORI DINAMIS (SAFE NON-CRASH TYPE CHECKING) */
     function getTranslatedSensory(text, lang) {
-      if (!text || text === '-') return '-';
-      if (lang === 'en') return text;
+      if (!text || text === '-' || text === 'null' || text === 'undefined') return '-';
+      
+      const strText = String(text);
+      if (lang === 'en') return strText;
 
-      const lower = text.toLowerCase().trim();
+      const lower = strText.toLowerCase().trim();
 
       // Mappings Visual
-      if (lower.includes('crystal clear') || lower.includes('bright clarity')) {
+      if (lower.includes('crystal clear') || lower.includes('bright clarity') || lower.includes('jernih')) {
         if (lang === 'fr') return "Limpide et cristal, clarté brillante";
         if (lang === 'id') return "Sangat jernih, kejernihan berkilau";
       }
-      if (lower.includes('deep ruby red') || lower.includes('garnet rim')) {
+      if (lower.includes('deep ruby') || lower.includes('garnet') || lower.includes('rubi')) {
         if (lang === 'fr') return "Rouge rubis profond, reflet grenat";
         if (lang === 'id') return "Merah rubi pekat, kilau garnet";
       }
-      if (lower.includes('golden amber') || lower.includes('warm glow')) {
+      if (lower.includes('golden amber') || lower.includes('warm glow') || lower.includes('amber')) {
         if (lang === 'fr') return "Ambre doré avec un éclat chaleureux";
         if (lang === 'id') return "Kuning amber keemasan dengan pendaran hangat";
       }
 
       // Mappings Aroma
-      if (lower.includes('clean, neutral, subtle rice grain sweetness')) {
+      if (lower.includes('clean, neutral') || lower.includes('rice grain')) {
         if (lang === 'fr') return "Propre, neutre, douceur subtile de grain de riz";
         if (lang === 'id') return "Bersih, netral, keharuman manis bulir beras yang lembut";
       }
@@ -1376,28 +1378,28 @@
       }
 
       // Mappings Palate
-      if (lower.includes('smooth and crisp, light sweetness, clean subtle finish')) {
+      if (lower.includes('smooth and crisp') || lower.includes('subtle finish')) {
         if (lang === 'fr') return "Doux et frais, légère douceur, finale propre et subtile";
         if (lang === 'id') return "Halus dan segar, rasa manis ringan, sentuhan akhir bersih";
       }
 
       // Mappings Notes
-      if (lower.includes('crafted from authentic 100% blue agave')) {
-        if (lang === 'fr') return "Fabriqué à partir d'authentique 100% Agave Bleu du Mexique, offrant une pureté herbacée fraîche et la douceur du patrimoine mexicain.";
-        if (lang === 'id') return "Dibuat dari 100% Blue Agave asli Meksiko, menghadirkan kemurnian herba yang segar dan kehalusan warisan alkohol tradisional Meksiko.";
+      if (lower.includes('blue agave') || lower.includes('crafted from')) {
+        if (lang === 'fr') return "Fabriqué à partir d'authentique 100% Agave Bleu du Mexique, offrant une pureté herbacée fraîche.";
+        if (lang === 'id') return "Dibuat dari 100% Blue Agave asli Meksiko, menghadirkan kemurnian herba yang segar.";
       }
 
       // Mappings Storage Note
-      if (lower.includes('store upright, cool, dark') || lower.includes('store upright, cool dark place')) {
+      if (lower.includes('store upright') || lower.includes('upright')) {
         if (lang === 'fr') return "Conserver debout, dans un endroit frais et sombre";
         if (lang === 'id') return "Simpan berdiri tegak, di tempat sejuk dan gelap";
       }
-      if (lower.includes('store horizontal, cool dark')) {
+      if (lower.includes('store horizontal') || lower.includes('horizontal')) {
         if (lang === 'fr') return "Conserver horizontalement, au frais et à l'abri de la lumière";
         if (lang === 'id') return "Simpan mendatar/miring, di tempat sejuk dan gelap";
       }
 
-      return text;
+      return strText;
     }
 
     /* Background Canvas Particle */
@@ -1485,22 +1487,22 @@
         if (data) {
           localWines = data.map(w => ({
             ...w,
-            slug: w.name ? w.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '',
+            slug: w.slug || (w.name ? w.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : ''),
             imageUrl: w.imageUrl || w.image_url || 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500&q=80',
             videoUrl: w.videoUrl || w.video_url || '',
             servingTemp: w.servingTemp || w.serving_temp || '16-18°C',
             stockStatus: w.stockStatus || w.stock_status || 'Tersedia',
             storageNote: w.storageNote || w.storage_note || 'Store upright, cool dark place',
             collection: w.collection || 'All Products',
-            bodyVal: w.bodyVal || w.body || 75,
-            tanninVal: w.tanninVal || w.tannin || 80,
-            acidityVal: w.acidityVal || w.acidity || 65,
-            sweetnessVal: w.sweetnessVal || w.sweetness || 20,
-            visual: w.visual || 'Deep ruby red, garnet rim',
-            aroma: w.aroma || 'Blackcurrant, violet, cedar, spice bouquet',
-            palate: w.palate || 'Full-bodied, structured, velvety tannins, elegant finish',
-            notes: (w.notes && w.notes !== '-') ? w.notes : 'Fine quality beverage with rich characteristics.',
-            pairing: w.pairing || 'Grilled meats, cheeses, rich cuisine'
+            bodyVal: parseInt(w.bodyVal || w.body_val || w.body) || 75,
+            tanninVal: parseInt(w.tanninVal || w.tannin_val || w.tannin) || 80,
+            acidityVal: parseInt(w.acidityVal || w.acidity_val || w.acidity) || 65,
+            sweetnessVal: parseInt(w.sweetnessVal || w.sweetness_val || w.sweetness) || 20,
+            visual: w.visual || w.visual_text || 'Deep ruby red, garnet rim',
+            aroma: w.aroma || w.aroma_text || 'Blackcurrant, violet, cedar, spice bouquet',
+            palate: w.palate || w.palate_text || 'Full-bodied, structured, velvety tannins, elegant finish',
+            notes: w.notes || w.general_notes || w.notes_text || 'Fine quality beverage with rich characteristics.',
+            pairing: w.pairing || w.food_pairing || 'Grilled meats, cheeses, rich cuisine'
           }));
           renderWines();
 
@@ -1613,7 +1615,7 @@
       const funFactText = getFunFact(wine);
       const t = i18n[currentLanguage];
 
-      // Terjemahkan Teks Sensori sesuai Bahasa Terpilih
+      // Terjemahkan Teks Sensori secara Aman
       const visualText = getTranslatedSensory(wine.visual, currentLanguage);
       const aromaText = getTranslatedSensory(wine.aroma, currentLanguage);
       const palateText = getTranslatedSensory(wine.palate, currentLanguage);
@@ -1753,6 +1755,7 @@
       window.history.pushState({ path: newUrl }, '', newUrl);
     }
 
+    /* ================= FITUR COMPREHENSIVE BEVERAGES EXPERT AI ================= */
     function initAiChatGreeting() {
       const history = document.getElementById('aiChatHistory');
       const chips = document.getElementById('aiChipsContainer');
