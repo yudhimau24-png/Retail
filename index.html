@@ -15,7 +15,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
-    /* (Semua CSS persis sama seperti yang Anda buat, tidak ada yang diubah) */
     :root {
       --gold-primary: #f3d082;
       --gold-secondary: #d8b255;
@@ -275,7 +274,6 @@
       overflow: hidden;
     }
 
-    /* BORDER ACCENT EMAS BERKILAU */
     .luxury-card-v2::before {
       content: '';
       position: absolute;
@@ -300,22 +298,85 @@
     .m-wine-name-v2 { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 800; color: #ffffff; line-height: 1.25; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px; }
     .m-wine-origin-v2 { font-size: 0.88rem; color: var(--gold-primary); font-weight: 600; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 6px; }
 
-    .m-img-glow-container {
+    /* ================= INTERACTIVE MEDIA BOX (FOTO & VIDEO) ================= */
+    .m-media-box {
       position: relative;
       width: 100%;
       height: 380px;
       border-radius: 22px;
-      background: radial-gradient(circle at center, rgba(120, 30, 50, 0.25) 0%, rgba(10, 5, 8, 0.85) 75%);
+      background: radial-gradient(circle at center, rgba(120, 30, 50, 0.3) 0%, rgba(10, 5, 8, 0.9) 80%);
       border: 1px solid var(--glass-border);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      overflow: hidden;
       box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
     }
 
     .m-bottle-img-v2 { max-height: 340px; object-fit: contain; filter: drop-shadow(0 20px 25px rgba(0,0,0,0.85)); animation: bottleFloat 4s ease-in-out infinite alternate; }
     @keyframes bottleFloat { 0% { transform: translateY(0px); } 100% { transform: translateY(-8px); } }
+
+    .m-bottle-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 22px;
+    }
+
+    .media-tab-group {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .media-tab-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(243, 208, 130, 0.3);
+      color: #fff;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .media-tab-btn.active, .media-tab-btn:hover {
+      background: var(--gold-primary);
+      color: #000;
+      box-shadow: 0 0 12px rgba(243, 208, 130, 0.5);
+    }
+
+    /* ELEMEN FUN FACT & SOMMELIER WARNING */
+    .fun-fact-card {
+      margin-top: 18px;
+      background: linear-gradient(135deg, rgba(255, 77, 77, 0.1) 0%, rgba(243, 208, 130, 0.08) 100%);
+      border: 1px dashed rgba(243, 208, 130, 0.4);
+      border-radius: 16px;
+      padding: 12px 16px;
+      text-align: left;
+      animation: pulseGlow 3s infinite alternate;
+    }
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 5px rgba(243, 208, 130, 0.1); }
+      100% { box-shadow: 0 0 18px rgba(243, 208, 130, 0.3); }
+    }
+    .fun-fact-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--gold-primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .fun-fact-text {
+      font-size: 0.82rem;
+      color: #f3f4f6;
+      font-style: italic;
+      line-height: 1.4;
+    }
 
     /* FLAVOR MATRIX CHARTS GLOWING */
     .m-matrix-title-v2 { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 800; color: var(--gold-primary); text-align: center; letter-spacing: 3px; margin-bottom: 20px; text-transform: uppercase; }
@@ -340,7 +401,7 @@
       box-shadow: 0 0 12px rgba(243, 208, 130, 0.6); 
     }
 
-    /* SENSORY CARDS (VISUAL, AROMA, PALATE, NOTES, STORAGE) */
+    /* SENSORY CARDS */
     .m-sensory-grid-v2 { margin-top: 22px; display: flex; flex-direction: column; gap: 10px; }
     .m-sensory-item-v2 {
       background: rgba(255, 255, 255, 0.025);
@@ -356,6 +417,58 @@
     .m-sensory-item-v2:hover { background: rgba(243, 208, 130, 0.05); }
     .m-sensory-item-v2 strong { font-family: 'Cinzel', serif; font-size: 0.75rem; color: var(--gold-primary); min-width: 85px; letter-spacing: 1px; font-weight: 700; }
     .m-sensory-item-v2 span { font-size: 0.83rem; color: #e4e4e7; font-style: italic; line-height: 1.4; }
+
+    /* REAKSI EMOJI INTERAKTIF */
+    .emoji-reaction-box {
+      margin-top: 20px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 10px;
+    }
+    .emoji-reaction-box span {
+      display: block;
+      font-size: 0.72rem;
+      color: #a1a1aa;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .emoji-btns {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn-emoji-react {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(243, 208, 130, 0.2);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-emoji-react:hover {
+      transform: scale(1.1) rotate(-3deg);
+      background: rgba(243, 208, 130, 0.2);
+      border-color: var(--gold-primary);
+    }
+
+    .floating-emoji {
+      position: fixed;
+      pointer-events: none;
+      font-size: 2rem;
+      animation: floatUp 1s ease-out forwards;
+      z-index: 10000;
+    }
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0) scale(0.8); }
+      100% { opacity: 0; transform: translateY(-80px) scale(1.4); }
+    }
 
     /* SPECS GRID (ABV, TEMP, STOK) */
     .m-specs-grid-v2 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 22px; }
@@ -543,6 +656,9 @@
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eW93dmppYW54aW9icHplam5jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODkyMjUyOCwiZXhwIjoyMTA0NDk4NTI4fQ.-aeTfpvoGy3ICP2LMxa0vGfYggXlldnj5vtouzRm7bg";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    /* DEFAULT MOTION VIDEO (JIKA BELUM ADA URL VIDEO SPESIFIK DI DATABASE) */
+    const DEFAULT_PRODUCT_VIDEO = "https://assets.mixkit.co/videos/preview/mixkit-pouring-red-wine-into-a-glass-42903-large.mp4";
+
     /* Background Canvas Particle */
     const canvas = document.getElementById('bgCanvas');
     const ctx = canvas.getContext('2d');
@@ -581,16 +697,30 @@
     
     const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whisky", "Cognac", "Soju", "Sake", "Traditional and Grain", "Baijiu", "Alcopops"];
 
+    /* GENERASI FUN FACT SOMMELIER SESUAI NAMA PRODUK */
+    function getFunFact(wineName) {
+      const name = wineName ? wineName.toLowerCase() : '';
+      if (name.includes('19 crimes')) {
+        return "🚨 <strong>Sommelier's Secret:</strong> Dulu 19 jenis kejahatan di Inggris bisa bikin orang dibuang ke Australia. Tapi tenang, ketagihan nikmatnya wine ini 100% legal kok! 😉🍷";
+      } else if (name.includes('tequila') || name.includes('1800')) {
+        return "⚡ <strong>Sommelier's Warning:</strong> Tequila ini bisa mendadak bikin Anda jago bahasa Spanyol dan tiba-tiba pengen joget pas midnight! 💃🇲🇽";
+      } else if (name.includes('whisky') || name.includes('whiskey')) {
+        return "💼 <strong>Gentleman Note:</strong> Minum 1 sloki berasa jadi Peaky Blinders, minum 3 sloki berasa pengen borong saham. 🥃🎩";
+      } else if (name.includes('vodka')) {
+        return "❄️ <strong>Cold Fact:</strong> Diminum dingin lebih mantap. Bisa menghilangkan stres sejenak dari dinamika dunia kerja! 🧊🍸";
+      }
+      return "✨ <strong>Pro Tip:</strong> 1 gelas bikin santai, 2 gelas bikin puitis, 3 gelas... mending kunci HP biar nggak salah kirim chat ke mantan! 🤫🍷";
+    }
+
     async function fetchWinesFromSupabase() {
       try {
         const { data, error } = await supabaseClient.from('wines').select('*');
         if (data) {
           localWines = data.map(w => ({
             ...w,
-            /* --- FITUR BARU: Membuat URL slug (link unik) berdasarkan nama produk --- */
             slug: w.name ? w.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '',
-            
             imageUrl: w.imageUrl || w.image_url || 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500&q=80',
+            videoUrl: w.videoUrl || w.video_url || DEFAULT_PRODUCT_VIDEO,
             servingTemp: w.servingTemp || w.serving_temp || '16-18°C',
             stockStatus: w.stockStatus || w.stock_status || 'Tersedia',
             storageNote: w.storageNote || w.storage_note || 'Store upright, cool dark place',
@@ -607,7 +737,7 @@
           }));
           renderWines();
 
-          /* --- FITUR BARU: Cek URL saat web pertama kali dibuka, apakah ada perintah buka produk? --- */
+          /* CEK URL APABILA DIBUKA DENGAN QUERY PARAMETER (?product=slug) */
           const urlParams = new URLSearchParams(window.location.search);
           const productSlug = urlParams.get('product');
           if (productSlug) {
@@ -678,8 +808,7 @@
         return;
       }
 
-      /* --- FITUR BARU: Mengubah fungsi onclick agar memanggil openDetailBySlug() --- */
-      grid.innerHTML = currentFilteredWines.map((wine, idx) => {
+      grid.innerHTML = currentFilteredWines.map((wine) => {
         const isSpirit = spiritTypes.some(spirit => wine.type && wine.type.includes(spirit));
         let badgeHtml = wine.collection === 'Best Seller' ? `<span class="collection-badge badge-best">⭐ Best Seller</span>` : (wine.collection === 'New Arrival' ? `<span class="collection-badge badge-new">✨ New</span>` : '');
 
@@ -707,11 +836,12 @@
       }).join('');
     }
 
-    /* --- FITUR BARU: Fungsi openDetail diubah namanya dan disesuaikan untuk URL Parameter --- */
     function openDetailBySlug(slug) {
-      // Cari produk dari seluruh data lokal berdasarkan slug-nya
       const wine = localWines.find(w => w.slug === slug);
       if (!wine) return;
+
+      const videoSrc = wine.videoUrl || DEFAULT_PRODUCT_VIDEO;
+      const funFactText = getFunFact(wine.name);
 
       document.getElementById('vintageContent').innerHTML = `
         <header class="m-header-v2">
@@ -723,8 +853,22 @@
           <div class="m-bottle-box-v2">
             <div class="m-wine-name-v2">${escapeHtml(wine.name)}</div>
             <div class="m-wine-origin-v2">📍 ${escapeHtml(wine.region) || 'Origin Unknown'} • ${escapeHtml(wine.type)}</div>
-            <div class="m-img-glow-container">
-              <img src="${wine.imageUrl}" class="m-bottle-img-v2">
+            
+            <div class="m-media-box" id="mediaBox">
+              <img src="${wine.imageUrl}" id="mediaImage" class="m-bottle-img-v2" style="display: block;">
+              <video id="mediaVideo" class="m-bottle-video" loop muted playsinline style="display: none;">
+                <source src="${videoSrc}" type="video/mp4">
+              </video>
+            </div>
+
+            <div class="media-tab-group">
+              <button class="media-tab-btn active" onclick="switchMedia('image')">📸 Foto Botol</button>
+              <button class="media-tab-btn" onclick="switchMedia('video')">🎥 Motion Video</button>
+            </div>
+
+            <div class="fun-fact-card">
+              <div class="fun-fact-title">🎭 Fun Fact & Sommelier Warning</div>
+              <div class="fun-fact-text">${funFactText}</div>
             </div>
           </div>
 
@@ -732,22 +876,22 @@
             <div class="m-matrix-title-v2">FLAVOR MATRIX CHARTS</div>
 
             <div class="m-meter-card">
-              <div class="m-bar-label-v2"><span>BODY</span><span class="score-badge">${wine.bodyVal / 10} / 10</span></div>
+              <div class="m-bar-label-v2"><span>BODY</span><span class="score-badge">${wine.bodyVal / 10} / 10 🏋️‍♂️</span></div>
               <div class="m-bar-track-v2"><div class="m-bar-fill-v2" style="width: ${wine.bodyVal}%;"></div></div>
             </div>
 
             <div class="m-meter-card">
-              <div class="m-bar-label-v2"><span>TANNIN</span><span class="score-badge">${wine.tanninVal / 10} / 10</span></div>
+              <div class="m-bar-label-v2"><span>TANNIN</span><span class="score-badge">${wine.tanninVal / 10} / 10 🍇</span></div>
               <div class="m-bar-track-v2"><div class="m-bar-fill-v2" style="width: ${wine.tanninVal}%;"></div></div>
             </div>
 
             <div class="m-meter-card">
-              <div class="m-bar-label-v2"><span>ACIDITY</span><span class="score-badge">${wine.acidityVal / 10} / 10</span></div>
+              <div class="m-bar-label-v2"><span>ACIDITY</span><span class="score-badge">${wine.acidityVal / 10} / 10 🍋</span></div>
               <div class="m-bar-track-v2"><div class="m-bar-fill-v2" style="width: ${wine.acidityVal}%;"></div></div>
             </div>
 
             <div class="m-meter-card">
-              <div class="m-bar-label-v2"><span>SWEETNESS</span><span class="score-badge">${wine.sweetnessVal / 10} / 10</span></div>
+              <div class="m-bar-label-v2"><span>SWEETNESS</span><span class="score-badge">${wine.sweetnessVal / 10} / 10 🍯</span></div>
               <div class="m-bar-track-v2"><div class="m-bar-fill-v2" style="width: ${wine.sweetnessVal}%;"></div></div>
             </div>
 
@@ -757,6 +901,16 @@
               <div class="m-sensory-item-v2"><strong>🍷 PALATE</strong><span>${escapeHtml(wine.palate)}</span></div>
               <div class="m-sensory-item-v2"><strong>📝 NOTES</strong><span>${escapeHtml(wine.notes)}</span></div>
               <div class="m-sensory-item-v2"><strong>🍾 STORAGE</strong><span>${escapeHtml(wine.storageNote)}</span></div>
+            </div>
+
+            <div class="emoji-reaction-box">
+              <span>Bagaimana Vibe Minuman Ini?</span>
+              <div class="emoji-btns">
+                <button class="btn-emoji-react" onclick="triggerEmojiReaction(event, '🍷')">🍷 Chill Aja</button>
+                <button class="btn-emoji-react" onclick="triggerEmojiReaction(event, '🔥')">🔥 Party Mode</button>
+                <button class="btn-emoji-react" onclick="triggerEmojiReaction(event, '😍')">😍 Auto Buy</button>
+                <button class="btn-emoji-react" onclick="triggerEmojiReaction(event, '🤪')">🤪 Pusing Nikmat</button>
+              </div>
             </div>
           </div>
         </div>
@@ -780,20 +934,55 @@
 
       document.getElementById('detailView').classList.add('active');
 
-      /* --- FITUR BARU: Update URL Browser (Biar bisa di-copy & QR Code) --- */
       const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?product=' + slug;
       window.history.pushState({ path: newUrl }, '', newUrl);
     }
 
-    /* --- FITUR BARU: Bersihkan URL saat popup ditutup --- */
+    function switchMedia(type) {
+      const img = document.getElementById('mediaImage');
+      const video = document.getElementById('mediaVideo');
+      const btns = document.querySelectorAll('.media-tab-btn');
+
+      if (type === 'video') {
+        img.style.display = 'none';
+        video.style.display = 'block';
+        video.play();
+        btns[0].classList.remove('active');
+        btns[1].classList.add('active');
+      } else {
+        video.pause();
+        video.style.display = 'none';
+        img.style.display = 'block';
+        btns[1].classList.remove('active');
+        btns[0].classList.add('active');
+      }
+    }
+
+    function triggerEmojiReaction(e, emojiChar) {
+      for (let i = 0; i < 5; i++) {
+        const emojiEl = document.createElement('div');
+        emojiEl.className = 'floating-emoji';
+        emojiEl.innerText = emojiChar;
+        
+        const x = e.clientX + (Math.random() * 60 - 30);
+        const y = e.clientY + (Math.random() * 20 - 10);
+        
+        emojiEl.style.left = `${x}px`;
+        emojiEl.style.top = `${y}px`;
+        
+        document.body.appendChild(emojiEl);
+        
+        setTimeout(() => { emojiEl.remove(); }, 1000);
+      }
+    }
+
     function closeDetail() { 
       document.getElementById('detailView').classList.remove('active'); 
       const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
       window.history.pushState({ path: cleanUrl }, '', cleanUrl);
     }
 
-    /* --- FITUR BARU: Deteksi tombol Back/Forward Browser --- */
-    window.addEventListener('popstate', (event) => {
+    window.addEventListener('popstate', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const productSlug = urlParams.get('product');
       if (productSlug) {
