@@ -1257,7 +1257,10 @@
 
       loadProductReviews(wine.slug);
 
-      // BACA SUARA OTOMATIS: ENGLISH SOMMELIER ACCENT DENGAN NADA BERWIBAWA
+      // LANGSUNG AKTIFKAN MOTION MODE 3D SECARA OTOMATIS
+      switchMedia('motion');
+
+      // BACA SUARA OTOMATIS: AKSEN BAHASA INGGRIS ELEGANT DENGAN WELCOME SAPAAN
       setTimeout(() => {
         speakCurrentProduct();
       }, 250);
@@ -1369,7 +1372,7 @@
       }
     }
 
-    /* ================= FITUR TEXT-TO-SPEECH (ELEGANT ENGLISH SOMMELIER ACCENT) ================= */
+    /* ================= FITUR TEXT-TO-SPEECH (ENGLISH SOMMELIER ACCENT + WARM WELCOME) ================= */
     function toggleSpeech() {
       if (!('speechSynthesis' in window)) {
         alert('Sorry, your browser does not support text-to-speech functionality.');
@@ -1390,7 +1393,7 @@
       const wine = currentActiveWine;
       const cleanFunFact = getFunFact(wine).replace(/<[^>]*>?/gm, '');
 
-      // Naskah narasi Bahasa Inggris bergaya Sommelier Profesional & Luwes
+      // Naskah narasi Bahasa Inggris bergaya Sommelier Profesional dengan sapaan hangat di awal
       const narrativeText = `
         Welcome to the Master Sommelier Profile.
         ${wine.name}.
@@ -1404,12 +1407,11 @@
       `;
 
       const utterance = new SpeechSynthesisUtterance(narrativeText);
-      utterance.lang = 'en-US'; // Diatur ke Aksen Bahasa Inggris
-      utterance.rate = 0.98; // Tempo artikulasi pas & tidak terlalu cepat
-      utterance.pitch = 0.92; // Pitch rendah untuk memberikan karakter suara berwibawa & dewasa
+      utterance.lang = 'en-US';
+      utterance.rate = 0.98;
+      utterance.pitch = 0.92;
 
       const voices = window.speechSynthesis.getVoices();
-      // Mengutamakan profil aksen bahasa Inggris pria/natural berartikulasi jernih (US / UK)
       const englishVoice = voices.find(v => (v.lang.includes('en-US') || v.lang.includes('en-GB') || v.lang.includes('en')) && (v.name.includes('Male') || v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Daniel') || v.name.includes('George'))) || voices.find(v => v.lang.includes('en'));
       if (englishVoice) utterance.voice = englishVoice;
 
