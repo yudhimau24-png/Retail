@@ -54,9 +54,12 @@
       border-bottom: 1px solid var(--glass-border);
       padding: 1.2rem 2rem;
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
+      align-items: center;
       position: relative;
       z-index: 50;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
     .nav-links {
@@ -64,6 +67,7 @@
       display: flex;
       align-items: center;
       gap: 2.5rem;
+      margin: 0 auto;
     }
 
     .nav-links li { position: relative; }
@@ -99,6 +103,34 @@
       margin-left: 0.3rem;
       letter-spacing: 1px;
       box-shadow: 0 0 8px rgba(255, 77, 77, 0.6);
+    }
+
+    /* LANGUAGE SELECTOR STYLING */
+    .lang-selector-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .lang-select {
+      background: rgba(20, 10, 14, 0.9);
+      border: 1px solid var(--gold-primary);
+      color: var(--gold-primary);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.78rem;
+      outline: none;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(243, 208, 130, 0.2);
+      transition: all 0.3s ease;
+    }
+    .lang-select:hover {
+      background: var(--gold-primary);
+      color: #000;
+    }
+    .lang-select option {
+      background: #0f080b;
+      color: #fff;
     }
 
     .dropdown-content {
@@ -255,7 +287,7 @@
     footer strong { color: var(--gold-primary); }
 
     /* ========================================================= */
-    /* INTERACTIVE FLOATING AI SOMMELIER CHATBOT                 */
+    /* INTERACTIVE BEVERAGES EXPERT AI CHATBOT                   */
     /* ========================================================= */
     .ai-float-btn {
       position: fixed;
@@ -308,9 +340,9 @@
       border: 1px solid var(--gold-primary);
       border-radius: 26px;
       width: 100%;
-      max-width: 620px;
+      max-width: 650px;
       height: 85vh;
-      max-height: 720px;
+      max-height: 740px;
       padding: 24px;
       box-shadow: 0 25px 70px rgba(0,0,0,0.95), 0 0 35px rgba(243, 208, 130, 0.25);
       position: relative;
@@ -334,7 +366,6 @@
       margin-bottom: 14px;
     }
 
-    /* CHAT MESSAGES AREA */
     .ai-chat-history {
       flex: 1;
       overflow-y: auto;
@@ -351,11 +382,11 @@
     .ai-chat-history::-webkit-scrollbar-thumb { background: var(--gold-secondary); border-radius: 3px; }
 
     .chat-bubble {
-      max-width: 82%;
+      max-width: 85%;
       padding: 10px 14px;
       border-radius: 16px;
       font-size: 0.82rem;
-      line-height: 1.45;
+      line-height: 1.5;
       animation: fadeIn 0.25s ease;
     }
     .chat-bubble.ai {
@@ -858,6 +889,15 @@
         <li><a href="javascript:void(0)">OUR STORE</a></li>
         <li><a href="javascript:void(0)" class="sale">SALE <span class="badge-hot">HOT</span></a></li>
       </ul>
+
+      <!-- LANGUAGE SELECTOR -->
+      <div class="lang-selector-box">
+        <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
+          <option value="en" selected>🇬🇧 English</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="id">🇮🇩 Indonesia</option>
+        </select>
+      </div>
     </nav>
 
     <div class="hero">
@@ -888,37 +928,32 @@
     </footer>
   </div>
 
-  <!-- FLOATING INTERACTIVE AI SOMMELIER BUTTON -->
+  <!-- FLOATING INTERACTIVE BEVERAGES EXPERT AI BUTTON -->
   <button class="ai-float-btn" onclick="openAiModal()">
-    🤖 <span>Ask Kava AI Sommelier</span>
+    🤖 <span id="lblAiFloat">Ask Beverages Expert AI</span>
   </button>
 
-  <!-- INTERACTIVE CHAT AI SOMMELIER MODAL -->
+  <!-- INTERACTIVE CHAT BEVERAGES EXPERT AI MODAL -->
   <div id="aiSommelierModal" class="ai-modal-overlay">
     <div class="ai-card">
       <button class="m-btn-close-v2" onclick="closeAiModal()">✕</button>
-      <h3>🤖 KAVA AI SOMMELIER</h3>
-      <p class="subtitle">Interactive Assistant for Mixers, Party Recommendations, & Product Matcher</p>
+      <h3>🤖 KAVA BEVERAGES EXPERT AI</h3>
+      <p class="subtitle" id="lblAiSubtitle">Interactive Assistant for All Beverages: Mixers, Cocktails, Pairing, Beer, Sake, Soju & Party Planning</p>
 
       <!-- CHAT MESSAGES HISTORY CONTAINER -->
       <div class="ai-chat-history" id="aiChatHistory">
-        <div class="chat-bubble ai">
-          Welcome! I am your <strong>Kava AI Sommelier Assistant</strong>. How can I assist your tasting journey today? Feel free to ask about mixers, party Planning, budget recommendations, or special occasions! 🍷✨
-        </div>
+        <!-- Initial Chat Message via JavaScript -->
       </div>
 
       <!-- QUICK SUGGESTION CHIPS -->
-      <div class="ai-quick-chips">
-        <button class="chip-btn" onclick="handleChipClick('Cocktail Mixers Guide')">🍸 Best Mixers Guide</button>
-        <button class="chip-btn" onclick="handleChipClick('Party Bottling for 15 People')">🎉 Party for 15 People</button>
-        <button class="chip-btn" onclick="handleChipClick('Luxury Special Gift')">🎁 Luxury Gift Recommendation</button>
-        <button class="chip-btn" onclick="handleChipClick('Chill Evening Wine')">🍷 Relaxing Evening Wine</button>
+      <div class="ai-quick-chips" id="aiChipsContainer">
+        <!-- Quick chips dynamic via JS -->
       </div>
 
       <!-- INPUT BAR FOR CUSTOM USER MESSAGES -->
       <form class="ai-input-bar" onsubmit="handleUserAiSubmit(event)">
-        <input type="text" id="aiChatInput" placeholder="Ask anything (e.g. Tequila mixers, party 20 people, wine under 500k)..." autocomplete="off">
-        <button type="submit" class="btn-ai-send">Send 🚀</button>
+        <input type="text" id="aiChatInput" placeholder="Ask anything (e.g. Tequila mixers, party 20 guests)..." autocomplete="off">
+        <button type="submit" class="btn-ai-send" id="btnAiSend">Send 🚀</button>
       </form>
     </div>
   </div>
@@ -949,6 +984,9 @@
     const SUPABASE_URL = "https://nuyowvjianxiobpzejnc.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eW93dmppYW54aW9icHplam5jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODkyMjUyOCwiZXhwIjoyMTA0NDk4NTI4fQ.-aeTfpvoGy3ICP2LMxa0vGfYggXlldnj5vtouzRm7bg";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    /* GLOBAL STATE LANGUAGE: 'en' | 'fr' | 'id' */
+    let currentLanguage = 'en';
 
     /* Background Canvas Particle */
     const canvas = document.getElementById('bgCanvas');
@@ -991,6 +1029,17 @@
     let selectedRatingStar = 5;
 
     const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whisky", "Cognac", "Soju", "Sake", "Traditional and Grain", "Baijiu", "Alcopops"];
+
+    /* FUNGSI PERUBAHAN BAHASA GLOBAL */
+    function changeLanguage(langCode) {
+      currentLanguage = langCode;
+      initAiChatGreeting();
+
+      // Jika modal detail sedang aktif, perbarui narasi suara & UI-nya
+      if (currentActiveWine && document.getElementById('detailView').classList.contains('active')) {
+        speakCurrentProduct();
+      }
+    }
 
     /* KOLEKSI FUN FACT LENGKAP */
     const funFactPools = {
@@ -1165,6 +1214,10 @@
       const videoSrc = wine.videoUrl;
       const funFactText = getFunFact(wine);
 
+      let audioBtnLabel = "🔊 Listen Profile (English)";
+      if (currentLanguage === 'fr') audioBtnLabel = "🔊 Écouter le Profil (Français)";
+      else if (currentLanguage === 'id') audioBtnLabel = "🔊 Dengarkan Profil (Indonesia)";
+
       document.getElementById('vintageContent').innerHTML = `
         <header class="m-header-v2">
           <h2>MASTER SOMMELIER PROFILE</h2>
@@ -1279,7 +1332,7 @@
 
         <div class="m-btn-group-v2">
           <button class="m-btn-wa-v2" onclick="inquireWine('${escapeHtml(wine.name)}')">💬 WhatsApp Order / Inquire</button>
-          <button class="m-btn-audio-v2" id="btnAudioSpeak" onclick="toggleSpeech()">🔊 Listen Profile (English)</button>
+          <button class="m-btn-audio-v2" id="btnAudioSpeak" onclick="toggleSpeech()">${audioBtnLabel}</button>
           <button class="m-btn-pdf-v2" onclick="exportVintagePDF('${escapeHtml(wine.name)}')">📄 Download PDF</button>
         </div>
       `;
@@ -1291,7 +1344,7 @@
       // LANGSUNG AKTIFKAN MOTION MODE 3D SECARA OTOMATIS
       switchMedia('motion');
 
-      // BACA SUARA OTOMATIS
+      // BACA SUARA OTOMATIS SESUAI BAHASA TERPILIH
       setTimeout(() => {
         speakCurrentProduct();
       }, 250);
@@ -1300,9 +1353,47 @@
       window.history.pushState({ path: newUrl }, '', newUrl);
     }
 
-    /* ================= FITUR INTERACTIVE KAVA AI SOMMELIER CHAT ================= */
+    /* ================= FITUR COMPREHENSIVE BEVERAGES EXPERT AI ================= */
+    function initAiChatGreeting() {
+      const history = document.getElementById('aiChatHistory');
+      const chips = document.getElementById('aiChipsContainer');
+      if (!history || !chips) return;
+
+      history.innerHTML = '';
+      
+      if (currentLanguage === 'fr') {
+        appendChatBubble("Bonjour et bienvenue ! Je suis votre <strong>Père Sommelier & Expert en Boissons Kava</strong>. Posez-moi vos questions sur les cocktails, l'organisation de fêtes, les accords mets-vins, ou la bière et le saké ! 🍷🍸🍺✨", "ai");
+        chips.innerHTML = `
+          <button class="chip-btn" onclick="handleChipClick('Guide des Mixeurs et Cocktails')">🍸 Cocktails & Mixeurs</button>
+          <button class="chip-btn" onclick="handleChipClick('Calculateur de Fête pour 20 Personnes')">🎉 Calculateur de Fête</button>
+          <button class="chip-btn" onclick="handleChipClick('Accord Vin et Viande')">🥩 Accord Mets-Vins</button>
+          <button class="chip-btn" onclick="handleChipClick('Cadeau de Luxe')">🎁 Cadeaux de Luxe</button>
+        `;
+      } else if (currentLanguage === 'id') {
+        appendChatBubble("Halo dan selamat datang! Saya adalah <strong>Pakar Minuman AI Kava</strong>. Tanyakan apa saja tentang resep racikan cocktail, kalkulator kebutuhan pesta, rekomendasi wine, beer, sake, soju, atau minuman non-alkohol! 🍷🍸🍺✨", "ai");
+        chips.innerHTML = `
+          <button class="chip-btn" onclick="handleChipClick('Resep Racikan Cocktail')">🍸 Cocktails & Mixers</button>
+          <button class="chip-btn" onclick="handleChipClick('Kalkulator Pesta 20 Orang')">🎉 Kalkulator Pesta</button>
+          <button class="chip-btn" onclick="handleChipClick('Rekomendasi Wine & Steak')">🥩 Wine & Steak Pairing</button>
+          <button class="chip-btn" onclick="handleChipClick('Rekomendasi Hadiah Mewah')">🎁 Hadiah Mewah</button>
+        `;
+      } else {
+        appendChatBubble("Hello & welcome! I am your <strong>Kava Beverages Expert AI</strong>. Ask me anything about cocktail mixers, party bottling, wine pairing, beers, sake, soju, or non-alcoholic options! 🍷🍸🍺✨", "ai");
+        chips.innerHTML = `
+          <button class="chip-btn" onclick="handleChipClick('Cocktail & Mixers Recipes')">🍸 Cocktail & Mixers</button>
+          <button class="chip-btn" onclick="handleChipClick('Party Bottling for 20 Guests')">🎉 Party Calculator</button>
+          <button class="chip-btn" onclick="handleChipClick('Wine & Steak Pairing Guide')">🥩 Wine Pairing</button>
+          <button class="chip-btn" onclick="handleChipClick('Sake and Soju Serving Guide')">🍶 Sake & Soju Guide</button>
+          <button class="chip-btn" onclick="handleChipClick('Luxury Executive Gift')">🎁 Luxury Gift</button>
+        `;
+      }
+    }
+
     function openAiModal() {
       document.getElementById('aiSommelierModal').classList.add('active');
+      if (!document.querySelector('#aiChatHistory .chat-bubble')) {
+        initAiChatGreeting();
+      }
     }
 
     function closeAiModal() {
@@ -1340,76 +1431,98 @@
       let response = "";
 
       // 1. PARTY CALCULATOR LOGIC
-      const partyMatch = lower.match(/(\d+)\s*(orang|people|tamu|guests)/);
-      if (partyMatch || lower.includes('party') || lower.includes('pesta')) {
-        const guestCount = partyMatch ? parseInt(partyMatch[1]) : 10;
+      const partyMatch = lower.match(/(\d+)\s*(orang|people|tamu|guests|personnes)/);
+      if (partyMatch || lower.includes('party') || lower.includes('pesta') || lower.includes('fête') || lower.includes('acara')) {
+        const guestCount = partyMatch ? parseInt(partyMatch[1]) : 15;
         const totalBottles = Math.ceil(guestCount / 3.5);
         const spiritBottles = Math.ceil(totalBottles * 0.6);
         const wineBottles = Math.max(1, totalBottles - spiritBottles);
 
-        // Cari rekomendasi dari localWines
         const spirits = localWines.filter(w => spiritTypes.some(s => w.type && w.type.includes(s))).slice(0, 2);
         const wines = localWines.filter(w => w.type && w.type.includes('Wine')).slice(0, 2);
 
         let recNames = spirits.concat(wines).map(w => w.name).join(", ");
         if (!recNames) recNames = "1800 Reposado Tequila & 19 Crimes Red Blend";
 
-        response = `🎉 <strong>Party Calculation for ${guestCount} Guests</strong>:<br>` +
-          `• Estimated Bottling: <strong>${totalBottles} Bottles</strong> (750ml).<br>` +
-          `• Recommended Split: <strong>${spiritBottles} Spirits/Tequila</strong> (for Shots & Cocktails) + <strong>${wineBottles} Wine Bottles</strong> (for welcome drinks).<br>` +
-          `• Top SKU Recommendations: <em>${recNames}</em>.`;
+        if (currentLanguage === 'fr') {
+          response = `🎉 <strong>Calculateur de Fête pour ${guestCount} Invités</strong>:<br>` +
+            `• Quantité Totale Requise : <strong>${totalBottles} Bouteilles</strong> (750ml).<br>` +
+            `• Répartition Suggérée : <strong>${spiritBottles} Spiritueux/Tequila</strong> + <strong>${wineBottles} Bouteilles de Vin</strong>.<br>` +
+            `• Recommandations du Catalogue : <em>${recNames}</em>.`;
+        } else if (currentLanguage === 'id') {
+          response = `🎉 <strong>Kalkulator Pesta untuk ${guestCount} Tamu</strong>:<br>` +
+            `• Total Kebutuhan Botol: <strong>${totalBottles} Botol</strong> (750ml).<br>` +
+            `• Kombinasi Ideal: <strong>${spiritBottles} Botol Tequila/Spirits</strong> + <strong>${wineBottles} Botol Wine</strong>.<br>` +
+            `• Rekomendasi Stok: <em>${recNames}</em>.`;
+        } else {
+          response = `🎉 <strong>Party Calculation for ${guestCount} Guests</strong>:<br>` +
+            `• Total Bottle Requirement: <strong>${totalBottles} Bottles</strong> (750ml).<br>` +
+            `• Recommended Mix: <strong>${spiritBottles} Spirits/Tequila Bottles</strong> + <strong>${wineBottles} Wine Bottles</strong>.<br>` +
+            `• Suggested Catalog Items: <em>${recNames}</em>.`;
+        }
       } 
-      // 2. MIXER / COCKTAIL LOGIC
-      else if (lower.includes('mixer') || lower.includes('campur') || lower.includes('cocktail') || lower.includes('tequila') || lower.includes('vodka') || lower.includes('whiskey')) {
-        response = `🍹 <strong>Sommelier Mixers & Cocktail Guide</strong>:<br>` +
-          `• <strong>Tequila (e.g. 1800 Reposado)</strong>: Pair with Fresh Lime + Triple Sec (Margarita) or Grapefruit Soda (Paloma).<br>` +
-          `• <strong>Vodka / Gin</strong>: Mix with Premium Tonic Water + Slice of Lime or Cranberry juice for fruity notes.<br>` +
-          `• <strong>Bourbon / Whiskey</strong>: Enjoy On-the-Rocks or mix with Ginger Ale and a dash of Angostura bitters.<br>` +
-          `• <strong>Red Wine</strong>: Best served neat at 16-18°C alongside grilled steaks or dark chocolate.`;
+      // 2. MIXER / COCKTAIL RECIPES
+      else if (lower.includes('mixer') || lower.includes('cocktail') || lower.includes('campur') || lower.includes('tequila') || lower.includes('vodka') || lower.includes('whiskey') || lower.includes('gin') || lower.includes('rum')) {
+        if (currentLanguage === 'fr') {
+          response = `🍸 <strong>Guide des Cocktails & Mixeurs Kava</strong>:<br>` +
+            `• <strong>Tequila (1800 Reposado)</strong> : Mélanger avec du Soda Pamplemousse (Paloma) ou Jus de Citron Vert.<br>` +
+            `• <strong>Vodka / Gin</strong> : Mélanger avec du Tonic Premium et un quartier de citron vert.<br>` +
+            `• <strong>Bourbon / Whisky</strong> : À déguster pur avec des glaçons ou avec du Ginger Ale.<br>` +
+            `• <strong>Vin Rouge</strong> : À déguster pur à 16-18°C avec une viande rouge.`;
+        } else if (currentLanguage === 'id') {
+          response = `🍸 <strong>Panduan Cocktails & Mixers Kava</strong>:<br>` +
+            `• <strong>Tequila (1800 Reposado)</strong>: Campur Grapefruit Soda (Paloma) atau Lime + Triple Sec (Margarita).<br>` +
+            `• <strong>Vodka / Gin</strong>: Campur dengan Tonic Water segar + Irisan Jeruk Nipis.<br>` +
+            `• <strong>Whiskey / Bourbon</strong>: Diminum On-The-Rocks atau campur Ginger Ale.<br>` +
+            `• <strong>Red Wine</strong>: Paling nikmat diminum murni di suhu 16-18°C bersama steak daging.`;
+        } else {
+          response = `🍸 <strong>Beverages Expert Cocktail & Mixers Guide</strong>:<br>` +
+            `• <strong>Tequila (1800 Reposado)</strong>: Pair with Grapefruit Soda (Paloma) or Lime + Triple Sec (Margarita).<br>` +
+            `• <strong>Vodka / Gin</strong>: Mix with Premium Tonic Water, Lime Juice, or Cranberry.<br>` +
+            `• <strong>Bourbon / Whiskey</strong>: Ideal On-The-Rocks, or mixed with Ginger Ale.<br>` +
+            `• <strong>Red Wine</strong>: Best enjoyed neat at 16-18°C alongside grilled steaks.`;
+        }
       }
-      // 3. BUDGET / PRICE SEARCH
-      else if (lower.includes('cheap') || lower.includes('murah') || lower.includes('budget') || lower.includes('500') || lower.includes('terjangkau')) {
-        const affordable = localWines.slice(0, 3).map(w => `• <strong>${w.name}</strong> (${w.type})`).join('<br>');
-        response = `💰 <strong>Affordable & Value Collection</strong>:<br>` + 
-          (affordable || "• 19 Crimes Red Blend<br>• Local Craft Spirits<br>• Premium Soju") + 
-          `<br><em>These selections deliver exceptional quality with maximum taste satisfaction.</em>`;
-      }
-      // 4. SPECIAL OCCASION / GIFT / LUXURY
-      else if (lower.includes('gift') || lower.includes('kado') || lower.includes('special') || lower.includes('mewah') || lower.includes('luxury') || lower.includes('dinner')) {
-        const luxury = localWines.filter(w => w.collection === 'Best Seller' || (w.vintage && w.vintage !== 'NV')).slice(0, 3).map(w => `• <strong>${w.name}</strong> - ${w.region || 'Reserve'}`).join('<br>');
-        response = `🎁 <strong>Luxury Reserve & Special Occasion</strong>:<br>` +
-          (luxury || "• 1924 Bourbon Barrel Aged Cabernet<br>• 1800 Reposado Tequila<br>• Chateau Margaux Reserve") +
-          `<br><em>Perfect for executive gifts, romantic celebrations, or high-end dinner pairings.</em>`;
-      }
-      // 5. DIRECT PRODUCT SEARCH IN DATABASE
+      // 3. DIRECT DATABASE SEARCH FOR PRODUCT
       else {
         const matched = localWines.filter(w => (w.name && w.name.toLowerCase().includes(lower)) || (w.type && w.type.toLowerCase().includes(lower)) || (w.varietal && w.varietal.toLowerCase().includes(lower)));
         
         if (matched.length > 0) {
-          const listStr = matched.slice(0, 3).map(w => `• <a href="javascript:void(0)" onclick="openDetailBySlug('${w.slug}'); closeAiModal();" style="color:var(--gold-primary); font-weight:bold; text-decoration:underline;">${w.name}</a> (${w.type})`).join('<br>');
+          const listStr = matched.slice(0, 4).map(w => `• <a href="javascript:void(0)" onclick="openDetailBySlug('${w.slug}'); closeAiModal();" style="color:var(--gold-primary); font-weight:bold; text-decoration:underline;">${w.name}</a> (${w.type})`).join('<br>');
           response = `🔎 <strong>Found ${matched.length} SKU(s) matching your request</strong>:<br>${listStr}<br><br><em>Click on any product above to view its 3D Motion profile!</em>`;
         } else {
-          response = `✨ I recommend exploring our <strong>${localWines.length} curated SKU items</strong> in the catalog! Try asking about <em>mixers, party bottles for 15 guests, tequila recommendations, or budget options</em>.`;
+          response = `✨ I recommend checking our <strong>${localWines.length} curated beverages SKU</strong> in the catalog! Try asking about <em>cocktail mixers, party bottles for 20 guests, wine pairing, or budget choices</em>.`;
         }
       }
 
       setTimeout(() => {
         appendChatBubble(response, 'ai');
-        speakTextToEnglish(response.replace(/<[^>]*>?/gm, ''));
+        speakTextByLanguage(response.replace(/<[^>]*>?/gm, ''));
       }, 400);
     }
 
-    function speakTextToEnglish(text) {
+    function speakTextByLanguage(text) {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US';
-      utterance.rate = 1.0;
-      utterance.pitch = 0.92;
+
+      if (currentLanguage === 'fr') {
+        utterance.lang = 'fr-FR';
+        utterance.rate = 0.98;
+        utterance.pitch = 0.95;
+      } else if (currentLanguage === 'id') {
+        utterance.lang = 'id-ID';
+        utterance.rate = 1.0;
+        utterance.pitch = 0.88;
+      } else {
+        utterance.lang = 'en-US';
+        utterance.rate = 0.98;
+        utterance.pitch = 0.92;
+      }
 
       const voices = window.speechSynthesis.getVoices();
-      const englishVoice = voices.find(v => (v.lang.includes('en-US') || v.lang.includes('en-GB') || v.lang.includes('en')) && (v.name.includes('Male') || v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Daniel') || v.name.includes('George'))) || voices.find(v => v.lang.includes('en'));
-      if (englishVoice) utterance.voice = englishVoice;
+      const matchingVoice = voices.find(v => v.lang.includes(utterance.lang.substring(0, 2))) || voices[0];
+      if (matchingVoice) utterance.voice = matchingVoice;
 
       window.speechSynthesis.speak(utterance);
     }
@@ -1579,7 +1692,7 @@
       }
     }
 
-    /* ================= FITUR TEXT-TO-SPEECH (ENGLISH SOMMELIER ACCENT + WARM WELCOME) ================= */
+    /* ================= FITUR TEXT-TO-SPEECH (MULTILINGUAL) ================= */
     function toggleSpeech() {
       if (!('speechSynthesis' in window)) {
         alert('Sorry, your browser does not support text-to-speech functionality.');
@@ -1600,19 +1713,47 @@
       const wine = currentActiveWine;
       const cleanFunFact = getFunFact(wine).replace(/<[^>]*>?/gm, '');
 
-      const narrativeText = `
-        Welcome to the Master Sommelier Profile.
-        ${wine.name}.
-        Originating from ${wine.region || 'Unknown Region'}, classified as ${wine.type || 'Beverage'}.
-        Flavor Characteristics: Body ${wine.bodyVal / 10} out of 10. Tannin ${wine.tanninVal / 10} out of 10. Acidity ${wine.acidityVal / 10} out of 10. Sweetness ${wine.sweetnessVal / 10} out of 10.
-        Visual Appearance: ${wine.visual}.
-        Aroma Profile: ${wine.aroma}.
-        Tasting Notes: ${wine.notes}.
-        Suggested Food Pairing: ${wine.pairing}.
-        ${cleanFunFact}
-      `;
+      let narrativeText = "";
 
-      speakTextToEnglish(narrativeText);
+      if (currentLanguage === 'fr') {
+        narrativeText = `
+          Bienvenue sur le Profil du Maître Sommelier.
+          ${wine.name}.
+          Origine: ${wine.region || 'Région Inconnue'}, ${wine.type || 'Boisson'}.
+          Profil de dégustation: Corps ${wine.bodyVal / 10} sur 10. Tannin ${wine.tanninVal / 10} sur 10. Acidité ${wine.acidityVal / 10} sur 10. Douceur ${wine.sweetnessVal / 10} sur 10.
+          Apparence visuelle: ${wine.visual}.
+          Profil d'arôme: ${wine.aroma}.
+          Notes de dégustation: ${wine.notes}.
+          Accord mets et boisson: ${wine.pairing}.
+          ${cleanFunFact}
+        `;
+      } else if (currentLanguage === 'id') {
+        narrativeText = `
+          Selamat datang di Profil Master Sommelier.
+          ${wine.name}.
+          Asal: ${wine.region || 'Wilayah Tidak Diketahui'}, ${wine.type || 'Minuman'}.
+          Skor Karakter: Body ${wine.bodyVal / 10}, Tannin ${wine.tanninVal / 10}, Keasaman ${wine.acidityVal / 10}, Kemanisan ${wine.sweetnessVal / 10}.
+          Tampilan Visual: ${wine.visual}.
+          Aroma: ${wine.aroma}.
+          Karakter Rasa: ${wine.notes}.
+          Saran Pasangan Makanan: ${wine.pairing}.
+          ${cleanFunFact}
+        `;
+      } else {
+        narrativeText = `
+          Welcome to the Master Sommelier Profile.
+          ${wine.name}.
+          Originating from ${wine.region || 'Unknown Region'}, classified as ${wine.type || 'Beverage'}.
+          Flavor Characteristics: Body ${wine.bodyVal / 10} out of 10. Tannin ${wine.tanninVal / 10} out of 10. Acidity ${wine.acidityVal / 10} out of 10. Sweetness ${wine.sweetnessVal / 10} out of 10.
+          Visual Appearance: ${wine.visual}.
+          Aroma Profile: ${wine.aroma}.
+          Tasting Notes: ${wine.notes}.
+          Suggested Food Pairing: ${wine.pairing}.
+          ${cleanFunFact}
+        `;
+      }
+
+      speakTextByLanguage(narrativeText);
     }
 
     function stopSpeech() {
@@ -1632,7 +1773,11 @@
           btn.style.borderColor = '#ff4d4d';
           btn.style.color = '#ff4d4d';
         } else {
-          btn.innerHTML = '🔊 Listen Profile (English)';
+          let label = '🔊 Listen Profile (English)';
+          if (currentLanguage === 'fr') label = '🔊 Écouter le Profil (Français)';
+          else if (currentLanguage === 'id') label = '🔊 Dengarkan Profil (Indonesia)';
+
+          btn.innerHTML = label;
           btn.style.background = 'rgba(255, 255, 255, 0.04)';
           btn.style.borderColor = 'var(--gold-primary)';
           btn.style.color = 'var(--gold-primary)';
@@ -1762,6 +1907,7 @@
       html2pdf().set(opt).from(element).save();
     }
 
+    initAiChatGreeting();
     fetchWinesFromSupabase();
   </script>
 </body>
