@@ -1244,7 +1244,7 @@
     /* GLOBAL STATE LANGUAGE: 'en' | 'fr' | 'id' */
     let currentLanguage = 'en';
 
-    /* SAMPLE FALLBACK DATA AGAR KATALOG TIDAK PERNAH BLANK */
+    /* SAMPLE FALLBACK DATA (DIPAKAI AGAR HALAMAN TIDAK PERNAH BLANK SAMA SEKALI) */
     const sampleWinesFallback = [
       {
         id: "1",
@@ -1310,6 +1310,19 @@
         storageNote: "Store horizontal, cool dark"
       }
     ];
+
+    let localWines = [...sampleWinesFallback];
+    let currentFilteredWines = [];
+    let currentMainCategory = null; 
+    let currentSubCategory = null; 
+    let currentShopCollection = null; 
+    let currentSortOrder = 'ASC';
+    let currentActiveWine = null;
+    let isSpeaking = false;
+    let localReviewsStore = {}; 
+    let selectedRatingStar = 5;
+
+    const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whisky", "Cognac", "Soju", "Sake", "Traditional and Grain", "Baijiu", "Alcopops"];
 
     /* KAMUS TRANSLASI TEKS MULTILINGUAL */
     const i18n = {
@@ -1411,7 +1424,7 @@
       }
     };
 
-    /* PENERJEMAH OTOMATIS TEKS SENSORI DINAMIS (SAFE NON-CRASH TYPE CHECKING) */
+    /* PENERJEMAH OTOMATIS TEKS SENSORI DINAMIS */
     function getTranslatedSensory(text, lang) {
       if (!text || text === '-' || text === 'null' || text === 'undefined') return '-';
       
@@ -1420,7 +1433,6 @@
 
       const lower = strText.toLowerCase().trim();
 
-      // Mappings Visual
       if (lower.includes('crystal clear') || lower.includes('bright clarity') || lower.includes('jernih')) {
         if (lang === 'fr') return "Limpide et cristal, clarté brillante";
         if (lang === 'id') return "Sangat jernih, kejernihan berkilau";
@@ -1434,7 +1446,6 @@
         if (lang === 'id') return "Kuning amber keemasan dengan pendaran hangat";
       }
 
-      // Mappings Aroma
       if (lower.includes('clean, neutral') || lower.includes('rice grain')) {
         if (lang === 'fr') return "Propre, neutre, douceur subtile de grain de riz";
         if (lang === 'id') return "Bersih, netral, keharuman manis bulir beras yang lembut";
@@ -1444,19 +1455,16 @@
         if (lang === 'id') return "Aroma blackcurrant, bunga violet, kayu cedar, dan rempah";
       }
 
-      // Mappings Palate
       if (lower.includes('smooth and crisp') || lower.includes('subtle finish')) {
         if (lang === 'fr') return "Doux et frais, légère douceur, finale propre et subtile";
         if (lang === 'id') return "Halus dan segar, rasa manis ringan, sentuhan akhir bersih";
       }
 
-      // Mappings Notes
       if (lower.includes('blue agave') || lower.includes('crafted from')) {
         if (lang === 'fr') return "Fabriqué à partir d'authentique 100% Agave Bleu du Mexique, offrant une pureté herbacée fraîche.";
         if (lang === 'id') return "Dibuat dari 100% Blue Agave asli Meksiko, menghadirkan kemurnian herba yang segar.";
       }
 
-      // Mappings Storage Note
       if (lower.includes('store upright') || lower.includes('upright')) {
         if (lang === 'fr') return "Conserver debout, dans un endroit frais et sombre";
         if (lang === 'id') return "Simpan berdiri tegak, di tempat sejuk dan gelap";
@@ -1516,21 +1524,10 @@
             notes: String(w.notes || w.general_notes || w.notes_text || 'Fine quality beverage with rich characteristics.'),
             pairing: String(w.pairing || w.food_pairing || 'Grilled meats, cheeses, rich cuisine')
           }));
-        } else {
-          localWines = sampleWinesFallback;
-        }
-
-        renderWines();
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const productSlug = urlParams.get('product');
-        if (productSlug) {
-          openDetailBySlug(productSlug);
+          renderWines();
         }
       } catch (err) { 
         console.error("Fetch Error:", err); 
-        localWines = sampleWinesFallback;
-        renderWines();
       }
     }
 
@@ -1575,6 +1572,8 @@
 
     function renderWines() {
       const grid = document.getElementById('wineGrid');
+      if (!grid) return;
+
       const search = document.getElementById('searchInput').value.toLowerCase();
 
       currentFilteredWines = localWines.filter(wine => {
@@ -1719,7 +1718,6 @@
           </div>
         </div>
 
-        <!-- SEKSI RATING & ULASAN PELANGGAN -->
         <div class="review-section">
           <div class="review-header">
             <div class="review-title">⭐ ${t.reviewsTitle}</div>
@@ -2349,10 +2347,12 @@
       html2pdf().set(opt).from(element).save();
     }
 
-    window.onload = () => {
+    // EKSEKUSI LANGSUNG BEGITU DOM SIAP (ANTI-BLANK)
+    document.addEventListener('DOMContentLoaded', () => {
       initAiChatGreeting();
-      fetchWinesFromSupabase();
-    };
+      renderWines(); // LANGSUNG TAMPILKAN PROD KETIKA DIBUKA!
+      fetchWinesFromSupabase(); // SINKRONISASI SUPABASE DI BACKGROUND
+    });
   </script>
 </body>
 </html>
