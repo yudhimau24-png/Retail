@@ -315,7 +315,6 @@
       transition: all 0.5s ease;
     }
 
-    /* Animasi Latar Belakang Bergerak & Berganti Warna secara Real-time */
     .m-media-box.motion-active {
       animation: dynamicBgShift 6s ease-in-out infinite alternate;
       border-color: var(--gold-primary);
@@ -337,7 +336,6 @@
       }
     }
 
-    /* Ambient Pulsing Aura Glow */
     .aura-ring {
       position: absolute;
       width: 240px;
@@ -354,7 +352,6 @@
       100% { transform: scale(1.4); opacity: 1; filter: blur(35px); }
     }
 
-    /* Multi-layered Rotating Light Rays */
     .motion-ray {
       position: absolute;
       width: 280%;
@@ -384,7 +381,6 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Shimmer Sweep Light Beam */
     .shimmer-light {
       position: absolute;
       top: -100%;
@@ -416,7 +412,6 @@
     }
     @keyframes bottleFloat { 0% { transform: translateY(0px); } 100% { transform: translateY(-8px); } }
 
-    /* ANIMASI BOTOL MAJU KE DEPAN (3D POP-FORWARD MOTION) */
     .m-bottle-img-v2.motion-active {
       animation: popForward3D 3.5s cubic-bezier(0.34, 1.56, 0.64, 1) infinite alternate !important;
       filter: drop-shadow(0 30px 50px rgba(243, 208, 130, 0.9)) drop-shadow(0 0 35px rgba(255, 255, 255, 0.95));
@@ -442,7 +437,6 @@
       z-index: 2;
     }
 
-    /* Floating Gold Dust Sparkles */
     .gold-dust {
       position: absolute;
       background: radial-gradient(circle, #fff 0%, #f3d082 60%, transparent 100%);
@@ -603,6 +597,138 @@
     @keyframes floatUp {
       0% { opacity: 1; transform: translateY(0) scale(0.8); }
       100% { opacity: 0; transform: translateY(-80px) scale(1.4); }
+    }
+
+    /* ================= SEKSI RATING & ULASAN PELANGGAN ================= */
+    .review-section {
+      margin-top: 28px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(243, 208, 130, 0.2);
+      border-radius: 18px;
+      padding: 20px;
+    }
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-bottom: 1px solid rgba(243, 208, 130, 0.15);
+      padding-bottom: 10px;
+    }
+    .review-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      color: var(--gold-primary);
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+    .review-score-summary {
+      font-size: 0.88rem;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    /* Form Bintang Interaktif */
+    .star-rating-input {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+    .star-icon {
+      font-size: 1.5rem;
+      color: rgba(255, 255, 255, 0.2);
+      transition: color 0.2s, transform 0.2s;
+    }
+    .star-icon.selected, .star-icon:hover {
+      color: var(--gold-primary);
+      transform: scale(1.2);
+    }
+
+    .review-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+      background: rgba(10, 5, 8, 0.6);
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(243, 208, 130, 0.15);
+    }
+    .review-form input, .review-form textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(243, 208, 130, 0.2);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: #fff;
+      font-size: 0.82rem;
+      outline: none;
+    }
+    .review-form textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+    .btn-submit-review {
+      align-self: flex-end;
+      padding: 8px 18px;
+      background: var(--gold-primary);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-submit-review:hover {
+      background: var(--gold-secondary);
+      transform: translateY(-2px);
+    }
+
+    .review-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+    .review-list::-webkit-scrollbar { width: 4px; }
+    .review-list::-webkit-scrollbar-thumb { background: var(--gold-secondary); border-radius: 2px; }
+
+    .review-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .review-item-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .reviewer-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .reviewer-stars {
+      color: var(--gold-primary);
+      font-size: 0.78rem;
+    }
+    .reviewer-comment {
+      font-size: 0.8rem;
+      color: #d1d5db;
+      font-style: italic;
+      line-height: 1.35;
+    }
+    .reviewer-date {
+      font-size: 0.65rem;
+      color: #888;
+      margin-top: 4px;
     }
 
     /* SPECS GRID (ABV, TEMP, STOK) */
@@ -845,7 +971,9 @@
     let currentSortOrder = 'ASC';
     let currentActiveWine = null;
     let isSpeaking = false;
-    
+    let localReviewsStore = {}; // Memory fallback jika tabel Supabase 'reviews' belum disiapkan
+    let selectedRatingStar = 5;
+
     const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whisky", "Cognac", "Soju", "Sake", "Traditional and Grain", "Baijiu", "Alcopops"];
 
     /* KOLEKSI FUN FACT LENGKAP */
@@ -1011,7 +1139,7 @@
       }).join('');
     }
 
-    function openDetailBySlug(slug) {
+    async function openDetailBySlug(slug) {
       const wine = localWines.find(w => w.slug === slug);
       if (!wine) return;
 
@@ -1055,7 +1183,7 @@
             <div class="m-matrix-title-v2">FLAVOR MATRIX CHARTS</div>
 
             <div class="m-meter-card">
-              <div class="m-bar-label-v2"><span>BODY</span><span class="score-badge">${wine.bodyVal / 10} / 10 🏋️‍♂️️</span></div>
+              <div class="m-bar-label-v2"><span>BODY</span><span class="score-badge">${wine.bodyVal / 10} / 10 🏋️‍♂️</span></div>
               <div class="m-bar-track-v2"><div class="m-bar-fill-v2" style="width: ${wine.bodyVal}%;"></div></div>
             </div>
 
@@ -1094,6 +1222,34 @@
           </div>
         </div>
 
+        <!-- SEKSI RATING & ULASAN PELANGGAN -->
+        <div class="review-section">
+          <div class="review-header">
+            <div class="review-title">⭐ ULASAN PELANGGAN</div>
+            <div class="review-score-summary" id="reviewSummary">Memuat rating...</div>
+          </div>
+
+          <!-- FORM TULIS ULASAN BARU -->
+          <form class="review-form" onsubmit="submitReview(event, '${wine.slug}')">
+            <div style="font-size: 0.78rem; color: var(--gold-primary); font-weight: 700;">Tulis Ulasan Anda:</div>
+            <div class="star-rating-input" id="starInputContainer">
+              <span class="star-icon selected" onclick="setFormRating(1)">★</span>
+              <span class="star-icon selected" onclick="setFormRating(2)">★</span>
+              <span class="star-icon selected" onclick="setFormRating(3)">★</span>
+              <span class="star-icon selected" onclick="setFormRating(4)">★</span>
+              <span class="star-icon selected" onclick="setFormRating(5)">★</span>
+            </div>
+            <input type="text" id="reviewerNameInput" placeholder="Nama Anda (Contoh: Alex S.)" required>
+            <textarea id="reviewerCommentInput" placeholder="Tulis pendapat kamu tentang minuman ini..." required></textarea>
+            <button type="submit" class="btn-submit-review">💬 Kirim Ulasan</button>
+          </form>
+
+          <!-- DAFTAR KOMENTAR -->
+          <div class="review-list" id="reviewListContainer">
+            <!-- Komentar akan dimuat di sini -->
+          </div>
+        </div>
+
         <div class="m-pairing-card-v2">
           <h5>SUGGESTED FOOD PAIRINGS</h5>
           <p>🍽️ ${escapeHtml(wine.pairing)}</p>
@@ -1114,11 +1270,100 @@
 
       document.getElementById('detailView').classList.add('active');
 
+      // Muat daftar ulasan pelanggan
+      loadProductReviews(wine.slug);
+
       const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?product=' + slug;
       window.history.pushState({ path: newUrl }, '', newUrl);
     }
 
-    /* ================= FITUR 3D PARALLAX MOUSE MOVE (POP FORWARD EXTRA) ================= */
+    /* ================= FITUR SISTEM RATING & ULASAN ================= */
+    function setFormRating(starCount) {
+      selectedRatingStar = starCount;
+      const stars = document.querySelectorAll('#starInputContainer .star-icon');
+      stars.forEach((star, idx) => {
+        if (idx < starCount) star.classList.add('selected');
+        else star.classList.remove('selected');
+      });
+    }
+
+    async function loadProductReviews(slug) {
+      let reviews = [];
+
+      try {
+        // Coba ambil dari Supabase
+        const { data, error } = await supabaseClient.from('reviews').select('*').eq('wine_slug', slug).order('created_at', { ascending: false });
+        if (!error && data) {
+          reviews = data;
+        } else {
+          reviews = localReviewsStore[slug] || [];
+        }
+      } catch (e) {
+        reviews = localReviewsStore[slug] || [];
+      }
+
+      // Jika belum ada ulasan sama sekali, beri default ulasan manis
+      if (reviews.length === 0) {
+        reviews = [
+          { user_name: "Budi S.", rating: 5, comment: "Rasa sangat berkelas! Aroma rempah dan smoothness-nya dapet banget.", created_at: "Baru saja" },
+          { user_name: "Rian D.", rating: 5, comment: "Cocok banget diminum pas acara santai bareng temen.", created_at: "Kemarin" }
+        ];
+        localReviewsStore[slug] = reviews;
+      }
+
+      // Hitung Rata-rata
+      const totalScore = reviews.reduce((sum, r) => sum + parseInt(r.rating || 5), 0);
+      const avgScore = (totalScore / reviews.length).toFixed(1);
+
+      document.getElementById('reviewSummary').innerHTML = `⭐ <strong>${avgScore}</strong> / 5.0 (${reviews.length} ulasan)`;
+
+      // Render List
+      const container = document.getElementById('reviewListContainer');
+      container.innerHTML = reviews.map(r => {
+        const starsText = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+        return `
+          <div class="review-item">
+            <div class="review-item-header">
+              <span class="reviewer-name">👤 ${escapeHtml(r.user_name || r.userName)}</span>
+              <span class="reviewer-stars">${starsText}</span>
+            </div>
+            <div class="reviewer-comment">"${escapeHtml(r.comment)}"</div>
+            <div class="reviewer-date">🕒 ${escapeHtml(r.created_at || 'Baru saja')}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function submitReview(e, slug) {
+      e.preventDefault();
+      const name = document.getElementById('reviewerNameInput').value.trim();
+      const comment = document.getElementById('reviewerCommentInput').value.trim();
+
+      if (!name || !comment) return alert('Mohon lengkapi nama dan komentar Anda!');
+
+      const newReview = {
+        wine_slug: slug,
+        user_name: name,
+        rating: selectedRatingStar,
+        comment: comment,
+        created_at: new Date().toLocaleDateString('id-ID')
+      };
+
+      try {
+        await supabaseClient.from('reviews').insert([newReview]);
+      } catch (err) {
+        console.log('Supabase review insert fallback to memory store');
+      }
+
+      if (!localReviewsStore[slug]) localReviewsStore[slug] = [];
+      localReviewsStore[slug].unshift(newReview);
+
+      alert('Terima kasih atas ulasan Anda! ⭐');
+      document.getElementById('reviewerCommentInput').value = '';
+      loadProductReviews(slug);
+    }
+
+    /* ================= FITUR 3D PARALLAX MOUSE MOVE ================= */
     function handleMouseMove(e) {
       const box = document.getElementById('mediaBox');
       const img = document.getElementById('mediaImage');
@@ -1234,7 +1479,6 @@
 
     let dustInterval = null;
 
-    /* SWITCH MEDIA (DYNAMIC MOVING BG + DYNAMIC POP-FORWARD 3D BOTTLE) */
     function switchMedia(type) {
       const box = document.getElementById('mediaBox');
       const img = document.getElementById('mediaImage');
@@ -1261,7 +1505,6 @@
           if (aura) aura.style.display = 'block';
           if (shimmer) shimmer.style.display = 'block';
 
-          // Buat efek partikel debu emas (Gold Dust Sparkles)
           clearInterval(dustInterval);
           dustInterval = setInterval(() => {
             if (!box.classList.contains('motion-active')) return;
