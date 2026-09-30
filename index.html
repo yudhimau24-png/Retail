@@ -298,7 +298,7 @@
     .m-wine-name-v2 { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 800; color: #ffffff; line-height: 1.25; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px; }
     .m-wine-origin-v2 { font-size: 0.88rem; color: var(--gold-primary); font-weight: 600; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 6px; }
 
-    /* ================= 3D CINEMATIC MOTION MEDIA BOX ================= */
+    /* ================= ULTRA-ADVANCED 3D MOTION MEDIA BOX ================= */
     .m-media-box {
       position: relative;
       width: 100%;
@@ -311,28 +311,81 @@
       justify-content: center;
       overflow: hidden;
       box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
+      perspective: 1000px;
       transition: all 0.5s ease;
     }
 
     .m-media-box.motion-active {
-      background: radial-gradient(circle at center, rgba(243, 208, 130, 0.35) 0%, rgba(120, 20, 40, 0.5) 60%, rgba(5, 2, 4, 0.98) 100%);
+      background: radial-gradient(circle at center, rgba(243, 208, 130, 0.4) 0%, rgba(140, 20, 45, 0.6) 55%, rgba(5, 2, 4, 0.98) 100%);
       border-color: var(--gold-primary);
-      box-shadow: 0 0 35px rgba(243, 208, 130, 0.4), inset 0 0 60px rgba(243, 208, 130, 0.25);
+      box-shadow: 0 0 40px rgba(243, 208, 130, 0.5), inset 0 0 60px rgba(243, 208, 130, 0.3);
     }
 
+    /* Ambient Pulsing Aura Glow */
+    .aura-ring {
+      position: absolute;
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(243, 208, 130, 0.6) 0%, rgba(255, 77, 77, 0.3) 50%, transparent 75%);
+      filter: blur(25px);
+      animation: pulseAura 2s ease-in-out infinite alternate;
+      display: none;
+      z-index: 1;
+    }
+    @keyframes pulseAura {
+      0% { transform: scale(0.85); opacity: 0.5; }
+      100% { transform: scale(1.35); opacity: 1; filter: blur(35px); }
+    }
+
+    /* Multi-layered Rotating Light Rays */
     .motion-ray {
       position: absolute;
-      width: 250%;
-      height: 250%;
-      background: conic-gradient(from 0deg, transparent 0deg, rgba(243, 208, 130, 0.2) 25deg, transparent 50deg, rgba(243, 208, 130, 0.2) 180deg, transparent 205deg);
-      animation: rotateRay 8s linear infinite;
+      width: 280%;
+      height: 280%;
+      background: conic-gradient(
+        from 0deg, 
+        transparent 0deg, 
+        rgba(243, 208, 130, 0.25) 20deg, 
+        transparent 40deg, 
+        rgba(255, 215, 0, 0.3) 70deg, 
+        transparent 90deg, 
+        rgba(243, 208, 130, 0.25) 140deg, 
+        transparent 170deg, 
+        rgba(255, 215, 0, 0.35) 220deg, 
+        transparent 250deg, 
+        rgba(243, 208, 130, 0.2) 310deg, 
+        transparent 340deg
+      );
+      animation: rotateRay 9s linear infinite;
       pointer-events: none;
       display: none;
       z-index: 1;
+      mix-blend-mode: screen;
     }
     @keyframes rotateRay {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
+    }
+
+    /* Shimmer Sweep Light Beam */
+    .shimmer-light {
+      position: absolute;
+      top: -100%;
+      left: -100%;
+      width: 60%;
+      height: 300%;
+      background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.45) 50%, transparent 100%);
+      transform: rotate(25deg);
+      animation: shimmerSweep 3.2s infinite;
+      pointer-events: none;
+      display: none;
+      z-index: 3;
+    }
+    @keyframes shimmerSweep {
+      0% { left: -100%; top: -100%; }
+      35% { left: 160%; top: 160%; }
+      100% { left: 160%; top: 160%; }
     }
 
     .m-bottle-img-v2 { 
@@ -342,19 +395,20 @@
       animation: bottleFloat 4s ease-in-out infinite alternate; 
       position: relative;
       z-index: 2;
-      transition: all 0.5s ease;
+      transition: transform 0.15s ease-out, filter 0.5s ease;
+      transform-style: preserve-3d;
     }
     @keyframes bottleFloat { 0% { transform: translateY(0px); } 100% { transform: translateY(-8px); } }
 
     .m-bottle-img-v2.motion-active {
       animation: super3DMotion 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate !important;
-      filter: drop-shadow(0 20px 40px rgba(243, 208, 130, 0.7)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.9));
+      filter: drop-shadow(0 20px 45px rgba(243, 208, 130, 0.8)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.9));
     }
     @keyframes super3DMotion {
       0% { transform: translateY(0px) scale(1) rotate(0deg); }
-      33% { transform: translateY(-14px) scale(1.08) rotate(2deg); }
-      66% { transform: translateY(-4px) scale(1.04) rotate(-2deg); }
-      100% { transform: translateY(-10px) scale(1.06) rotate(1deg); }
+      33% { transform: translateY(-16px) scale(1.09) rotate(2.5deg); }
+      66% { transform: translateY(-4px) scale(1.04) rotate(-2.5deg); }
+      100% { transform: translateY(-12px) scale(1.07) rotate(1.5deg); }
     }
 
     .m-bottle-video {
@@ -366,18 +420,20 @@
       z-index: 2;
     }
 
-    .bubble-particle {
+    /* Floating Gold Dust Sparkles */
+    .gold-dust {
       position: absolute;
-      background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(243,208,130,0.8) 70%);
+      background: radial-gradient(circle, #fff 0%, #f3d082 60%, transparent 100%);
       border-radius: 50%;
       pointer-events: none;
       z-index: 2;
-      animation: riseUp 2.5s infinite linear;
+      box-shadow: 0 0 10px #f3d082;
+      animation: floatDust 3s ease-in-out infinite;
     }
-    @keyframes riseUp {
-      0% { opacity: 0; transform: translateY(120px) scale(0.3); }
-      50% { opacity: 0.9; }
-      100% { opacity: 0; transform: translateY(-160px) scale(1.3); }
+    @keyframes floatDust {
+      0% { opacity: 0; transform: translateY(0) scale(0.2) rotate(0deg); }
+      50% { opacity: 1; transform: translateY(-90px) translateX(20px) scale(1.2) rotate(180deg); }
+      100% { opacity: 0; transform: translateY(-180px) translateX(-20px) scale(0.2) rotate(360deg); }
     }
 
     .media-tab-group {
@@ -954,15 +1010,17 @@
             <div class="m-wine-name-v2">${escapeHtml(wine.name)}</div>
             <div class="m-wine-origin-v2">📍 ${escapeHtml(wine.region) || 'Origin Unknown'} • ${escapeHtml(wine.type)}</div>
             
-            <div class="m-media-box" id="mediaBox">
+            <div class="m-media-box" id="mediaBox" onmousemove="handleMouseMove(event)" onmouseleave="handleMouseLeave()">
+              <div class="aura-ring" id="auraRing"></div>
               <div class="motion-ray" id="motionRay"></div>
+              <div class="shimmer-light" id="shimmerLight"></div>
               <img src="${wine.imageUrl}" id="mediaImage" class="m-bottle-img-v2">
               ${videoSrc ? `<video id="mediaVideo" class="m-bottle-video" src="${videoSrc}" loop muted playsinline style="display: none;" preload="auto"></video>` : ''}
             </div>
 
             <div class="media-tab-group">
               <button class="media-tab-btn active" id="btnTabImg" onclick="switchMedia('image')">📸 Foto Botol</button>
-              <button class="media-tab-btn" id="btnTabMotion" onclick="switchMedia('motion')">🎥 Motion Mode</button>
+              <button class="media-tab-btn" id="btnTabMotion" onclick="switchMedia('motion')">🎥 Motion Mode 3D</button>
             </div>
 
             <div class="fun-fact-card">
@@ -1038,6 +1096,29 @@
       window.history.pushState({ path: newUrl }, '', newUrl);
     }
 
+    /* ================= FITUR 3D PARALLAX MOUSE MOVE ================= */
+    function handleMouseMove(e) {
+      const box = document.getElementById('mediaBox');
+      const img = document.getElementById('mediaImage');
+      if (!box || !img || !box.classList.contains('motion-active')) return;
+
+      const rect = box.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+
+      const rotateX = (-y / rect.height) * 25;
+      const rotateY = (x / rect.width) * 25;
+
+      img.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.1) translateY(-10px)`;
+    }
+
+    function handleMouseLeave() {
+      const img = document.getElementById('mediaImage');
+      if (img && img.classList.contains('motion-active')) {
+        img.style.transform = '';
+      }
+    }
+
     /* ================= FITUR TEXT-TO-SPEECH (SUARA SOMMELIER) ================= */
     function toggleSpeech() {
       if (!('speechSynthesis' in window)) {
@@ -1076,7 +1157,6 @@
       utterance.rate = 0.95;
       utterance.pitch = 1.0;
 
-      // Pilih suara bahasa Indonesia jika tersedia
       const voices = window.speechSynthesis.getVoices();
       const idVoice = voices.find(v => v.lang.includes('id') || v.lang.includes('ID'));
       if (idVoice) utterance.voice = idVoice;
@@ -1124,20 +1204,22 @@
       }
     }
 
-    // Load voices list for Web Speech API
     if ('speechSynthesis' in window) {
       window.speechSynthesis.onvoiceschanged = () => {
         window.speechSynthesis.getVoices();
       };
     }
 
-    let bubbleInterval = null;
+    let dustInterval = null;
 
+    /* SWITCH MEDIA (ULTRA 3D CINEMATIC MOTION + GOLD DUST SPARKLES) */
     function switchMedia(type) {
       const box = document.getElementById('mediaBox');
       const img = document.getElementById('mediaImage');
       const video = document.getElementById('mediaVideo');
       const ray = document.getElementById('motionRay');
+      const aura = document.getElementById('auraRing');
+      const shimmer = document.getElementById('shimmerLight');
       const btnImg = document.getElementById('btnTabImg');
       const btnMotion = document.getElementById('btnTabMotion');
 
@@ -1154,21 +1236,24 @@
           box.classList.add('motion-active');
           img.classList.add('motion-active');
           if (ray) ray.style.display = 'block';
+          if (aura) aura.style.display = 'block';
+          if (shimmer) shimmer.style.display = 'block';
 
-          clearInterval(bubbleInterval);
-          bubbleInterval = setInterval(() => {
+          // Buat efek partikel debu emas (Gold Dust Sparkles)
+          clearInterval(dustInterval);
+          dustInterval = setInterval(() => {
             if (!box.classList.contains('motion-active')) return;
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble-particle';
-            const size = Math.random() * 12 + 6;
-            bubble.style.width = `${size}px`;
-            bubble.style.height = `${size}px`;
-            bubble.style.left = `${Math.random() * 80 + 10}%`;
-            bubble.style.bottom = '10px';
-            box.appendChild(bubble);
+            const dust = document.createElement('div');
+            dust.className = 'gold-dust';
+            const size = Math.random() * 8 + 4;
+            dust.style.width = `${size}px`;
+            dust.style.height = `${size}px`;
+            dust.style.left = `${Math.random() * 80 + 10}%`;
+            dust.style.bottom = '15px';
+            box.appendChild(dust);
 
-            setTimeout(() => { bubble.remove(); }, 2500);
-          }, 300);
+            setTimeout(() => { dust.remove(); }, 3000);
+          }, 250);
         }
 
       } else {
@@ -1177,11 +1262,16 @@
 
         box.classList.remove('motion-active');
         img.classList.remove('motion-active');
+        img.style.transform = '';
         img.style.display = 'block';
+
         if (ray) ray.style.display = 'none';
+        if (aura) aura.style.display = 'none';
+        if (shimmer) shimmer.style.display = 'none';
         if (video) { video.pause(); video.style.display = 'none'; }
-        clearInterval(bubbleInterval);
-        document.querySelectorAll('.bubble-particle').forEach(el => el.remove());
+
+        clearInterval(dustInterval);
+        document.querySelectorAll('.gold-dust').forEach(el => el.remove());
       }
     }
 
@@ -1205,8 +1295,8 @@
 
     function closeDetail() { 
       stopSpeech();
-      clearInterval(bubbleInterval);
-      document.querySelectorAll('.bubble-particle').forEach(el => el.remove());
+      clearInterval(dustInterval);
+      document.querySelectorAll('.gold-dust').forEach(el => el.remove());
       document.getElementById('detailView').classList.remove('active'); 
       const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
       window.history.pushState({ path: cleanUrl }, '', cleanUrl);
