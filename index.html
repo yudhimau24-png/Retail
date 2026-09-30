@@ -1248,7 +1248,7 @@
 
         <div class="m-btn-group-v2">
           <button class="m-btn-wa-v2" onclick="inquireWine('${escapeHtml(wine.name)}')">💬 WhatsApp Order / Inquire</button>
-          <button class="m-btn-audio-v2" id="btnAudioSpeak" onclick="toggleSpeech()">🔊 Dengarkan Profile</button>
+          <button class="m-btn-audio-v2" id="btnAudioSpeak" onclick="toggleSpeech()">🔊 Listen Profile (English)</button>
           <button class="m-btn-pdf-v2" onclick="exportVintagePDF('${escapeHtml(wine.name)}')">📄 Download PDF</button>
         </div>
       `;
@@ -1257,7 +1257,7 @@
 
       loadProductReviews(wine.slug);
 
-      // BACA SUARA OTOMATIS: HARMONI ANTARA WARM WELCOME & NADA TEGAS BERWIBAWA
+      // BACA SUARA OTOMATIS: ENGLISH SOMMELIER ACCENT DENGAN NADA BERWIBAWA
       setTimeout(() => {
         speakCurrentProduct();
       }, 250);
@@ -1369,10 +1369,10 @@
       }
     }
 
-    /* ================= FITUR TEXT-TO-SPEECH (WARM WELCOME + NADA TEGAS BERWIBAWA) ================= */
+    /* ================= FITUR TEXT-TO-SPEECH (ELEGANT ENGLISH SOMMELIER ACCENT) ================= */
     function toggleSpeech() {
       if (!('speechSynthesis' in window)) {
-        alert('Maaf, browser Anda tidak mendukung fitur pembaca suara.');
+        alert('Sorry, your browser does not support text-to-speech functionality.');
         return;
       }
 
@@ -1390,27 +1390,28 @@
       const wine = currentActiveWine;
       const cleanFunFact = getFunFact(wine).replace(/<[^>]*>?/gm, '');
 
-      // Naskah diawali sapaan hangat (Warm Welcome) disusul penyampaian lugas & tegas
+      // Naskah narasi Bahasa Inggris bergaya Sommelier Profesional & Luwes
       const narrativeText = `
-        Selamat datang di Profil Master Sommelier.
+        Welcome to the Master Sommelier Profile.
         ${wine.name}.
-        Asal: ${wine.region || 'Region Tidak Terdefinisi'}, ${wine.type || 'Beverage'}.
-        Skor Karakter: Body ${wine.bodyVal / 10}, Tannin ${wine.tanninVal / 10}, Keasaman ${wine.acidityVal / 10}, Kemanisan ${wine.sweetnessVal / 10}.
-        Visual: ${wine.visual}.
-        Aroma: ${wine.aroma}.
-        Karakter Rasa: ${wine.notes}.
-        Saran Pasangan Makanan: ${wine.pairing}.
+        Originating from ${wine.region || 'Unknown Region'}, classified as ${wine.type || 'Beverage'}.
+        Flavor Characteristics: Body ${wine.bodyVal / 10} out of 10. Tannin ${wine.tanninVal / 10} out of 10. Acidity ${wine.acidityVal / 10} out of 10. Sweetness ${wine.sweetnessVal / 10} out of 10.
+        Visual Appearance: ${wine.visual}.
+        Aroma Profile: ${wine.aroma}.
+        Tasting Notes: ${wine.notes}.
+        Suggested Food Pairing: ${wine.pairing}.
         ${cleanFunFact}
       `;
 
       const utterance = new SpeechSynthesisUtterance(narrativeText);
-      utterance.lang = 'id-ID';
-      utterance.rate = 1.02; // Tempo presisi & tegas
-      utterance.pitch = 0.85; // Pitch diturunkan agar nada suara berat, berwibawa & mantap
+      utterance.lang = 'en-US'; // Diatur ke Aksen Bahasa Inggris
+      utterance.rate = 0.98; // Tempo artikulasi pas & tidak terlalu cepat
+      utterance.pitch = 0.92; // Pitch rendah untuk memberikan karakter suara berwibawa & dewasa
 
       const voices = window.speechSynthesis.getVoices();
-      const idVoice = voices.find(v => (v.lang.includes('id') || v.lang.includes('ID')) && (v.name.includes('Male') || v.name.includes('Google') || v.name.includes('Natural'))) || voices.find(v => v.lang.includes('id') || v.lang.includes('ID'));
-      if (idVoice) utterance.voice = idVoice;
+      // Mengutamakan profil aksen bahasa Inggris pria/natural berartikulasi jernih (US / UK)
+      const englishVoice = voices.find(v => (v.lang.includes('en-US') || v.lang.includes('en-GB') || v.lang.includes('en')) && (v.name.includes('Male') || v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Daniel') || v.name.includes('George'))) || voices.find(v => v.lang.includes('en'));
+      if (englishVoice) utterance.voice = englishVoice;
 
       utterance.onstart = () => {
         isSpeaking = true;
@@ -1442,12 +1443,12 @@
       const btn = document.getElementById('btnAudioSpeak');
       if (btn) {
         if (speaking) {
-          btn.innerHTML = '⏹️ Hentikan Suara';
+          btn.innerHTML = '⏹️ Stop Narration';
           btn.style.background = 'rgba(255, 77, 77, 0.2)';
           btn.style.borderColor = '#ff4d4d';
           btn.style.color = '#ff4d4d';
         } else {
-          btn.innerHTML = '🔊 Dengarkan Profile';
+          btn.innerHTML = '🔊 Listen Profile (English)';
           btn.style.background = 'rgba(255, 255, 255, 0.04)';
           btn.style.borderColor = 'var(--gold-primary)';
           btn.style.color = 'var(--gold-primary)';
