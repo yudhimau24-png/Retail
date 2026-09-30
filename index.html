@@ -298,7 +298,7 @@
     .m-wine-name-v2 { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 800; color: #ffffff; line-height: 1.25; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px; }
     .m-wine-origin-v2 { font-size: 0.88rem; color: var(--gold-primary); font-weight: 600; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 6px; }
 
-    /* ================= INTERACTIVE MEDIA BOX (FOTO & VIDEO) ================= */
+    /* ================= 3D CINEMATIC MOTION MEDIA BOX ================= */
     .m-media-box {
       position: relative;
       width: 100%;
@@ -311,16 +311,76 @@
       justify-content: center;
       overflow: hidden;
       box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
+      transition: all 0.5s ease;
     }
 
-    .m-bottle-img-v2 { max-height: 340px; object-fit: contain; filter: drop-shadow(0 20px 25px rgba(0,0,0,0.85)); animation: bottleFloat 4s ease-in-out infinite alternate; }
+    /* Efek Sinar Putar Emas saat Motion Mode Aktif */
+    .m-media-box.motion-active {
+      background: radial-gradient(circle at center, rgba(243, 208, 130, 0.35) 0%, rgba(120, 20, 40, 0.5) 60%, rgba(5, 2, 4, 0.98) 100%);
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 35px rgba(243, 208, 130, 0.4), inset 0 0 60px rgba(243, 208, 130, 0.25);
+    }
+
+    .motion-ray {
+      position: absolute;
+      width: 250%;
+      height: 250%;
+      background: conic-gradient(from 0deg, transparent 0deg, rgba(243, 208, 130, 0.2) 25deg, transparent 50deg, rgba(243, 208, 130, 0.2) 180deg, transparent 205deg);
+      animation: rotateRay 8s linear infinite;
+      pointer-events: none;
+      display: none;
+      z-index: 1;
+    }
+    @keyframes rotateRay {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .m-bottle-img-v2 { 
+      max-height: 340px; 
+      object-fit: contain; 
+      filter: drop-shadow(0 20px 25px rgba(0,0,0,0.85)); 
+      animation: bottleFloat 4s ease-in-out infinite alternate; 
+      position: relative;
+      z-index: 2;
+      transition: all 0.5s ease;
+    }
     @keyframes bottleFloat { 0% { transform: translateY(0px); } 100% { transform: translateY(-8px); } }
+
+    /* Animasi Gerakan Botol 3D Super Hidup */
+    .m-bottle-img-v2.motion-active {
+      animation: super3DMotion 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate !important;
+      filter: drop-shadow(0 20px 40px rgba(243, 208, 130, 0.7)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.9));
+    }
+    @keyframes super3DMotion {
+      0% { transform: translateY(0px) scale(1) rotate(0deg); }
+      33% { transform: translateY(-14px) scale(1.08) rotate(2deg); }
+      66% { transform: translateY(-4px) scale(1.04) rotate(-2deg); }
+      100% { transform: translateY(-10px) scale(1.06) rotate(1deg); }
+    }
 
     .m-bottle-video {
       width: 100%;
       height: 100%;
       object-fit: cover;
       border-radius: 22px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Partikel Gelembung Berkilau */
+    .bubble-particle {
+      position: absolute;
+      background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(243,208,130,0.8) 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 2;
+      animation: riseUp 2.5s infinite linear;
+    }
+    @keyframes riseUp {
+      0% { opacity: 0; transform: translateY(120px) scale(0.3); }
+      50% { opacity: 0.9; }
+      100% { opacity: 0; transform: translateY(-160px) scale(1.3); }
     }
 
     .media-tab-group {
@@ -656,9 +716,6 @@
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eW93dmppYW54aW9icHplam5jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODkyMjUyOCwiZXhwIjoyMTA0NDk4NTI4fQ.-aeTfpvoGy3ICP2LMxa0vGfYggXlldnj5vtouzRm7bg";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    /* CDN VIDEO SAMPLE TERUJI BEBAS BLOKIR CORS */
-    const DEFAULT_PRODUCT_VIDEO = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
-
     /* Background Canvas Particle */
     const canvas = document.getElementById('bgCanvas');
     const ctx = canvas.getContext('2d');
@@ -750,7 +807,7 @@
             ...w,
             slug: w.name ? w.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '',
             imageUrl: w.imageUrl || w.image_url || 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500&q=80',
-            videoUrl: w.videoUrl || w.video_url || DEFAULT_PRODUCT_VIDEO,
+            videoUrl: w.videoUrl || w.video_url || '',
             servingTemp: w.servingTemp || w.serving_temp || '16-18°C',
             stockStatus: w.stockStatus || w.stock_status || 'Tersedia',
             storageNote: w.storageNote || w.storage_note || 'Store upright, cool dark place',
@@ -856,7 +913,7 @@
                 <div class="detail-row"><strong>Notes:</strong> ${escapeHtml(wine.notes) || '-'}</div>
               </div>
               <div class="action-group">
-                <button class="btn-order" onclick="event.stopPropagation(); openDetailBySlug('${wine.slug}')">👁️ Detail Profile</button>
+                <button class="btn-order" onclick="event.stopPropagation(); openDetailBySlug('${wine.slug}')">👁️️ Detail Profile</button>
                 <button class="btn-pdf-card" onclick="event.stopPropagation(); openDetailBySlug('${wine.slug}')">📄 PDF</button>
               </div>
             </div>
@@ -869,7 +926,7 @@
       const wine = localWines.find(w => w.slug === slug);
       if (!wine) return;
 
-      const videoSrc = wine.videoUrl || DEFAULT_PRODUCT_VIDEO;
+      const videoSrc = wine.videoUrl;
       const funFactText = getFunFact(wine);
 
       document.getElementById('vintageContent').innerHTML = `
@@ -884,13 +941,14 @@
             <div class="m-wine-origin-v2">📍 ${escapeHtml(wine.region) || 'Origin Unknown'} • ${escapeHtml(wine.type)}</div>
             
             <div class="m-media-box" id="mediaBox">
-              <img src="${wine.imageUrl}" id="mediaImage" class="m-bottle-img-v2" style="display: block;">
-              <video id="mediaVideo" class="m-bottle-video" src="${videoSrc}" loop muted playsinline style="display: none;" preload="auto"></video>
+              <div class="motion-ray" id="motionRay"></div>
+              <img src="${wine.imageUrl}" id="mediaImage" class="m-bottle-img-v2">
+              ${videoSrc ? `<video id="mediaVideo" class="m-bottle-video" src="${videoSrc}" loop muted playsinline style="display: none;" preload="auto"></video>` : ''}
             </div>
 
             <div class="media-tab-group">
-              <button class="media-tab-btn active" onclick="switchMedia('image')">📸 Foto Botol</button>
-              <button class="media-tab-btn" onclick="switchMedia('video')">🎥 Motion Video</button>
+              <button class="media-tab-btn active" id="btnTabImg" onclick="switchMedia('image')">📸 Foto Botol</button>
+              <button class="media-tab-btn" id="btnTabMotion" onclick="switchMedia('motion')">🎥 Motion Mode</button>
             </div>
 
             <div class="fun-fact-card">
@@ -965,35 +1023,61 @@
       window.history.pushState({ path: newUrl }, '', newUrl);
     }
 
-    /* FUNGSI SWITCH MEDIA YANG SUDAH DIPERBAIKI TOTAL */
+    let bubbleInterval = null;
+
+    /* FUNGSI SWITCH MEDIA 100% PASTI GERAK (CSS 3D MOTION + BUBBLE SPARKLES) */
     function switchMedia(type) {
+      const box = document.getElementById('mediaBox');
       const img = document.getElementById('mediaImage');
       const video = document.getElementById('mediaVideo');
-      const btns = document.querySelectorAll('.media-tab-btn');
+      const ray = document.getElementById('motionRay');
+      const btnImg = document.getElementById('btnTabImg');
+      const btnMotion = document.getElementById('btnTabMotion');
 
-      if (type === 'video') {
-        img.style.display = 'none';
-        video.style.display = 'block';
-        
-        video.load();
-        const playPromise = video.play();
+      if (type === 'motion') {
+        btnImg.classList.remove('active');
+        btnMotion.classList.add('active');
 
-        if (playPromise !== undefined) {
-          playPromise.catch(error => {
-            console.warn("Autoplay terhalang izin browser:", error);
-            video.muted = true;
-            video.play();
-          });
+        // Jika ada URL Video asli MP4 dari Supabase, putar video
+        if (video) {
+          img.style.display = 'none';
+          video.style.display = 'block';
+          video.load();
+          video.play().catch(e => { video.muted = true; video.play(); });
+        } else {
+          // Jika tidak ada file video MP4, aktifkan Efek Motion 3D + Glowing + Ray + Sparkle
+          box.classList.add('motion-active');
+          img.classList.add('motion-active');
+          if (ray) ray.style.display = 'block';
+
+          // Buat partikel gelembung melayang
+          clearInterval(bubbleInterval);
+          bubbleInterval = setInterval(() => {
+            if (!box.classList.contains('motion-active')) return;
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble-particle';
+            const size = Math.random() * 12 + 6;
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            bubble.style.left = `${Math.random() * 80 + 10}%`;
+            bubble.style.bottom = '10px';
+            box.appendChild(bubble);
+
+            setTimeout(() => { bubble.remove(); }, 2500);
+          }, 300);
         }
 
-        btns[0].classList.remove('active');
-        btns[1].classList.add('active');
       } else {
-        video.pause();
-        video.style.display = 'none';
+        btnMotion.classList.remove('active');
+        btnImg.classList.add('active');
+
+        box.classList.remove('motion-active');
+        img.classList.remove('motion-active');
         img.style.display = 'block';
-        btns[1].classList.remove('active');
-        btns[0].classList.add('active');
+        if (ray) ray.style.display = 'none';
+        if (video) { video.pause(); video.style.display = 'none'; }
+        clearInterval(bubbleInterval);
+        document.querySelectorAll('.bubble-particle').forEach(el => el.remove());
       }
     }
 
@@ -1016,6 +1100,8 @@
     }
 
     function closeDetail() { 
+      clearInterval(bubbleInterval);
+      document.querySelectorAll('.bubble-particle').forEach(el => el.remove());
       document.getElementById('detailView').classList.remove('active'); 
       const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
       window.history.pushState({ path: cleanUrl }, '', cleanUrl);
@@ -1027,7 +1113,7 @@
       if (productSlug) {
         openDetailBySlug(productSlug);
       } else {
-        document.getElementById('detailView').classList.remove('active');
+        closeDetail();
       }
     });
 
