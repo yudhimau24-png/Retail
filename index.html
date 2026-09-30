@@ -1257,10 +1257,10 @@
 
       loadProductReviews(wine.slug);
 
-      // FITUR BARU: BACA SUARA NARATOR OTOMATIS BEGITU HALAMAN DIPILIH
+      // BACA SUARA OTOMATIS: HARMONI ANTARA WARM WELCOME & NADA TEGAS BERWIBAWA
       setTimeout(() => {
         speakCurrentProduct();
-      }, 300);
+      }, 250);
 
       const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?product=' + slug;
       window.history.pushState({ path: newUrl }, '', newUrl);
@@ -1369,7 +1369,7 @@
       }
     }
 
-    /* ================= FITUR TEXT-TO-SPEECH (SUARA SOMMELIER) ================= */
+    /* ================= FITUR TEXT-TO-SPEECH (WARM WELCOME + NADA TEGAS BERWIBAWA) ================= */
     function toggleSpeech() {
       if (!('speechSynthesis' in window)) {
         alert('Maaf, browser Anda tidak mendukung fitur pembaca suara.');
@@ -1390,25 +1390,26 @@
       const wine = currentActiveWine;
       const cleanFunFact = getFunFact(wine).replace(/<[^>]*>?/gm, '');
 
+      // Naskah diawali sapaan hangat (Warm Welcome) disusul penyampaian lugas & tegas
       const narrativeText = `
         Selamat datang di Profil Master Sommelier.
-        Produk ini adalah ${wine.name}.
-        Berasal dari wilayah ${wine.region || 'tidak disebutkan'}, dengan kategori ${wine.type || 'beverage'}.
-        Indikator profil rasa: Nilai body ${wine.bodyVal / 10} dari 10, tannin ${wine.tanninVal / 10} dari 10, keasaman ${wine.acidityVal / 10} dari 10, dan kemanisan ${wine.sweetnessVal / 10} dari 10.
+        ${wine.name}.
+        Asal: ${wine.region || 'Region Tidak Terdefinisi'}, ${wine.type || 'Beverage'}.
+        Skor Karakter: Body ${wine.bodyVal / 10}, Tannin ${wine.tanninVal / 10}, Keasaman ${wine.acidityVal / 10}, Kemanisan ${wine.sweetnessVal / 10}.
         Visual: ${wine.visual}.
         Aroma: ${wine.aroma}.
-        Catatan rasa: ${wine.notes}.
-        Saran perpaduan makanan: ${wine.pairing}.
+        Karakter Rasa: ${wine.notes}.
+        Saran Pasangan Makanan: ${wine.pairing}.
         ${cleanFunFact}
       `;
 
       const utterance = new SpeechSynthesisUtterance(narrativeText);
       utterance.lang = 'id-ID';
-      utterance.rate = 0.95;
-      utterance.pitch = 1.0;
+      utterance.rate = 1.02; // Tempo presisi & tegas
+      utterance.pitch = 0.85; // Pitch diturunkan agar nada suara berat, berwibawa & mantap
 
       const voices = window.speechSynthesis.getVoices();
-      const idVoice = voices.find(v => v.lang.includes('id') || v.lang.includes('ID'));
+      const idVoice = voices.find(v => (v.lang.includes('id') || v.lang.includes('ID')) && (v.name.includes('Male') || v.name.includes('Google') || v.name.includes('Natural'))) || voices.find(v => v.lang.includes('id') || v.lang.includes('ID'));
       if (idVoice) utterance.voice = idVoice;
 
       utterance.onstart = () => {
@@ -1549,13 +1550,6 @@
       const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
       window.history.pushState({ path: cleanUrl }, '', cleanUrl);
     }
-
-    // Bantuan untuk mengaktifkan audio pada sentuhan pertama jika autoplay terblokir browser
-    document.addEventListener('click', function initialTouch() {
-      if (currentActiveWine && !isSpeaking && document.getElementById('detailView').classList.contains('active')) {
-        // Layar disentuh pertama kali saat modal terbuka
-      }
-    }, { once: true });
 
     window.addEventListener('popstate', () => {
       const urlParams = new URLSearchParams(window.location.search);
