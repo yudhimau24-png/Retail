@@ -314,7 +314,6 @@
       transition: all 0.5s ease;
     }
 
-    /* Efek Sinar Putar Emas saat Motion Mode Aktif */
     .m-media-box.motion-active {
       background: radial-gradient(circle at center, rgba(243, 208, 130, 0.35) 0%, rgba(120, 20, 40, 0.5) 60%, rgba(5, 2, 4, 0.98) 100%);
       border-color: var(--gold-primary);
@@ -347,7 +346,6 @@
     }
     @keyframes bottleFloat { 0% { transform: translateY(0px); } 100% { transform: translateY(-8px); } }
 
-    /* Animasi Gerakan Botol 3D Super Hidup */
     .m-bottle-img-v2.motion-active {
       animation: super3DMotion 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate !important;
       filter: drop-shadow(0 20px 40px rgba(243, 208, 130, 0.7)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.9));
@@ -368,7 +366,6 @@
       z-index: 2;
     }
 
-    /* Partikel Gelembung Berkilau */
     .bubble-particle {
       position: absolute;
       background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(243,208,130,0.8) 70%);
@@ -556,10 +553,11 @@
     .m-pairing-card-v2 h5 { font-family: 'Cinzel', serif; font-size: 0.85rem; color: var(--gold-primary); letter-spacing: 2px; margin-bottom: 6px; font-weight: 700; }
     .m-pairing-card-v2 p { font-size: 0.85rem; color: #f3f4f6; font-style: italic; }
 
-    /* BUTTON ACTION GROUP */
-    .m-btn-group-v2 { display: flex; gap: 12px; margin-top: 28px; }
+    /* BUTTON ACTION GROUP DENGAN AUDIO VOICE READER */
+    .m-btn-group-v2 { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
     .m-btn-wa-v2 {
       flex: 2;
+      min-width: 200px;
       padding: 15px;
       background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-secondary) 100%);
       color: #000;
@@ -575,8 +573,24 @@
     }
     .m-btn-wa-v2:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(243, 208, 130, 0.5); }
 
+    .m-btn-audio-v2 {
+      flex: 1.2;
+      min-width: 170px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--gold-primary);
+      border: 1px solid var(--gold-primary);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+    .m-btn-audio-v2:hover { background: rgba(243, 208, 130, 0.15); box-shadow: 0 0 15px rgba(243, 208, 130, 0.3); }
+
     .m-btn-pdf-v2 {
       flex: 1;
+      min-width: 140px;
       padding: 15px;
       background: rgba(255, 255, 255, 0.04);
       color: var(--gold-primary);
@@ -751,51 +765,48 @@
     let currentSubCategory = null; 
     let currentShopCollection = null; 
     let currentSortOrder = 'ASC';
+    let currentActiveWine = null;
+    let isSpeaking = false;
     
     const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whisky", "Cognac", "Soju", "Sake", "Traditional and Grain", "Baijiu", "Alcopops"];
 
     /* KOLEKSI FUN FACT LENGKAP */
     const funFactPools = {
       '19 crimes': [
-        "🚨 <strong>Daily Quote:</strong> Ketagihan nikmatnya 19 Crimes 100% legal kok, ga bakal dibuang ke Australia! 😉🍷",
-        "📜 <strong>History Fact:</strong> Karakter di label botol ini adalah narapidana nyata abad ke-18. Angkat gelas untuk para 'rebel'! 🥂",
-        "🍷 <strong>Sommelier Tip:</strong> Rasa red blend ini makin bold kalau ditemenin steak daging panggang empuk.",
-        "🤫 <strong>Secret Note:</strong> Coba scan label botolnya pakai aplikasi AR, fotonya bisa ngomong sendiri lho!"
+        "🚨 Daily Quote: Ketagihan nikmatnya 19 Crimes seratus persen legal kok, ga bakal dibuang ke Australia!",
+        "📜 History Fact: Karakter di label botol ini adalah narapidana nyata abad ke-18. Angkat gelas untuk para rebel!",
+        "🍷 Sommelier Tip: Rasa red blend ini makin bold kalau ditemenin steak daging panggang empuk.",
+        "🤫 Secret Note: Coba scan label botolnya pakai aplikasi AR, fotonya bisa ngomong sendiri lho!"
       ],
       'tequila': [
-        "⚡ <strong>Sommelier Warning:</strong> Tequila ini bisa bikin kamu mendadak lancar bahasa Spanyol pas midnight! 💃🇲🇽",
-        "🌵 <strong>Agave Fact:</strong> Butuh waktu 8-12 tahun buat panen tanaman Blue Agave terbaik demi botol ini.",
-        "🍹 <strong>Mixologist Tip:</strong> Bikin Margarita pakai 1800 Reposado tingkat kelezatannya naik 200%!",
-        "🧊 <strong>Chill Note:</strong> Diminum straight on-the-rocks di gelas dingin adalah cara terbaik menikmati malam."
+        "⚡ Sommelier Warning: Tequila ini bisa bikin kamu mendadak lancar bahasa Spanyol pas midnight!",
+        "🌵 Agave Fact: Butuh waktu 8 sampai 12 tahun buat panen tanaman Blue Agave terbaik demi botol ini.",
+        "🍹 Mixologist Tip: Bikin Margarita pakai 1800 Reposado tingkat kelezatannya naik dua ratus persen!",
+        "🧊 Chill Note: Diminum straight on the rocks di gelas dingin adalah cara terbaik menikmati malam."
       ],
       'general': [
-        "✨ <strong>Pro Tip:</strong> 1 gelas bikin santai, 2 gelas bikin puitis, 3 gelas... mending kunci HP biar ga typo chat mantan! 🤫🍷",
-        "🥂 <strong>Sommelier Fact:</strong> Pegang tangkai gelas wine (stem) ya, bukan badannya, biar suhu wine tetep terjaga sempurna!",
-        "💡 <strong>Daily Mood:</strong> Apapun masalah harimu, tuangkan sedikit kegembiraan ke dalam gelas malam ini.",
-        "🍽️ <strong>Pairing Hack:</strong> Minuman yang tepat selalu bikin rasa makanan di piringmu 2x lebih lezat.",
-        "🌙 <strong>Night Note:</strong> Kesuksesan hari ini patut dirayakan dengan tegukan yang elegan."
+        "✨ Pro Tip: Satu gelas bikin santai, dua gelas bikin puitis, tiga gelas mending kunci hape biar tidak typo!",
+        "🥂 Sommelier Fact: Pegang tangkai gelas wine ya, bukan badannya, biar suhu wine tetap terjaga sempurna!",
+        "💡 Daily Mood: Apapun masalah harimu, tuangkan sedikit kegembiraan ke dalam gelas malam ini.",
+        "🍽️ Pairing Hack: Minuman yang tepat selalu bikin rasa makanan di piringmu dua kali lebih lezat.",
+        "🌙 Night Note: Kesuksesan hari ini patut dirayakan dengan tegukan yang elegan."
       ]
     };
 
-    /* FUNGSI ROTASI OTOMATIS BERGANTI SETIAP 24 JAM (JAM 00:00) & UNIK PER PRODUK */
     function getFunFact(wine) {
       if (!wine || !wine.name) return "";
-
       const dateSeed = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
-
       let productHash = 0;
       const slug = wine.slug || wine.name;
       for (let i = 0; i < slug.length; i++) {
         productHash += slug.charCodeAt(i);
       }
-
       const name = wine.name.toLowerCase();
       let pool = funFactPools['general'];
       if (name.includes('19 crimes')) pool = funFactPools['19 crimes'];
       else if (name.includes('tequila') || name.includes('1800')) pool = funFactPools['tequila'];
 
       const chosenIndex = Math.abs(productHash + dateSeed) % pool.length;
-
       return pool[chosenIndex];
     }
 
@@ -913,7 +924,7 @@
                 <div class="detail-row"><strong>Notes:</strong> ${escapeHtml(wine.notes) || '-'}</div>
               </div>
               <div class="action-group">
-                <button class="btn-order" onclick="event.stopPropagation(); openDetailBySlug('${wine.slug}')">👁️️ Detail Profile</button>
+                <button class="btn-order" onclick="event.stopPropagation(); openDetailBySlug('${wine.slug}')">👁 Detail Profile</button>
                 <button class="btn-pdf-card" onclick="event.stopPropagation(); openDetailBySlug('${wine.slug}')">📄 PDF</button>
               </div>
             </div>
@@ -925,6 +936,9 @@
     function openDetailBySlug(slug) {
       const wine = localWines.find(w => w.slug === slug);
       if (!wine) return;
+
+      currentActiveWine = wine;
+      stopSpeech();
 
       const videoSrc = wine.videoUrl;
       const funFactText = getFunFact(wine);
@@ -1013,6 +1027,7 @@
 
         <div class="m-btn-group-v2">
           <button class="m-btn-wa-v2" onclick="inquireWine('${escapeHtml(wine.name)}')">💬 WhatsApp Order / Inquire</button>
+          <button class="m-btn-audio-v2" id="btnAudioSpeak" onclick="toggleSpeech()">🔊 Dengarkan Profile</button>
           <button class="m-btn-pdf-v2" onclick="exportVintagePDF('${escapeHtml(wine.name)}')">📄 Download PDF</button>
         </div>
       `;
@@ -1023,9 +1038,101 @@
       window.history.pushState({ path: newUrl }, '', newUrl);
     }
 
+    /* ================= FITUR TEXT-TO-SPEECH (SUARA SOMMELIER) ================= */
+    function toggleSpeech() {
+      if (!('speechSynthesis' in window)) {
+        alert('Maaf, browser Anda tidak mendukung fitur pembaca suara.');
+        return;
+      }
+
+      if (window.speechSynthesis.speaking) {
+        stopSpeech();
+      } else {
+        speakCurrentProduct();
+      }
+    }
+
+    function speakCurrentProduct() {
+      if (!currentActiveWine) return;
+      window.speechSynthesis.cancel();
+
+      const wine = currentActiveWine;
+      const cleanFunFact = getFunFact(wine).replace(/<[^>]*>?/gm, '');
+
+      const narrativeText = `
+        Selamat datang di Profil Master Sommelier.
+        Produk ini adalah ${wine.name}.
+        Berasal dari wilayah ${wine.region || 'tidak disebutkan'}, dengan kategori ${wine.type || 'beverage'}.
+        Indikator profil rasa: Nilai body ${wine.bodyVal / 10} dari 10, tannin ${wine.tanninVal / 10} dari 10, keasaman ${wine.acidityVal / 10} dari 10, dan kemanisan ${wine.sweetnessVal / 10} dari 10.
+        Visual: ${wine.visual}.
+        Aroma: ${wine.aroma}.
+        Catatan rasa: ${wine.notes}.
+        Saran perpaduan makanan: ${wine.pairing}.
+        ${cleanFunFact}
+      `;
+
+      const utterance = new SpeechSynthesisUtterance(narrativeText);
+      utterance.lang = 'id-ID';
+      utterance.rate = 0.95;
+      utterance.pitch = 1.0;
+
+      // Pilih suara bahasa Indonesia jika tersedia
+      const voices = window.speechSynthesis.getVoices();
+      const idVoice = voices.find(v => v.lang.includes('id') || v.lang.includes('ID'));
+      if (idVoice) utterance.voice = idVoice;
+
+      utterance.onstart = () => {
+        isSpeaking = true;
+        updateAudioButtonUI(true);
+      };
+
+      utterance.onend = () => {
+        isSpeaking = false;
+        updateAudioButtonUI(false);
+      };
+
+      utterance.onerror = () => {
+        isSpeaking = false;
+        updateAudioButtonUI(false);
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function stopSpeech() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        isSpeaking = false;
+        updateAudioButtonUI(false);
+      }
+    }
+
+    function updateAudioButtonUI(speaking) {
+      const btn = document.getElementById('btnAudioSpeak');
+      if (btn) {
+        if (speaking) {
+          btn.innerHTML = '⏹️ Hentikan Suara';
+          btn.style.background = 'rgba(255, 77, 77, 0.2)';
+          btn.style.borderColor = '#ff4d4d';
+          btn.style.color = '#ff4d4d';
+        } else {
+          btn.innerHTML = '🔊 Dengarkan Profile';
+          btn.style.background = 'rgba(255, 255, 255, 0.04)';
+          btn.style.borderColor = 'var(--gold-primary)';
+          btn.style.color = 'var(--gold-primary)';
+        }
+      }
+    }
+
+    // Load voices list for Web Speech API
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
+
     let bubbleInterval = null;
 
-    /* FUNGSI SWITCH MEDIA 100% PASTI GERAK (CSS 3D MOTION + BUBBLE SPARKLES) */
     function switchMedia(type) {
       const box = document.getElementById('mediaBox');
       const img = document.getElementById('mediaImage');
@@ -1038,19 +1145,16 @@
         btnImg.classList.remove('active');
         btnMotion.classList.add('active');
 
-        // Jika ada URL Video asli MP4 dari Supabase, putar video
         if (video) {
           img.style.display = 'none';
           video.style.display = 'block';
           video.load();
           video.play().catch(e => { video.muted = true; video.play(); });
         } else {
-          // Jika tidak ada file video MP4, aktifkan Efek Motion 3D + Glowing + Ray + Sparkle
           box.classList.add('motion-active');
           img.classList.add('motion-active');
           if (ray) ray.style.display = 'block';
 
-          // Buat partikel gelembung melayang
           clearInterval(bubbleInterval);
           bubbleInterval = setInterval(() => {
             if (!box.classList.contains('motion-active')) return;
@@ -1100,6 +1204,7 @@
     }
 
     function closeDetail() { 
+      stopSpeech();
       clearInterval(bubbleInterval);
       document.querySelectorAll('.bubble-particle').forEach(el => el.remove());
       document.getElementById('detailView').classList.remove('active'); 
