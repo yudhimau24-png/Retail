@@ -598,7 +598,7 @@
             visual: w.visual || 'Deep ruby red, garnet rim',
             aroma: w.aroma || 'Blackcurrant, violet, cedar, spice bouquet',
             palate: w.palate || 'Full-bodied, structured, velvety tannins, elegant finish',
-            notes: w.notes || 'Fine quality beverage with rich characteristics.',
+            notes: (w.notes && w.notes !== '-') ? w.notes : 'Fine quality beverage with rich characteristics.',
             pairing: w.pairing || 'Grilled meats, cheeses, rich cuisine'
           }));
           renderWines();
