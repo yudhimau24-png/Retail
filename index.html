@@ -47,7 +47,7 @@
 
     #catalogPage { position: relative; z-index: 1; }
 
-    /* ================= NAVIGATION BAR ================= */
+    /* NAVIGATION BAR */
     .top-navbar {
       background: rgba(15, 8, 11, 0.85);
       backdrop-filter: blur(15px);
@@ -105,7 +105,6 @@
       box-shadow: 0 0 8px rgba(255, 77, 77, 0.6);
     }
 
-    /* LANGUAGE SELECTOR STYLING */
     .lang-selector-box {
       display: flex;
       align-items: center;
@@ -178,7 +177,7 @@
       color: var(--gold-primary);
     }
 
-    /* ================= HERO SECTION ================= */
+    /* HERO SECTION */
     .hero { 
       text-align: center; 
       padding: 3.5rem 1rem 3rem; 
@@ -196,7 +195,7 @@
     }
     .hero p { color: #a1a1aa; font-size: 0.95rem; margin-top: 0.6rem; letter-spacing: 1px; }
 
-    /* ================= CONTROLS ================= */
+    /* CONTROLS */
     .controls { display: flex; flex-direction: column; align-items: center; margin: 2rem 1rem 1rem; gap: 1rem; }
     input.search-input { 
       padding: 0.75rem 1.4rem; 
@@ -237,7 +236,7 @@
     .sub-btn:hover { border-color: var(--gold-primary); color: #fff; }
     .sub-btn.active { background: rgba(243, 208, 130, 0.15); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-weight: 700; }
 
-    /* ================= CATALOG GRID ================= */
+    /* CATALOG GRID */
     .wine-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.2rem; max-width: 1400px; margin: 0 auto; padding: 0 1rem; }
     @media (max-width: 1200px) { .wine-grid { grid-template-columns: repeat(4, 1fr); } }
     @media (max-width: 900px) { .wine-grid { grid-template-columns: repeat(3, 1fr); } }
@@ -286,9 +285,7 @@
     footer { text-align: center; padding: 2.5rem 1rem 1rem; margin-top: 4rem; border-top: 1px solid var(--glass-border); color: #71717a; font-size: 0.85rem; }
     footer strong { color: var(--gold-primary); }
 
-    /* ========================================================= */
-    /* INTERACTIVE BEVERAGES EXPERT AI CHATBOT                   */
-    /* ========================================================= */
+    /* AI CHATBOT BUTTON & MODAL */
     .ai-float-btn {
       position: fixed;
       bottom: 28px;
@@ -366,7 +363,6 @@
       margin-bottom: 14px;
     }
 
-    /* CHAT MESSAGES AREA */
     .ai-chat-history {
       flex: 1;
       overflow-y: auto;
@@ -432,10 +428,7 @@
       color: #000;
     }
 
-    .ai-input-bar {
-      display: flex;
-      gap: 8px;
-    }
+    .ai-input-bar { display: flex; gap: 8px; }
     .ai-input-bar input {
       flex: 1;
       background: rgba(255, 255, 255, 0.06);
@@ -466,7 +459,7 @@
       transform: translateY(-2px);
     }
 
-    /* MODAL SOMMELIER DETAIL */
+    /* SOMMELIER DETAIL MODAL */
     .fullpage-detail { display: none; position: fixed; inset: 0; background: rgba(3, 1, 2, 0.94); z-index: 9999; overflow-y: auto; padding: 2.5rem 1rem; backdrop-filter: blur(20px); }
     .fullpage-detail.active { display: block; animation: fadeIn 0.35s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: scale(0.97) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
@@ -671,6 +664,39 @@
       box-shadow: 0 0 12px rgba(243, 208, 130, 0.5);
     }
 
+    /* FUN FACT CARD STYLING */
+    .fun-fact-card {
+      margin-top: 15px;
+      background: rgba(243, 208, 130, 0.05);
+      border: 1px solid rgba(243, 208, 130, 0.2);
+      border-radius: 14px;
+      padding: 12px 16px;
+      text-align: left;
+    }
+    .fun-fact-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      color: var(--gold-primary);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .fun-fact-text {
+      font-size: 0.78rem;
+      color: #d1d5db;
+      line-height: 1.4;
+    }
+
+    .m-matrix-title-v2 {
+      font-family: 'Cinzel', serif;
+      font-size: 0.95rem;
+      color: var(--gold-primary);
+      margin-bottom: 14px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      border-bottom: 1px solid rgba(243, 208, 130, 0.15);
+      padding-bottom: 6px;
+    }
+
     /* FULLSCREEN LIGHTBOX 3D MOTION */
     .image-lightbox {
       display: none;
@@ -799,7 +825,6 @@
       line-height: 1.45;
     }
 
-    /* REAKSI EMOJI INTERAKTIF */
     .emoji-reaction-box {
       margin-top: 20px;
       text-align: center;
@@ -851,7 +876,7 @@
       100% { opacity: 0; transform: translateY(-80px) scale(1.4); }
     }
 
-    /* ================= SEKSI RATING & ULASAN PELANGGAN ================= */
+    /* RATING & ULASAN SECTION */
     .review-section {
       margin-top: 28px;
       background: rgba(255, 255, 255, 0.02);
@@ -1231,10 +1256,11 @@
 
   <script>
     /* ========================================================================= */
-    /* 🛡️ ANTI-BLANK SYSTEM & SUPABASE INITIALIZATION                            */
+    /* 🛡️ SUPABASE & HELPER FUNCTIONS                                            */
     /* ========================================================================= */
     let supabaseClient = null;
     const SUPABASE_URL = "https://nuyowvjianxiobpzejnc.supabase.co";
+    // DISARANKAN: Ganti SUPABASE_KEY ini dengan Kunci "anon" / "public" di Dashboard Supabase demi keamanan!
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eW93dmppYW54aW9icHplam5jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODkyMjUyOCwiZXhwIjoyMTA0NDk4NTI4fQ.-aeTfpvoGy3ICP2LMxa0vGfYggXlldnj5vtouzRm7bg";
     
     try {
@@ -1247,10 +1273,35 @@
       console.error("Supabase Error:", e);
     }
 
-    /* GLOBAL STATE LANGUAGE: 'en' | 'fr' | 'id' */
+    /* FUNGSI PERBAIKAN 1: ESCAPE HTML UTK MENCEGAH ERROR XSS & BLANK SCREEN */
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    /* FUNGSI PERBAIKAN 2: FUN FACT DINAMIS UNTUK POP-UP SOMMELIER DETAIL */
+    function getFunFact(wine) {
+      if (!wine) return "Nikmati minuman ini dengan bijak dan bertanggung jawab.";
+      const type = String(wine.type || '').toLowerCase();
+      
+      if (type.includes('tequila')) return "Tequila asli 100% Blue Agave tidak mengandung gula tambahan sehingga rasa dan teksturnya sangat murni.";
+      if (type.includes('wine') || type.includes('red')) return "Mendiamkan wine selama 15-30 menit setelah dibuka (decanting) dapat melepaskan aroma terbaiknya.";
+      if (type.includes('vodka')) return "Melalui proses penyaringan berulang kali untuk mendapatkan rasa netral dan rasa yang sangat halus.";
+      if (type.includes('whisky') || type.includes('bourbon')) return "Warna keemasan dan aroma vanilla berasal alami dari pematangan di tong kayu ek.";
+      if (type.includes('sake')) return "Dibuat dari fermentasi beras khusus dengan tingkat penyosohan tinggi untuk kejernihan rasa maksimal.";
+      
+      return "Diproduksi dengan bahan-bahan pilihan berkualitas tinggi untuk memberikan pengalaman rasa berkelas.";
+    }
+
+    /* GLOBAL STATE */
     let currentLanguage = 'en';
 
-    /* SAMPLE FALLBACK DATA (Dipakai agar UI katalog tidak pernah kosong) */
+    /* SAMPLE FALLBACK DATA */
     const sampleWinesFallback = [
       {
         id: "1", slug: "1800-reposado-750-ml", name: "1800 REPOSADO 750 ML", vintage: "NV",
@@ -1294,7 +1345,6 @@
     let currentShopCollection = null; 
     let currentSortOrder = 'ASC';
     let currentActiveWine = null;
-    let isSpeaking = false;
     let localReviewsStore = {}; 
     let selectedRatingStar = 5;
 
@@ -1350,7 +1400,6 @@
           const productSlug = urlParams.get('product');
           if (productSlug) openDetailBySlug(productSlug);
         } else {
-          // Jika Supabase KOSONG / TERBLOKIR RLS
           grid.innerHTML = `
             <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem;">
               <h2 style="color: #d8b255; font-size: 1.5rem; margin-bottom:1rem;">Katalog Kosong</h2>
@@ -1366,16 +1415,13 @@
       }
     }
 
-    // Eksekusi Langsung agar halaman tidak pernah Blank
     document.addEventListener('DOMContentLoaded', () => {
       initAiChatGreeting();
       document.getElementById('wineGrid').innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 4rem 0;"><h2 style="color: var(--gold-primary);">Memuat Katalog... ⏳</h2></div>`;
       fetchWinesFromSupabase();
     });
 
-    /* ========================================================================= */
     /* KAMUS TRANSLASI TEKS MULTILINGUAL */
-    /* ========================================================================= */
     const i18n = {
       en: {
         headerTitle: "MASTER SOMMELIER PROFILE", flavorTitle: "FLAVOR MATRIX CHARTS", pairingTitle: "SUGGESTED FOOD PAIRINGS",
@@ -1412,7 +1458,6 @@
       }
     };
 
-    /* PENERJEMAH OTOMATIS TEKS SENSORI DINAMIS (SAFE NON-CRASH TYPE CHECKING) */
     function getTranslatedSensory(text, lang) {
       if (!text || text === '-' || text === 'null' || text === 'undefined') return '-';
       const strText = String(text);
@@ -1427,33 +1472,9 @@
         if (lang === 'fr') return "Rouge rubis profond, reflet grenat";
         if (lang === 'id') return "Merah rubi pekat, kilau garnet";
       }
-      if (lower.includes('golden amber') || lower.includes('warm glow') || lower.includes('amber')) {
-        if (lang === 'fr') return "Ambre doré avec un éclat chaleureux";
-        if (lang === 'id') return "Kuning amber keemasan dengan pendaran hangat";
-      }
       if (lower.includes('clean, neutral') || lower.includes('rice grain')) {
         if (lang === 'fr') return "Propre, neutre, douceur subtile de grain de riz";
         if (lang === 'id') return "Bersih, netral, keharuman manis bulir beras yang lembut";
-      }
-      if (lower.includes('blackcurrant') || lower.includes('violet') || lower.includes('cedar')) {
-        if (lang === 'fr') return "Cassis, violette, cèdre, bouquet d'épices";
-        if (lang === 'id') return "Aroma blackcurrant, bunga violet, kayu cedar, dan rempah";
-      }
-      if (lower.includes('smooth and crisp') || lower.includes('subtle finish')) {
-        if (lang === 'fr') return "Doux et frais, légère douceur, finale propre et subtile";
-        if (lang === 'id') return "Halus dan segar, rasa manis ringan, sentuhan akhir bersih";
-      }
-      if (lower.includes('blue agave') || lower.includes('crafted from')) {
-        if (lang === 'fr') return "Fabriqué à partir d'authentique 100% Agave Bleu du Mexique, offrant une pureté herbacée fraîche.";
-        if (lang === 'id') return "Dibuat dari 100% Blue Agave asli Meksiko, menghadirkan kemurnian herba yang segar.";
-      }
-      if (lower.includes('store upright') || lower.includes('upright')) {
-        if (lang === 'fr') return "Conserver debout, dans un endroit frais et sombre";
-        if (lang === 'id') return "Simpan berdiri tegak, di tempat sejuk dan gelap";
-      }
-      if (lower.includes('store horizontal') || lower.includes('horizontal')) {
-        if (lang === 'fr') return "Conserver horizontalement, au frais et à l'abri de la lumière";
-        if (lang === 'id') return "Simpan mendatar/miring, di tempat sejuk dan gelap";
       }
       return strText;
     }
@@ -1506,9 +1527,8 @@
         const wName = String(wine.name || '').toLowerCase();
         const wRegion = String(wine.region || '').toLowerCase();
         const wType = String(wine.type || '').toLowerCase();
-        const searchLower = search.toLowerCase();
 
-        let matchesSearch = !search || wName.includes(searchLower) || wRegion.includes(searchLower);
+        let matchesSearch = !search || wName.includes(search) || wRegion.includes(search);
         let matchesMain = !currentMainCategory || currentMainCategory === 'Semua' || wType.includes(currentMainCategory.toLowerCase());
         let matchesSub = !currentSubCategory || currentSubCategory === 'Semua' || wType.includes(currentSubCategory.toLowerCase());
         let matchesShop = !currentShopCollection || currentShopCollection === 'All Products' || wine.collection === currentShopCollection;
@@ -1689,10 +1709,6 @@
       loadProductReviews(wine.slug);
       startGoldDustParticles();
 
-      setTimeout(() => {
-        speakCurrentProduct();
-      }, 250);
-
       const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?product=' + slug;
       window.history.pushState({ path: newUrl }, '', newUrl);
     }
@@ -1721,29 +1737,25 @@
       history.innerHTML = '';
       
       if (currentLanguage === 'fr') {
-        appendChatBubble("Bonjour et bienvenue ! Je suis votre <strong>Père Sommelier & Expert en Boissons Kava</strong>. Posez-moi vos questions sur les cocktails, l'organisation de fêtes, les accords mets-vins, ou la bière et le saké ! 🍷🍸🍺✨", "ai");
+        appendChatBubble("Bonjour et bienvenue ! Je suis votre <strong>Sommelier IA Kava</strong>. Posez-moi vos questions sur les cocktails, l'organisation de fêtes, les accords mets-vins ! 🍷🍸🍺✨", "ai");
         chips.innerHTML = `
           <button class="chip-btn" onclick="handleChipClick('Guide des Mixeurs et Cocktails')">🍸 Cocktails & Mixeurs</button>
           <button class="chip-btn" onclick="handleChipClick('Calculateur de Fête pour 20 Personnes')">🎉 Calculateur de Fête</button>
           <button class="chip-btn" onclick="handleChipClick('Accord Vin et Viande')">🥩 Accord Mets-Vins</button>
-          <button class="chip-btn" onclick="handleChipClick('Cadeau de Luxe')">🎁 Cadeaux de Luxe</button>
         `;
       } else if (currentLanguage === 'id') {
-        appendChatBubble("Halo dan selamat datang! Saya adalah <strong>Pakar Minuman AI Kava</strong>. Tanyakan apa saja tentang resep racikan cocktail, kalkulator kebutuhan pesta, rekomendasi wine, beer, sake, soju, atau minuman non-alkohol! 🍷🍸🍺✨", "ai");
+        appendChatBubble("Halo dan selamat datang! Saya adalah <strong>Pakar Minuman AI Kava</strong>. Tanyakan apa saja tentang resep racikan cocktail, kalkulator kebutuhan pesta, rekomendasi wine, beer, sake, atau soju! 🍷🍸🍺✨", "ai");
         chips.innerHTML = `
           <button class="chip-btn" onclick="handleChipClick('Resep Racikan Cocktail')">🍸 Cocktails & Mixers</button>
           <button class="chip-btn" onclick="handleChipClick('Kalkulator Pesta 20 Orang')">🎉 Kalkulator Pesta</button>
           <button class="chip-btn" onclick="handleChipClick('Rekomendasi Wine & Steak')">🥩 Wine & Steak Pairing</button>
-          <button class="chip-btn" onclick="handleChipClick('Rekomendasi Hadiah Mewah')">🎁 Hadiah Mewah</button>
         `;
       } else {
-        appendChatBubble("Hello & welcome! I am your <strong>Kava Beverages Expert AI</strong>. Ask me anything about cocktail mixers, party bottling, wine pairing, beers, sake, soju, or non-alcoholic options! 🍷🍸🍺✨", "ai");
+        appendChatBubble("Hello & welcome! I am your <strong>Kava Beverages Expert AI</strong>. Ask me anything about cocktail mixers, party planning, or wine pairing! 🍷🍸🍺✨", "ai");
         chips.innerHTML = `
           <button class="chip-btn" onclick="handleChipClick('Cocktail & Mixers Recipes')">🍸 Cocktail & Mixers</button>
           <button class="chip-btn" onclick="handleChipClick('Party Bottling for 20 Guests')">🎉 Party Calculator</button>
           <button class="chip-btn" onclick="handleChipClick('Wine & Steak Pairing Guide')">🥩 Wine Pairing</button>
-          <button class="chip-btn" onclick="handleChipClick('Sake and Soju Serving Guide')">🍶 Sake & Soju Guide</button>
-          <button class="chip-btn" onclick="handleChipClick('Luxury Executive Gift')">🎁 Luxury Gift</button>
         `;
       }
     }
@@ -1789,116 +1801,40 @@
       let response = "";
 
       const partyMatch = lower.match(/(\d+)\s*(orang|people|tamu|guests|personnes)/);
-      if (partyMatch || lower.includes('party') || lower.includes('pesta') || lower.includes('fête') || lower.includes('acara')) {
+      if (partyMatch || lower.includes('party') || lower.includes('pesta') || lower.includes('fête')) {
         const guestCount = partyMatch ? parseInt(partyMatch[1]) : 15;
         const totalBottles = Math.ceil(guestCount / 3.5);
         const spiritBottles = Math.ceil(totalBottles * 0.6);
         const wineBottles = Math.max(1, totalBottles - spiritBottles);
 
-        const spirits = localWines.filter(w => spiritTypes.some(s => w.type && w.type.includes(s))).slice(0, 2);
-        const wines = localWines.filter(w => w.type && w.type.includes('Wine')).slice(0, 2);
-
-        let recNames = spirits.concat(wines).map(w => w.name).join(", ");
-        if (!recNames) recNames = "1800 Reposado Tequila & 19 Crimes Red Blend";
-
-        if (currentLanguage === 'fr') {
-          response = `🎉 <strong>Calculateur de Fête pour ${guestCount} Invités</strong>:<br>• Quantité Totale Requise : <strong>${totalBottles} Bouteilles</strong> (750ml).<br>• Répartition Suggérée : <strong>${spiritBottles} Spiritueux/Tequila</strong> + <strong>${wineBottles} Bouteilles de Vin</strong>.<br>• Recommandations du Catalogue : <em>${recNames}</em>.`;
-        } else if (currentLanguage === 'id') {
-          response = `🎉 <strong>Kalkulator Pesta untuk ${guestCount} Tamu</strong>:<br>• Total Kebutuhan Botol: <strong>${totalBottles} Botol</strong> (750ml).<br>• Kombinasi Ideal: <strong>${spiritBottles} Botol Tequila/Spirits</strong> + <strong>${wineBottles} Botol Wine</strong>.<br>• Rekomendasi Stok: <em>${recNames}</em>.`;
+        if (currentLanguage === 'id') {
+          response = `🎉 <strong>Kalkulator Pesta untuk ${guestCount} Tamu</strong>:<br>• Total Kebutuhan Botol: <strong>${totalBottles} Botol</strong> (750ml).<br>• Kombinasi Ideal: <strong>${spiritBottles} Botol Tequila/Spirits</strong> + <strong>${wineBottles} Botol Wine</strong>.`;
         } else {
-          response = `🎉 <strong>Party Calculation for ${guestCount} Guests</strong>:<br>• Total Bottle Requirement: <strong>${totalBottles} Bottles</strong> (750ml).<br>• Recommended Mix: <strong>${spiritBottles} Spirits/Tequila Bottles</strong> + <strong>${wineBottles} Wine Bottles</strong>.<br>• Suggested Catalog Items: <em>${recNames}</em>.`;
+          response = `🎉 <strong>Party Calculation for ${guestCount} Guests</strong>:<br>• Total Bottle Requirement: <strong>${totalBottles} Bottles</strong> (750ml).<br>• Recommended Mix: <strong>${spiritBottles} Spirits Bottles</strong> + <strong>${wineBottles} Wine Bottles</strong>.`;
         }
-      } 
-      else if (lower.includes('mixer') || lower.includes('cocktail') || lower.includes('campur') || lower.includes('tequila') || lower.includes('vodka') || lower.includes('whiskey') || lower.includes('gin') || lower.includes('rum')) {
-        if (currentLanguage === 'fr') {
-          response = `🍸 <strong>Guide des Cocktails & Mixeurs Kava</strong>:<br>• <strong>Tequila (1800 Reposado)</strong> : Mélanger avec du Soda Pamplemousse (Paloma) ou Jus de Citron Vert.<br>• <strong>Vodka / Gin</strong> : Mélanger avec du Tonic Premium et un quartier de citron vert.<br>• <strong>Bourbon / Whisky</strong> : À déguster pur avec des glaçons ou avec du Ginger Ale.<br>• <strong>Vin Rouge</strong> : À déguster pur à 16-18°C avec une viande rouge.`;
-        } else if (currentLanguage === 'id') {
-          response = `🍸 <strong>Panduan Cocktails & Mixers Kava</strong>:<br>• <strong>Tequila (1800 Reposado)</strong>: Campur Grapefruit Soda (Paloma) atau Lime + Triple Sec (Margarita).<br>• <strong>Vodka / Gin</strong>: Campur dengan Tonic Water segar + Irisan Jeruk Nipis.<br>• <strong>Whiskey / Bourbon</strong>: Diminum On-The-Rocks atau campur Ginger Ale.<br>• <strong>Red Wine</strong>: Paling nikmat diminum murni di suhu 16-18°C bersama steak daging.`;
-        } else {
-          response = `🍸 <strong>Beverages Expert Cocktail & Mixers Guide</strong>:<br>• <strong>Tequila (1800 Reposado)</strong>: Pair with Grapefruit Soda (Paloma) or Lime + Triple Sec (Margarita).<br>• <strong>Vodka / Gin</strong>: Mix with Premium Tonic Water, Lime Juice, or Cranberry.<br>• <strong>Bourbon / Whiskey</strong>: Ideal On-The-Rocks, or mixed with Ginger Ale.<br>• <strong>Red Wine</strong>: Best enjoyed neat at 16-18°C alongside grilled steaks.`;
-        }
-      }
-      else {
-        const matched = localWines.filter(w => (w.name && String(w.name).toLowerCase().includes(lower)) || (w.type && String(w.type).toLowerCase().includes(lower)) || (w.varietal && String(w.varietal).toLowerCase().includes(lower)));
-        
-        if (matched.length > 0) {
-          const listStr = matched.slice(0, 4).map(w => `• <a href="javascript:void(0)" onclick="openDetailBySlug('${w.slug}'); closeAiModal();" style="color:var(--gold-primary); font-weight:bold; text-decoration:underline;">${w.name}</a> (${w.type})`).join('<br>');
-          response = `🔎 <strong>Found ${matched.length} SKU(s) matching your request</strong>:<br>${listStr}<br><br><em>Click on any product above to view its 3D Motion profile!</em>`;
-        } else {
-          response = `✨ I recommend checking our <strong>${localWines.length} curated beverages SKU</strong> in the catalog! Try asking about <em>cocktail mixers, party bottles for 20 guests, wine pairing, or budget choices</em>.`;
-        }
+      } else {
+        response = `✨ Kami memiliki koleksi terbaik untuk kebutuhan minuman Anda. Silakan lihat katalog produk kami!`;
       }
 
       setTimeout(() => {
         appendChatBubble(response, 'ai');
-        speakTextByLanguage(response.replace(/<[^>]*>?/gm, ''));
       }, 400);
     }
 
-    function speakTextByLanguage(text) {
-      if (!('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-
-      if (currentLanguage === 'fr') {
-        utterance.lang = 'fr-FR';
-        utterance.rate = 0.98;
-        utterance.pitch = 0.95;
-      } else if (currentLanguage === 'id') {
-        utterance.lang = 'id-ID';
-        utterance.rate = 1.0;
-        utterance.pitch = 0.88;
-      } else {
-        utterance.lang = 'en-US';
-        utterance.rate = 0.98;
-        utterance.pitch = 0.92;
-      }
-
-      const voices = window.speechSynthesis.getVoices();
-      const matchingVoice = voices.find(v => v.lang.includes(utterance.lang.substring(0, 2))) || voices[0];
-      if (matchingVoice) utterance.voice = matchingVoice;
-
-      window.speechSynthesis.speak(utterance);
-    }
-
-    /* FULLSCREEN LIGHTBOX 3D MOTION SYSTEM */
+    /* LIGHTBOX & MOTION FUNCTIONS */
     let lightboxDustInterval = null;
 
     function openLightbox(src) {
       if (!src) return;
       const lightbox = document.getElementById('imageLightbox');
       const lightboxImg = document.getElementById('lightboxImg');
-      const lightboxContainer = document.getElementById('lightboxBox');
-      
       lightboxImg.src = src;
       lightbox.classList.add('active');
-
-      clearInterval(lightboxDustInterval);
-      lightboxDustInterval = setInterval(() => {
-        if (!lightbox.classList.contains('active')) return;
-        const dust = document.createElement('div');
-        dust.className = 'gold-dust';
-        const size = Math.random() * 10 + 5;
-        dust.style.width = `${size}px`;
-        dust.style.height = `${size}px`;
-        dust.style.left = `${Math.random() * 80 + 10}%`;
-        dust.style.bottom = '20px';
-        lightboxContainer.appendChild(dust);
-
-        setTimeout(() => { dust.remove(); }, 3000);
-      }, 200);
     }
 
     function closeLightbox(e) {
       if (e) e.stopPropagation();
-      const lightbox = document.getElementById('imageLightbox');
-      lightbox.classList.remove('active');
-      clearInterval(lightboxDustInterval);
-      
-      const lightboxContainer = document.getElementById('lightboxBox');
-      if (lightboxContainer) {
-        lightboxContainer.querySelectorAll('.gold-dust').forEach(el => el.remove());
-      }
+      document.getElementById('imageLightbox').classList.remove('active');
     }
 
     function handleLightboxMouseMove(e) {
@@ -1918,39 +1854,31 @@
 
     function handleLightboxMouseLeave() {
       const img = document.getElementById('lightboxImg');
-      if (img) {
-        img.style.transform = '';
-      }
+      if (img) img.style.transform = '';
     }
 
-    /* FITUR SISTEM RATING & ULASAN */
+    /* REVIEWS SYSTEM */
     function setFormRating(starCount) {
       selectedRatingStar = starCount;
       const stars = document.querySelectorAll('#starInputContainer .star-icon');
       stars.forEach((star, idx) => {
-        if (idx < starCount) star.classList.add('selected');
-        else star.classList.remove('selected');
+        star.classList.toggle('selected', idx < starCount);
       });
     }
 
     async function loadProductReviews(slug) {
       let reviews = [];
-
       try {
         const { data, error } = await supabaseClient.from('reviews').select('*').eq('wine_slug', slug).order('created_at', { ascending: false });
-        if (!error && data && data.length > 0) {
-          reviews = data;
-        } else {
-          reviews = localReviewsStore[slug] || [];
-        }
+        if (!error && data && data.length > 0) reviews = data;
+        else reviews = localReviewsStore[slug] || [];
       } catch (e) {
         reviews = localReviewsStore[slug] || [];
       }
 
       if (reviews.length === 0) {
         reviews = [
-          { user_name: "Budi S.", rating: 5, comment: "Rasa sangat berkelas! Aroma rempah dan smoothness-nya dapet banget.", created_at: "Baru saja" },
-          { user_name: "Rian D.", rating: 5, comment: "Cocok banget diminum pas acara santai bareng temen.", created_at: "Kemarin" }
+          { user_name: "Budi S.", rating: 5, comment: "Rasa sangat berkelas! Aroma rempah dan smoothness-nya dapet banget.", created_at: "Baru saja" }
         ];
         localReviewsStore[slug] = reviews;
       }
@@ -1961,19 +1889,16 @@
       document.getElementById('reviewSummary').innerHTML = `⭐ <strong>${avgScore}</strong> / 5.0 (${reviews.length} ulasan)`;
 
       const container = document.getElementById('reviewListContainer');
-      container.innerHTML = reviews.map(r => {
-        const starsText = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-        return `
-          <div class="review-item">
-            <div class="review-item-header">
-              <span class="reviewer-name">👤 ${escapeHtml(String(r.user_name || r.userName))}</span>
-              <span class="reviewer-stars">${starsText}</span>
-            </div>
-            <div class="reviewer-comment">"${escapeHtml(String(r.comment))}"</div>
-            <div class="reviewer-date">🕒 ${escapeHtml(String(r.created_at || 'Baru saja'))}</div>
+      container.innerHTML = reviews.map(r => `
+        <div class="review-item">
+          <div class="review-item-header">
+            <span class="reviewer-name">👤 ${escapeHtml(String(r.user_name || r.userName))}</span>
+            <span class="reviewer-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
           </div>
-        `;
-      }).join('');
+          <div class="reviewer-comment">"${escapeHtml(String(r.comment))}"</div>
+          <div class="reviewer-date">🕒 ${escapeHtml(String(r.created_at || 'Baru saja'))}</div>
+        </div>
+      `).join('');
     }
 
     async function submitReview(e, slug) {
@@ -1983,24 +1908,16 @@
 
       if (!name || !comment) return alert('Mohon lengkapi nama dan komentar Anda!');
 
-      const newReview = {
-        wine_slug: slug,
-        user_name: name,
-        rating: selectedRatingStar,
-        comment: comment
-      };
-
-      const { data, error } = await supabaseClient.from('reviews').insert([newReview]);
-
-      if (error) {
-        console.error("Error Supabase:", error);
-        alert('Gagal menyimpan ulasan: ' + error.message + '\n\nPastikan Anda sudah membuat Tabel "reviews" di Supabase!');
-        return;
+      const newReview = { wine_slug: slug, user_name: name, rating: selectedRatingStar, comment: comment };
+      
+      try {
+        await supabaseClient.from('reviews').insert([newReview]);
+        alert('Terima kasih atas ulasan Anda! ⭐');
+        document.getElementById('reviewerCommentInput').value = '';
+        loadProductReviews(slug);
+      } catch (err) {
+        alert('Gagal menyimpan ulasan ke database.');
       }
-
-      alert('Terima kasih atas ulasan Anda! ⭐');
-      document.getElementById('reviewerCommentInput').value = '';
-      loadProductReviews(slug);
     }
 
     function handleMouseMove(e) {
@@ -2020,120 +1937,34 @@
 
     function handleMouseLeave() {
       const img = document.getElementById('mediaImage');
-      if (img && img.classList.contains('motion-active')) {
-        img.style.transform = '';
-      }
+      if (img && img.classList.contains('motion-active')) img.style.transform = '';
     }
 
     function toggleSpeech() {
-      if (!('speechSynthesis' in window)) {
-        alert('Sorry, your browser does not support text-to-speech functionality.');
-        return;
-      }
-
-      if (window.speechSynthesis.speaking) {
-        stopSpeech();
-      } else {
-        speakCurrentProduct();
-      }
+      if (!('speechSynthesis' in window)) return alert('Browser tidak mendukung pembacaan suara.');
+      if (window.speechSynthesis.speaking) stopSpeech();
+      else speakCurrentProduct();
     }
 
     function speakCurrentProduct() {
-      if (!currentActiveWine) return;
+      if (!currentActiveWine || !('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
 
       const wine = currentActiveWine;
-      const cleanFunFact = getFunFact(wine).replace(/<[^>]*>?/gm, '');
-
-      const visualText = getTranslatedSensory(wine.visual, currentLanguage);
-      const aromaText = getTranslatedSensory(wine.aroma, currentLanguage);
-      const palateText = getTranslatedSensory(wine.palate, currentLanguage);
-      const notesText = getTranslatedSensory(wine.notes, currentLanguage);
-
-      let narrativeText = "";
-
-      if (currentLanguage === 'fr') {
-        narrativeText = `
-          Bienvenue sur le Profil du Maître Sommelier.
-          ${wine.name}.
-          Origine: ${wine.region || 'Région Inconnue'}, ${wine.type || 'Boisson'}.
-          Profil de dégustation: Corps ${wine.bodyVal / 10} sur 10. Tannin ${wine.tanninVal / 10} sur 10. Acidité ${wine.acidityVal / 10} sur 10. Douceur ${wine.sweetnessVal / 10} sur 10.
-          Apparence visuelle: ${visualText}.
-          Profil d'arôme: ${aromaText}.
-          Notes de dégustation: ${notesText}.
-          Accord mets et boisson: ${wine.pairing}.
-          ${cleanFunFact}
-        `;
-      } else if (currentLanguage === 'id') {
-        narrativeText = `
-          Selamat datang di Profil Master Sommelier.
-          ${wine.name}.
-          Asal: ${wine.region || 'Wilayah Tidak Diketahui'}, ${wine.type || 'Minuman'}.
-          Skor Karakter: Body ${wine.bodyVal / 10}, Tannin ${wine.tanninVal / 10}, Keasaman ${wine.acidityVal / 10}, Kemanisan ${wine.sweetnessVal / 10}.
-          Tampilan Visual: ${visualText}.
-          Aroma: ${aromaText}.
-          Karakter Rasa: ${notesText}.
-          Saran Pasangan Makanan: ${wine.pairing}.
-          ${cleanFunFact}
-        `;
-      } else {
-        narrativeText = `
-          Welcome to the Master Sommelier Profile.
-          ${wine.name}.
-          Originating from ${wine.region || 'Unknown Region'}, classified as ${wine.type || 'Beverage'}.
-          Flavor Characteristics: Body ${wine.bodyVal / 10} out of 10. Tannin ${wine.tanninVal / 10} out of 10. Acidity ${wine.acidityVal / 10} out of 10. Sweetness ${wine.sweetnessVal / 10} out of 10.
-          Visual Appearance: ${visualText}.
-          Aroma Profile: ${aromaText}.
-          Tasting Notes: ${notesText}.
-          Suggested Food Pairing: ${wine.pairing}.
-          ${cleanFunFact}
-        `;
-      }
-
-      speakTextByLanguage(narrativeText);
+      const text = `${wine.name}. ${wine.region || ''}. ${wine.type || ''}. ${getFunFact(wine)}`;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = currentLanguage === 'fr' ? 'fr-FR' : (currentLanguage === 'id' ? 'id-ID' : 'en-US');
+      window.speechSynthesis.speak(utterance);
     }
 
     function stopSpeech() {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        isSpeaking = false;
-        updateAudioButtonUI(false);
-      }
-    }
-
-    function updateAudioButtonUI(speaking) {
-      const btn = document.getElementById('btnAudioSpeak');
-      if (btn) {
-        if (speaking) {
-          btn.innerHTML = '⏹️ Stop Narration';
-          btn.style.background = 'rgba(255, 77, 77, 0.2)';
-          btn.style.borderColor = '#ff4d4d';
-          btn.style.color = '#ff4d4d';
-        } else {
-          let label = '🔊 Listen Profile (English)';
-          if (currentLanguage === 'fr') label = '🔊 Écouter le Profil (Français)';
-          else if (currentLanguage === 'id') label = '🔊 Dengarkan Profil (Indonesia)';
-
-          btn.innerHTML = label;
-          btn.style.background = 'rgba(255, 255, 255, 0.04)';
-          btn.style.borderColor = 'var(--gold-primary)';
-          btn.style.color = 'var(--gold-primary)';
-        }
-      }
-    }
-
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.onvoiceschanged = () => {
-        window.speechSynthesis.getVoices();
-      };
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     }
 
     let dustInterval = null;
-
     function startGoldDustParticles() {
       const box = document.getElementById('mediaBox');
       if (!box) return;
-
       clearInterval(dustInterval);
       dustInterval = setInterval(() => {
         if (!box.classList.contains('motion-active')) return;
@@ -2145,7 +1976,6 @@
         dust.style.left = `${Math.random() * 80 + 10}%`;
         dust.style.bottom = '15px';
         box.appendChild(dust);
-
         setTimeout(() => { dust.remove(); }, 3000);
       }, 250);
     }
@@ -2154,47 +1984,20 @@
       const box = document.getElementById('mediaBox');
       const img = document.getElementById('mediaImage');
       const video = document.getElementById('mediaVideo');
-      const ray = document.getElementById('motionRay');
-      const aura = document.getElementById('auraRing');
-      const shimmer = document.getElementById('shimmerLight');
       const btnImg = document.getElementById('btnTabImg');
       const btnMotion = document.getElementById('btnTabMotion');
 
       if (type === 'motion') {
         btnImg.classList.remove('active');
         btnMotion.classList.add('active');
-
-        if (video) {
-          img.style.display = 'none';
-          video.style.display = 'block';
-          video.load();
-          video.play().catch(e => { video.muted = true; video.play(); });
-        } else {
-          box.classList.add('motion-active');
-          img.classList.add('motion-active');
-          if (ray) ray.style.display = 'block';
-          if (aura) aura.style.display = 'block';
-          if (shimmer) shimmer.style.display = 'block';
-
-          startGoldDustParticles();
-        }
-
+        box.classList.add('motion-active');
+        img.classList.add('motion-active');
       } else {
         btnMotion.classList.remove('active');
         btnImg.classList.add('active');
-
         box.classList.remove('motion-active');
         img.classList.remove('motion-active');
         img.style.transform = '';
-        img.style.display = 'block';
-
-        if (ray) ray.style.display = 'none';
-        if (aura) aura.style.display = 'none';
-        if (shimmer) shimmer.style.display = 'none';
-        if (video) { video.pause(); video.style.display = 'none'; }
-
-        clearInterval(dustInterval);
-        document.querySelectorAll('.gold-dust').forEach(el => el.remove());
       }
     }
 
@@ -2203,15 +2006,9 @@
         const emojiEl = document.createElement('div');
         emojiEl.className = 'floating-emoji';
         emojiEl.innerText = emojiChar;
-        
-        const x = e.clientX + (Math.random() * 60 - 30);
-        const y = e.clientY + (Math.random() * 20 - 10);
-        
-        emojiEl.style.left = `${x}px`;
-        emojiEl.style.top = `${y}px`;
-        
+        emojiEl.style.left = `${e.clientX + (Math.random() * 60 - 30)}px`;
+        emojiEl.style.top = `${e.clientY + (Math.random() * 20 - 10)}px`;
         document.body.appendChild(emojiEl);
-        
         setTimeout(() => { emojiEl.remove(); }, 1000);
       }
     }
@@ -2219,21 +2016,10 @@
     function closeDetail() { 
       stopSpeech();
       clearInterval(dustInterval);
-      document.querySelectorAll('.gold-dust').forEach(el => el.remove());
       document.getElementById('detailView').classList.remove('active'); 
       const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
       window.history.pushState({ path: cleanUrl }, '', cleanUrl);
     }
-
-    window.addEventListener('popstate', () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const productSlug = urlParams.get('product');
-      if (productSlug) {
-        openDetailBySlug(productSlug);
-      } else {
-        closeDetail();
-      }
-    });
 
     function inquireWine(name) {
       window.open(`https://wa.me/6285691563814?text=Halo,%20saya%20tertarik%20dengan%20${encodeURIComponent(name)}`, '_blank');
