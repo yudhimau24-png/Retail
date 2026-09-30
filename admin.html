@@ -109,7 +109,7 @@
       <p>Management Beverages Inventory & Moderasi Ulasan</p>
     </div>
 
-    <!-- MODERASI KOMENTAR & RATING (FITUR BARU) -->
+    <!-- MODERASI KOMENTAR & RATING -->
     <div class="admin-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap: 1rem;">
         <h2>💬 Moderasi Ulasan & Komentar Pelanggan</h2>
@@ -391,13 +391,14 @@
         const { data, error } = await supabaseClient.from('reviews').select('*').order('created_at', { ascending: false });
         if (!error && data) {
           adminReviews = data;
-          renderAdminReviews();
         } else {
           adminReviews = [];
-          renderAdminReviews();
         }
+        renderAdminReviews();
       } catch (e) {
         console.warn("Table reviews belum disiapkan di Supabase atau kosong.");
+        adminReviews = [];
+        renderAdminReviews();
       }
     }
 
@@ -433,7 +434,7 @@
     }
 
     async function deleteReview(id) {
-      if (!confirm('Apakah Anda yakin ingin MENGHAPUS komentar ini? Komentar yang tidak pantas akan terhapus secara permanen.')) return;
+      if (!confirm('Apakah Anda yakin ingin MENGHAPUS komentar ini? Komentar yang tidak pantas akan terhapus secara permanen dari Supabase.')) return;
 
       try {
         const { error } = await supabaseClient.from('reviews').delete().eq('id', id);
