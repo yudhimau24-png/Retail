@@ -508,6 +508,7 @@
     .m-wine-name-v2 { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 800; color: #ffffff; line-height: 1.25; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px; }
     .m-wine-origin-v2 { font-size: 0.88rem; color: var(--gold-primary); font-weight: 600; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 6px; }
 
+    /* ================= DYNAMIC MOVING BACKGROUND & POP-FORWARD 3D BOTTLE ================= */
     .m-media-box {
       position: relative;
       width: 100%;
@@ -1312,17 +1313,17 @@
             <div class="m-wine-name-v2">${escapeHtml(wine.name)}</div>
             <div class="m-wine-origin-v2">📍 ${escapeHtml(wine.region) || 'Origin Unknown'} • ${escapeHtml(wine.type)}</div>
             
-            <div class="m-media-box" id="mediaBox" onmousemove="handleMouseMove(event)" onmouseleave="handleMouseLeave()">
-              <div class="aura-ring" id="auraRing"></div>
-              <div class="motion-ray" id="motionRay"></div>
-              <div class="shimmer-light" id="shimmerLight"></div>
-              <img src="${wine.imageUrl}" id="mediaImage" class="m-bottle-img-v2" onclick="openLightbox(this.src)" title="Klik untuk tampilan membesarkan 3D">
+            <div class="m-media-box motion-active" id="mediaBox" onmousemove="handleMouseMove(event)" onmouseleave="handleMouseLeave()">
+              <div class="aura-ring" id="auraRing" style="display:block;"></div>
+              <div class="motion-ray" id="motionRay" style="display:block;"></div>
+              <div class="shimmer-light" id="shimmerLight" style="display:block;"></div>
+              <img src="${wine.imageUrl}" id="mediaImage" class="m-bottle-img-v2 motion-active" onclick="openLightbox(this.src)" title="Klik untuk tampilan membesarkan 3D">
               ${videoSrc ? `<video id="mediaVideo" class="m-bottle-video" src="${videoSrc}" loop muted playsinline style="display: none;" preload="auto"></video>` : ''}
             </div>
 
             <div class="media-tab-group">
-              <button class="media-tab-btn active" id="btnTabImg" onclick="switchMedia('image')">${t.btnFoto}</button>
-              <button class="media-tab-btn" id="btnTabMotion" onclick="switchMedia('motion')">${t.btnMotion}</button>
+              <button class="media-tab-btn" id="btnTabImg" onclick="switchMedia('image')">${t.btnFoto}</button>
+              <button class="media-tab-btn active" id="btnTabMotion" onclick="switchMedia('motion')">${t.btnMotion}</button>
             </div>
 
             <div class="fun-fact-card">
@@ -1424,8 +1425,8 @@
 
       loadProductReviews(wine.slug);
 
-      // LANGSUNG AKTIFKAN MOTION MODE 3D SECARA OTOMATIS
-      switchMedia('motion');
+      // PARTIKEL DEBU EMAS
+      startGoldDustParticles();
 
       // BACA SUARA OTOMATIS SESUAI BAHASA TERPILIH
       setTimeout(() => {
@@ -1876,6 +1877,26 @@
 
     let dustInterval = null;
 
+    function startGoldDustParticles() {
+      const box = document.getElementById('mediaBox');
+      if (!box) return;
+
+      clearInterval(dustInterval);
+      dustInterval = setInterval(() => {
+        if (!box.classList.contains('motion-active')) return;
+        const dust = document.createElement('div');
+        dust.className = 'gold-dust';
+        const size = Math.random() * 8 + 4;
+        dust.style.width = `${size}px`;
+        dust.style.height = `${size}px`;
+        dust.style.left = `${Math.random() * 80 + 10}%`;
+        dust.style.bottom = '15px';
+        box.appendChild(dust);
+
+        setTimeout(() => { dust.remove(); }, 3000);
+      }, 250);
+    }
+
     function switchMedia(type) {
       const box = document.getElementById('mediaBox');
       const img = document.getElementById('mediaImage');
@@ -1902,20 +1923,7 @@
           if (aura) aura.style.display = 'block';
           if (shimmer) shimmer.style.display = 'block';
 
-          clearInterval(dustInterval);
-          dustInterval = setInterval(() => {
-            if (!box.classList.contains('motion-active')) return;
-            const dust = document.createElement('div');
-            dust.className = 'gold-dust';
-            const size = Math.random() * 8 + 4;
-            dust.style.width = `${size}px`;
-            dust.style.height = `${size}px`;
-            dust.style.left = `${Math.random() * 80 + 10}%`;
-            dust.style.bottom = '15px';
-            box.appendChild(dust);
-
-            setTimeout(() => { dust.remove(); }, 3000);
-          }, 250);
+          startGoldDustParticles();
         }
 
       } else {
