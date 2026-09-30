@@ -508,7 +508,6 @@
     .m-wine-name-v2 { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 800; color: #ffffff; line-height: 1.25; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px; }
     .m-wine-origin-v2 { font-size: 0.88rem; color: var(--gold-primary); font-weight: 600; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 6px; }
 
-    /* ================= DYNAMIC MOVING BACKGROUND & POP-FORWARD 3D BOTTLE ================= */
     .m-media-box {
       position: relative;
       width: 100%;
@@ -732,6 +731,261 @@
     .close-lightbox-btn:hover {
       transform: scale(1.2) rotate(90deg);
       color: #ff4d4d;
+    }
+
+    /* METER & SENSORY CARDS STYLING */
+    .m-meter-card {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(243, 208, 130, 0.15);
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+    }
+    .m-bar-label-v2 {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #e4e4e7;
+      font-family: 'Cinzel', serif;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+    .m-bar-label-v2 .score-badge {
+      color: var(--gold-primary);
+      font-weight: 800;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .m-bar-track-v2 {
+      height: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(243, 208, 130, 0.25);
+    }
+    .m-bar-fill-v2 {
+      height: 100%;
+      background: linear-gradient(90deg, #b89235 0%, var(--gold-primary) 100%);
+      border-radius: 10px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 12px rgba(243, 208, 130, 0.6);
+    }
+
+    .m-sensory-grid-v2 { margin-top: 22px; display: flex; flex-direction: column; gap: 10px; }
+    .m-sensory-item-v2 {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(243, 208, 130, 0.15);
+      border-left: 3px solid var(--gold-primary);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 4px;
+    }
+    .m-sensory-item-v2 strong {
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      color: var(--gold-primary);
+      min-width: 130px;
+      flex-shrink: 0;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+    .m-sensory-item-v2 span {
+      font-size: 0.85rem;
+      color: #e4e4e7;
+      line-height: 1.45;
+    }
+
+    /* REAKSI EMOJI INTERAKTIF */
+    .emoji-reaction-box {
+      margin-top: 20px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 10px;
+    }
+    .emoji-reaction-box span {
+      display: block;
+      font-size: 0.72rem;
+      color: #a1a1aa;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .emoji-btns {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn-emoji-react {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(243, 208, 130, 0.2);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-emoji-react:hover {
+      transform: scale(1.1) rotate(-3deg);
+      background: rgba(243, 208, 130, 0.2);
+      border-color: var(--gold-primary);
+    }
+
+    .floating-emoji {
+      position: fixed;
+      pointer-events: none;
+      font-size: 2rem;
+      animation: floatUp 1s ease-out forwards;
+      z-index: 10000;
+    }
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0) scale(0.8); }
+      100% { opacity: 0; transform: translateY(-80px) scale(1.4); }
+    }
+
+    /* ================= SEKSI RATING & ULASAN PELANGGAN ================= */
+    .review-section {
+      margin-top: 28px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(243, 208, 130, 0.2);
+      border-radius: 18px;
+      padding: 20px;
+    }
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-bottom: 1px solid rgba(243, 208, 130, 0.15);
+      padding-bottom: 10px;
+    }
+    .review-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      color: var(--gold-primary);
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+    .review-score-summary {
+      font-size: 0.88rem;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .star-rating-input {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+    .star-icon {
+      font-size: 1.5rem;
+      color: rgba(255, 255, 255, 0.2);
+      transition: color 0.2s, transform 0.2s;
+    }
+    .star-icon.selected, .star-icon:hover {
+      color: var(--gold-primary);
+      transform: scale(1.2);
+    }
+
+    .review-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+      background: rgba(15, 8, 12, 0.8);
+      padding: 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(243, 208, 130, 0.25);
+    }
+    .review-form input[type="text"], .review-form textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(243, 208, 130, 0.3);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #fff;
+      font-size: 0.85rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+    .review-form input[type="text"]:focus, .review-form textarea:focus {
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 15px rgba(243, 208, 130, 0.25);
+      background: rgba(255, 255, 255, 0.07);
+    }
+    .review-form textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .btn-submit-review {
+      align-self: flex-end;
+      padding: 10px 22px;
+      background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-secondary) 100%);
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .btn-submit-review:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(243, 208, 130, 0.4);
+    }
+
+    .review-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+    .review-list::-webkit-scrollbar { width: 4px; }
+    .review-list::-webkit-scrollbar-thumb { background: var(--gold-secondary); border-radius: 2px; }
+
+    .review-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(243, 208, 130, 0.15);
+      border-radius: 12px;
+      padding: 12px 16px;
+    }
+    .review-item-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .reviewer-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .reviewer-stars {
+      color: var(--gold-primary);
+      font-size: 0.78rem;
+    }
+    .reviewer-comment {
+      font-size: 0.8rem;
+      color: #d1d5db;
+      font-style: italic;
+      line-height: 1.35;
+    }
+    .reviewer-date {
+      font-size: 0.65rem;
+      color: #888;
+      margin-top: 4px;
     }
 
     /* SPECS GRID */
@@ -1015,6 +1269,13 @@
         lblAiFloat: "Ask Beverages Expert AI",
         lblAiSubtitle: "Interactive Assistant for All Beverages: Mixers, Cocktails, Pairing, Beer, Sake, Soju & Party Planning",
         placeholderInput: "Ask anything (e.g. Tequila mixers, party 20 guests)...",
+        placeholderName: "Your Name (e.g. Alex S.)",
+        placeholderComment: "Write your review about this beverage...",
+        vibeTitle: "What's the vibe of this drink?",
+        vibeChill: "🍷 Chill Out",
+        vibeParty: "🔥 Party Mode",
+        vibeAutoBuy: "😍 Auto Buy",
+        vibeDizzy: "🤪 Mind Blowing",
         btnSend: "Send 🚀"
       },
       fr: {
@@ -1040,6 +1301,13 @@
         lblAiFloat: "Demander à l'IA Sommelier",
         lblAiSubtitle: "Assistant Interactif : Cocktails, Accords, Bières, Saké, Soju & Fêtes",
         placeholderInput: "Posez votre question (ex. Mixeurs Tequila, fête 20 personnes)...",
+        placeholderName: "Votre Nom (ex. Alex S.)",
+        placeholderComment: "Écrivez votre avis sur cette boisson...",
+        vibeTitle: "Quelle est l'ambiance de cette boisson ?",
+        vibeChill: "🍷 Détente",
+        vibeParty: "🔥 Mode Fête",
+        vibeAutoBuy: "😍 Achat Immédiat",
+        vibeDizzy: "🤪 Enivrant",
         btnSend: "Envoyer 🚀"
       },
       id: {
@@ -1065,6 +1333,13 @@
         lblAiFloat: "Tanya AI Sommelier",
         lblAiSubtitle: "Asisten Interaktif : Mixers, Cocktail, Pairing, Bir, Sake, Soju & Pesta",
         placeholderInput: "Tanyakan apa saja (contoh: racikan Tequila, pesta 20 tamu)...",
+        placeholderName: "Nama Anda (Contoh: Alex S.)",
+        placeholderComment: "Tulis pendapat kamu tentang minuman ini...",
+        vibeTitle: "Bagaimana Vibe Minuman Ini?",
+        vibeChill: "🍷 Chill Aja",
+        vibeParty: "🔥 Party Mode",
+        vibeAutoBuy: "😍 Auto Buy",
+        vibeDizzy: "🤪 Pusing Nikmat",
         btnSend: "Kirim 🚀"
       }
     };
@@ -1364,12 +1639,12 @@
             </div>
 
             <div class="emoji-reaction-box">
-              <span>Bagaimana Vibe Minuman Ini?</span>
+              <span>${t.vibeTitle}</span>
               <div class="emoji-btns">
-                <button class="btn-emoji-react" onclick="triggerEmojiReaction(event, '🍷')">🍷 Chill Aja</button>
-                <button class="btn-emoji-react" onclick="triggerEmojiReaction(event, '🔥')">🔥 Party Mode</button>
-                <button class="btn-emoji-react" onclick="triggerEmojiReaction(event, '😍')">😍 Auto Buy</button>
-                <button class="btn-emoji-react" onclick="triggerEmojiReaction(event, '🤪')">🤪 Pusing Nikmat</button>
+                <button class="btn-emoji-react" onclick="triggerEmojiReaction(event, '🍷')">${t.vibeChill}</button>
+                <button class="btn-emoji-react" onclick="triggerEmojiReaction(event, '🔥')">${t.vibeParty}</button>
+                <button class="btn-emoji-react" onclick="triggerEmojiReaction(event, '😍')">${t.vibeAutoBuy}</button>
+                <button class="btn-emoji-react" onclick="triggerEmojiReaction(event, '🤪')">${t.vibeDizzy}</button>
               </div>
             </div>
           </div>
@@ -1384,7 +1659,7 @@
 
           <!-- FORM TULIS ULASAN BARU -->
           <form class="review-form" onsubmit="submitReview(event, '${wine.slug}')">
-            <div style="font-size: 0.78rem; color: var(--gold-primary); font-weight: 700;">${t.writeReviewLabel}</div>
+            <div style="font-size: 0.82rem; color: var(--gold-primary); font-weight: 700;">${t.writeReviewLabel}</div>
             <div class="star-rating-input" id="starInputContainer">
               <span class="star-icon selected" onclick="setFormRating(1)">★</span>
               <span class="star-icon selected" onclick="setFormRating(2)">★</span>
@@ -1392,8 +1667,8 @@
               <span class="star-icon selected" onclick="setFormRating(4)">★</span>
               <span class="star-icon selected" onclick="setFormRating(5)">★</span>
             </div>
-            <input type="text" id="reviewerNameInput" placeholder="Nama Anda (Contoh: Alex S.)" required>
-            <textarea id="reviewerCommentInput" placeholder="Tulis pendapat kamu tentang minuman ini..." required></textarea>
+            <input type="text" id="reviewerNameInput" placeholder="${t.placeholderName}" required>
+            <textarea id="reviewerCommentInput" placeholder="${t.placeholderComment}" required></textarea>
             <button type="submit" class="btn-submit-review">${t.btnSubmitReview}</button>
           </form>
 
