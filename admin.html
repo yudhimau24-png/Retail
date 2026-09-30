@@ -147,7 +147,7 @@
       </div>
       <div class="btn-group">
         <button type="button" class="btn-gold" onclick="importExcelFile()">📥 Proses & Import Ke Supabase</button>
-        <button type="button" class="btn-secondary" onclick="downloadTemplate()">⬇️ Download Template Excel</button>
+        <button type="button" class="btn-secondary" onclick="downloadTemplate()">⬇️️ Download Template Excel</button>
       </div>
     </div>
 
@@ -233,7 +233,6 @@
             </select>
           </div>
 
-          <!-- SECTION METRICS TASTING MATRIX -->
           <div class="section-divider">📊 INDICATOR TASTING MATRIX (0 - 100%)</div>
 
           <div class="form-group">
@@ -253,7 +252,6 @@
             <input type="number" id="wineSweetness" min="0" max="100" value="20" placeholder="0 - 100">
           </div>
 
-          <!-- SECTION: VISUAL, AROMA, PALATE SENSORI -->
           <div class="section-divider">🍷 SENSORY TASTING NOTES (VISUAL, AROMA, PALATE)</div>
 
           <div class="form-group full-width">
@@ -342,13 +340,17 @@
   </div>
 
   <script>
-    /* KREDENSIAL SUPABASE */
     const SUPABASE_URL = "https://nuyowvjianxiobpzejnc.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eW93dmppYW54aW9icHplam5jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODkyMjUyOCwiZXhwIjoyMTA0NDk4NTI4fQ.-aeTfpvoGy3ICP2LMxa0vGfYggXlldnj5vtouzRm7bg";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const ADMIN_USER = "admin";
     const ADMIN_PASS = "admin123";
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
 
     function checkAuthStatus() {
       if (sessionStorage.getItem('mbi_admin_auth') === 'true') {
@@ -378,25 +380,15 @@
       checkAuthStatus();
     }
 
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-    }
-
-    /* ================= FITUR MODERASI REVIEWS & KOMENTAR ================= */
     let adminReviews = [];
 
     async function loadAdminReviews() {
       try {
         const { data, error } = await supabaseClient.from('reviews').select('*').order('created_at', { ascending: false });
-        if (!error && data) {
-          adminReviews = data;
-        } else {
-          adminReviews = [];
-        }
+        if (!error && data) adminReviews = data;
+        else adminReviews = [];
         renderAdminReviews();
       } catch (e) {
-        console.warn("Table reviews belum disiapkan di Supabase atau kosong.");
         adminReviews = [];
         renderAdminReviews();
       }
@@ -416,30 +408,24 @@
         return;
       }
 
-      tbody.innerHTML = filtered.map(r => {
-        const stars = '⭐'.repeat(r.rating || 5);
-        return `
-          <tr>
-            <td><strong style="color: #d8b255;">${escapeHtml(r.wine_slug)}</strong></td>
-            <td>${escapeHtml(r.user_name || r.userName)}</td>
-            <td>${stars} (${r.rating})</td>
-            <td><div style="max-width: 320px; font-style: italic;">"${escapeHtml(r.comment)}"</div></td>
-            <td>${escapeHtml(r.created_at || 'Baru saja')}</td>
-            <td>
-              <button class="btn-sm-del" onclick="deleteReview('${r.id}')">🗑️ Hapus Ulasan</button>
-            </td>
-          </tr>
-        `;
-      }).join('');
+      tbody.innerHTML = filtered.map(r => `
+        <tr>
+          <td><strong style="color: #d8b255;">${escapeHtml(r.wine_slug)}</strong></td>
+          <td>${escapeHtml(r.user_name || r.userName)}</td>
+          <td>${'⭐'.repeat(r.rating || 5)} (${r.rating})</td>
+          <td><div style="max-width: 320px; font-style: italic;">"${escapeHtml(r.comment)}"</div></td>
+          <td>${escapeHtml(r.created_at || 'Baru saja')}</td>
+          <td>
+            <button class="btn-sm-del" onclick="deleteReview('${r.id}')">🗑️ Hapus Ulasan</button>
+          </td>
+        </tr>
+      `).join('');
     }
 
     async function deleteReview(id) {
-      if (!confirm('Apakah Anda yakin ingin MENGHAPUS komentar ini? Komentar yang tidak pantas akan terhapus secara permanen dari Supabase.')) return;
-
+      if (!confirm('Apakah Anda yakin ingin MENGHAPUS komentar ini?')) return;
       try {
-        const { error } = await supabaseClient.from('reviews').delete().eq('id', id);
-        if (error) throw error;
-
+        await supabaseClient.from('reviews').delete().eq('id', id);
         alert('Ulasan berhasil dihapus!');
         loadAdminReviews();
       } catch (err) {
@@ -469,9 +455,8 @@
       const bucketName = 'bottle-images';
       
       const { data, error } = await supabaseClient.storage.from(bucketName).upload(fileName, file);
-
       if (error) {
-        alert('Gagal upload gambar ke Supabase Storage (' + bucketName + '): ' + error.message);
+        alert('Gagal upload gambar ke Supabase Storage: ' + error.message);
         return null;
       }
       const { data: publicUrlData } = supabaseClient.storage.from(bucketName).getPublicUrl(fileName);
@@ -491,68 +476,40 @@
       const input = document.getElementById('batchFolderInput');
       const btn = document.getElementById('btnInjectFolder');
 
-      if (!input.files || input.files.length === 0) {
-        alert('Pilih folder terlebih dahulu!');
-        return;
-      }
+      if (!input.files || input.files.length === 0) return alert('Pilih folder terlebih dahulu!');
 
       btn.disabled = true;
       addFolderLog('Memulai pemrosesan folder...', '#d8b255');
 
       const files = Array.from(input.files);
-      
-      const imageFiles = files.filter(f => {
-        const isImageMime = f.type && f.type.startsWith('image/');
-        const hasImageExt = /\.(jpg|jpeg|png|webp|jfif|avif|heic|heif|bmp|gif|svg)$/i.test(f.name);
-        return isImageMime || hasImageExt;
-      });
+      const imageFiles = files.filter(f => /\.(jpg|jpeg|png|webp|jfif|avif|heic|bmp|gif|svg)$/i.test(f.name));
 
       if (imageFiles.length === 0) {
-        addFolderLog(`Dari total ${files.length} file di folder, tidak ada satupun yang terdeteksi sebagai foto/gambar.`, '#ef5350');
+        addFolderLog(`Tidak ada file gambar terdeteksi di folder.`, '#ef5350');
         btn.disabled = false;
         return;
       }
 
-      addFolderLog(`Ditemukan ${imageFiles.length} file gambar. Memulai proses match & upload...`, '#4CAF50');
+      addFolderLog(`Ditemukan ${imageFiles.length} file gambar. Memulai upload...`, '#4CAF50');
 
       let successCount = 0, failCount = 0;
 
       for (const file of imageFiles) {
         const pathParts = file.webkitRelativePath.split('/');
-        let productName = '';
-
-        if (pathParts.length >= 3) productName = pathParts[pathParts.length - 2].trim();
-        else if (pathParts.length === 2) productName = file.name.replace(/\.[^/.]+$/, "").trim();
+        let productName = pathParts.length >= 3 ? pathParts[pathParts.length - 2].trim() : file.name.replace(/\.[^/.]+$/, "").trim();
 
         if (!productName) continue;
 
-        addFolderLog(`Mengunggah foto untuk produk: "${productName}"...`);
-
         try {
-          const fileExt = file.name.includes('.') ? file.name.split('.').pop().toLowerCase() : 'jpg';
+          const fileExt = file.name.split('.').pop().toLowerCase();
           const fileName = `bottle_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
-          const bucketName = 'bottle-images';
+          
+          await supabaseClient.storage.from('bottle-images').upload(fileName, file, { contentType: file.type || 'image/jpeg', upsert: true });
+          const { data: publicUrlData } = supabaseClient.storage.from('bottle-images').getPublicUrl(fileName);
+          
+          await supabaseClient.from('wines').update({ imageUrl: publicUrlData.publicUrl }).ilike('name', productName);
 
-          let mimeType = (file.type && file.type !== "") ? file.type : 'image/jpeg';
-
-          const { error: uploadErr } = await supabaseClient.storage.from(bucketName).upload(fileName, file, { 
-            contentType: mimeType,
-            upsert: true 
-          });
-
-          if (uploadErr) throw uploadErr;
-
-          const { data: publicUrlData } = supabaseClient.storage.from(bucketName).getPublicUrl(fileName);
-          const publicUrl = publicUrlData.publicUrl;
-
-          const { error: dbErr } = await supabaseClient
-            .from('wines')
-            .update({ imageUrl: publicUrl })
-            .ilike('name', productName);
-
-          if (dbErr) throw dbErr;
-
-          addFolderLog(`✅ SUCCESS: Foto untuk "${productName}" berhasil di-match & update!`, '#4CAF50');
+          addFolderLog(`✅ SUCCESS: Foto untuk "${productName}" berhasil di-update!`, '#4CAF50');
           successCount++;
         } catch (err) {
           addFolderLog(`❌ ERROR [${productName}]: ${err.message}`, '#ef5350');
@@ -574,7 +531,7 @@
           adminWines = data;
           renderAdminTable();
         }
-      } catch (err) { console.error('Error loading Supabase data:', err); }
+      } catch (err) { console.error(err); }
     }
 
     function renderAdminTable() {
@@ -587,18 +544,17 @@
         return;
       }
 
-      tbody.innerHTML = filtered.map((w) => {
-        return `
+      tbody.innerHTML = filtered.map((w) => `
         <tr>
-          <td><img src="${w.imageUrl || 'https://via.placeholder.com/45'}" class="thumb-img" onerror="this.src='https://via.placeholder.com/45'"></td>
+          <td><img src="${w.imageUrl || 'https://via.placeholder.com/45'}" class="thumb-img"></td>
           <td><strong>${escapeHtml(w.name)}</strong></td>
           <td>${escapeHtml(w.vintage) || '-'}</td>
           <td>${escapeHtml(w.type) || '-'}</td>
           <td>${escapeHtml(w.region) || '-'}</td>
           <td>
-            <div style="font-size:0.75rem; color:#bbb; line-height:1.2;">
-              👁️ ${escapeHtml(w.visual) || 'Deep ruby red'}<br>
-              🍇 ${escapeHtml(w.aroma) || 'Blackcurrant bouquet'}
+            <div style="font-size:0.75rem; color:#bbb;">
+              👁️ ${escapeHtml(w.visual) || '-'}<br>
+              🍇 ${escapeHtml(w.aroma) || '-'}
             </div>
           </td>
           <td><span style="color:${w.stockStatus && w.stockStatus.includes('Habis') ? '#e53935' : '#4CAF50'}">${escapeHtml(w.stockStatus) || 'In Stock'}</span></td>
@@ -609,7 +565,7 @@
             </div>
           </td>
         </tr>
-      `}).join('');
+      `).join('');
     }
 
     function editWine(id) {
@@ -627,10 +583,10 @@
       document.getElementById('wineStockStatus').value = w.stockStatus || 'In Stock';
       document.getElementById('wineCollection').value = w.collection || 'All Products';
 
-      document.getElementById('wineBody').value = w.bodyVal || w.body || 75;
-      document.getElementById('wineTannin').value = w.tanninVal || w.tannin || 80;
-      document.getElementById('wineAcidity').value = w.acidityVal || w.acidity || 65;
-      document.getElementById('wineSweetness').value = w.sweetnessVal || w.sweetness || 20;
+      document.getElementById('wineBody').value = w.bodyVal || 75;
+      document.getElementById('wineTannin').value = w.tanninVal || 80;
+      document.getElementById('wineAcidity').value = w.acidityVal || 65;
+      document.getElementById('wineSweetness').value = w.sweetnessVal || 20;
 
       document.getElementById('wineVisual').value = w.visual || '';
       document.getElementById('wineAroma').value = w.aroma || '';
@@ -644,7 +600,6 @@
 
       document.getElementById('formTitle').innerText = '✏️ Edit Data Minuman';
       document.getElementById('btnSaveWine').innerText = '💾 Update Data Minuman';
-      
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -653,10 +608,6 @@
       document.getElementById('wineForm').reset();
       selectedFileForUpload = null;
       document.getElementById('imgPreview').src = 'https://via.placeholder.com/70?text=Preview';
-      document.getElementById('wineBody').value = 75;
-      document.getElementById('wineTannin').value = 80;
-      document.getElementById('wineAcidity').value = 65;
-      document.getElementById('wineSweetness').value = 20;
       document.getElementById('formTitle').innerText = '✨ Tambah Minuman Baru';
       document.getElementById('btnSaveWine').innerText = '➕ Simpan Ke Supabase';
     }
@@ -686,28 +637,20 @@
         tanninVal: parseInt(document.getElementById('wineTannin').value) || 80,
         acidityVal: parseInt(document.getElementById('wineAcidity').value) || 65,
         sweetnessVal: parseInt(document.getElementById('wineSweetness').value) || 20,
-        
         visual: document.getElementById('wineVisual').value,
         aroma: document.getElementById('wineAroma').value,
         palate: document.getElementById('winePalate').value,
-
         imageUrl: imageUrl,
         notes: document.getElementById('wineNotes').value,
         pairing: document.getElementById('winePairing').value,
         storageNote: document.getElementById('wineStorageNote').value
       };
 
-      let res;
-      if (id) {
-        res = await supabaseClient.from('wines').update(wineData).eq('id', id);
-      } else {
-        res = await supabaseClient.from('wines').insert([wineData]);
-      }
+      let res = id ? await supabaseClient.from('wines').update(wineData).eq('id', id) : await supabaseClient.from('wines').insert([wineData]);
 
-      if (res.error) {
-        alert('Gagal menyimpan: ' + res.error.message);
-      } else {
-        alert('Data berhasil disimpan ke Supabase!');
+      if (res.error) alert('Gagal menyimpan: ' + res.error.message);
+      else {
+        alert('Data berhasil disimpan!');
         resetForm();
         loadAdminData();
       }
@@ -719,121 +662,29 @@
       if (!error) {
         alert('Data berhasil dihapus!');
         loadAdminData();
-      } else {
-        alert('Gagal menghapus: ' + error.message);
       }
     }
 
     async function deleteAllWines() {
-      if (!confirm('🚨 PERINGATAN BAHAYA! 🚨\n\nApakah Anda yakin ingin MENGHAPUS SEMUA SKU/DATA MINUMAN dari database?')) return;
-      if (!confirm('Tindakan ini TIDAK DAPAT DIBATALKAN. Anda benar-benar yakin?')) return;
-
+      if (!confirm('🚨 Yakin HAPUS SEMUA DATA MINUMAN dari database?')) return;
       const { error } = await supabaseClient.from('wines').delete().not('id', 'is', null);
       if (!error) {
         alert('Semua data SKU berhasil dikosongkan!');
         loadAdminData();
-      } else {
-        alert('Gagal menghapus semua data: ' + error.message);
       }
-    }
-
-    function applyStyles(worksheet) {
-      const range = XLSX.utils.decode_range(worksheet['!ref']);
-      const borderStyle = {
-        top: { style: "thin", color: { rgb: "000000" } },
-        bottom: { style: "thin", color: { rgb: "000000" } },
-        left: { style: "thin", color: { rgb: "000000" } },
-        right: { style: "thin", color: { rgb: "000000" } }
-      };
-
-      for (let R = range.s.r; R <= range.e.r; ++R) {
-        for (let C = range.s.c; C <= range.e.c; ++C) {
-          const address = XLSX.utils.encode_cell({ r: R, c: C });
-          if (!worksheet[address]) worksheet[address] = { t: 's', v: '' };
-          worksheet[address].s = worksheet[address].s || {};
-          worksheet[address].s.border = borderStyle;
-
-          if (R === 0) {
-            worksheet[address].s.fill = { fgColor: { rgb: "FFFF00" } };
-            worksheet[address].s.font = { bold: true, color: { rgb: "000000" } };
-          }
-        }
-      }
-    }
-
-    function exportDataToExcel() {
-      if (!adminWines || adminWines.length === 0) return alert("Tidak ada data katalog yang bisa di-export!");
-
-      const exportData = adminWines.map(w => ({
-        "FOTO": w.imageUrl || '',
-        "NAMA MINUMAN": w.name || '',
-        "VINTAGE": w.vintage || 'NV',
-        "KATEGORI": w.type || '',
-        "WILAYAH": w.region || '-',
-        "KOLEKSI SHOP": w.collection || 'All Products',
-        "BODY (%)": w.bodyVal || 75,
-        "TANNIN (%)": w.tanninVal || 80,
-        "ACIDITY (%)": w.acidityVal || 65,
-        "SWEETNESS (%)": w.sweetnessVal || 20,
-        "VISUAL": w.visual || '-',
-        "AROMA": w.aroma || '-',
-        "PALATE": w.palate || '-',
-        "NOTES": w.notes || '-',
-        "VARIETAL": w.varietal || '-',
-        "ABV": w.abv || '-',
-        "SUHU PENYAJIAN": w.servingTemp || '-',
-        "STATUS STOK": w.stockStatus || 'In Stock',
-        "FOOD PAIRING": w.pairing || '-',
-        "STORAGE NOTE": w.storageNote || '-'
-      }));
-
-      const worksheet = XLSX.utils.json_to_sheet(exportData);
-      worksheet['!cols'] = [
-        { wch: 45 }, { wch: 35 }, { wch: 10 }, { wch: 18 }, { wch: 25 }, { wch: 15 }, 
-        { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
-        { wch: 25 }, { wch: 30 }, { wch: 40 }, { wch: 35 }, { wch: 25 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 35 }, { wch: 25 }
-      ];
-
-      applyStyles(worksheet);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Data_Katalog");
-      XLSX.writeFile(workbook, `Export_Katalog_Minuman_${new Date().toISOString().split('T')[0]}.xlsx`);
     }
 
     function downloadTemplate() {
       const templateData = [{
-        "FOTO": "",
-        "NAMA MINUMAN": "1800 REPOSADO 750 ML",
-        "VINTAGE": "NV",
-        "KATEGORI": "Import Tequila",
-        "WILAYAH": "Mexico",
-        "KOLEKSI SHOP": "Best Seller", 
-        "BODY (%)": 75,
-        "TANNIN (%)": 80,
-        "ACIDITY (%)": 65,
-        "SWEETNESS (%)": 20,
-        "VISUAL": "Crystal clear, bright clarity",
-        "AROMA": "Clean, neutral, subtle rice grain sweetness",
-        "PALATE": "Smooth and crisp, light sweetness, clean subtle finish",
-        "NOTES": "Smooth 100% agave tequila aged in French and American oak barrels.",
-        "VARIETAL": "Blue Agave",
-        "ABV": "38%",
-        "SUHU PENYAJIAN": "Room Temperature",
-        "STATUS STOK": "In Stock",
-        "FOOD PAIRING": "Grilled meats, tacos, Mexican cuisine",
-        "STORAGE NOTE": "Store upright, cool, dark"
+        "FOTO": "", "NAMA MINUMAN": "1800 REPOSADO 750 ML", "VINTAGE": "NV", "KATEGORI": "Import Tequila",
+        "WILAYAH": "Mexico", "KOLEKSI SHOP": "Best Seller", "BODY (%)": 75, "TANNIN (%)": 80, "ACIDITY (%)": 65, "SWEETNESS (%)": 20,
+        "VISUAL": "Crystal clear", "AROMA": "Agave scent", "PALATE": "Smooth finish", "NOTES": "Fine tequila",
+        "VARIETAL": "Blue Agave", "ABV": "38%", "SUHU PENYAJIAN": "Room Temperature", "STATUS STOK": "In Stock", "FOOD PAIRING": "Tacos", "STORAGE NOTE": "Cool dark place"
       }];
 
       const worksheet = XLSX.utils.json_to_sheet(templateData);
-      worksheet['!cols'] = [
-        { wch: 15 }, { wch: 30 }, { wch: 10 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, 
-        { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
-        { wch: 25 }, { wch: 30 }, { wch: 40 }, { wch: 35 }, { wch: 20 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 35 }, { wch: 25 } 
-      ];
-
-      applyStyles(worksheet);
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Template_Katalog");
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Template");
       XLSX.writeFile(workbook, "Template_Import_Minuman.xlsx");
     }
 
@@ -848,39 +699,24 @@
         const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
 
         const formatted = jsonData.map(row => ({
-          imageUrl: row["FOTO"] || row.FOTO || '', 
-          name: row["NAMA MINUMAN"] || row.Name || row.name || '',
-          vintage: row["VINTAGE"] || row.Vintage || row.vintage || 'NV',
-          type: row["KATEGORI"] || row.Type || row.type || 'Import Wine',
-          region: row["WILAYAH"] || row.Region || row.region || '-',
-          collection: row["KOLEKSI SHOP"] || row.Collection || row.collection || 'All Products',
-          bodyVal: parseInt(row["BODY (%)"]) || 75,
-          tanninVal: parseInt(row["TANNIN (%)"]) || 80,
-          acidityVal: parseInt(row["ACIDITY (%)"]) || 65,
-          sweetnessVal: parseInt(row["SWEETNESS (%)"]) || 20,
-          visual: row["VISUAL"] || row.Visual || row.visual || '-',
-          aroma: row["AROMA"] || row.Aroma || row.aroma || '-',
-          palate: row["PALATE"] || row.Palate || row.palate || '-',
-          notes: row["NOTES"] || row["TASTING NOTES"] || row["GENERAL NOTES"] || row["CATATAN"] || row.Notes || row.notes || '-',
-          varietal: row["VARIETAL"] || row.Varietal || row.varietal || '-',
-          abv: row["ABV"] || row.ABV || row.abv || '-',
-          servingTemp: row["SUHU PENYAJIAN"] || row.ServingTemp || row.servingTemp || '-',
-          stockStatus: row["STATUS STOK"] || row.StockStatus || row.stockStatus || 'In Stock',
-          pairing: row["FOOD PAIRING"] || row.Pairing || row.pairing || '-',
-          storageNote: row["STORAGE NOTE"] || row.StorageNote || row.storageNote || '-'
-        }));
+          imageUrl: row["FOTO"] || '', name: row["NAMA MINUMAN"] || '', vintage: row["VINTAGE"] || 'NV',
+          type: row["KATEGORI"] || 'Import Wine', region: row["WILAYAH"] || '-', collection: row["KOLEKSI SHOP"] || 'All Products',
+          bodyVal: parseInt(row["BODY (%)"]) || 75, tanninVal: parseInt(row["TANNIN (%)"]) || 80,
+          acidityVal: parseInt(row["ACIDITY (%)"]) || 65, sweetnessVal: parseInt(row["SWEETNESS (%)"]) || 20,
+          visual: row["VISUAL"] || '-', aroma: row["AROMA"] || '-', palate: row["PALATE"] || '-',
+          notes: row["NOTES"] || '-', varietal: row["VARIETAL"] || '-', abv: row["ABV"] || '-',
+          servingTemp: row["SUHU PENYAJIAN"] || '-', stockStatus: row["STATUS STOK"] || 'In Stock',
+          pairing: row["FOOD PAIRING"] || '-', storageNote: row["STORAGE NOTE"] || '-'
+        })).filter(item => item.name && item.name.trim() !== '');
 
-        const validData = formatted.filter(item => item.name && item.name.trim() !== '');
-        if (validData.length === 0) return alert('Tidak ada data valid yang ditemukan di file!');
+        if (formatted.length === 0) return alert('Tidak ada data valid!');
 
-        const { error } = await supabaseClient.from('wines').insert(validData);
+        const { error } = await supabaseClient.from('wines').insert(formatted);
         if (!error) {
-          alert(`Berhasil mengimpor ${validData.length} produk ke Supabase!`);
+          alert(`Berhasil mengimpor ${formatted.length} produk!`);
           document.getElementById('excelFileInput').value = ""; 
           loadAdminData();
-        } else {
-          alert('Gagal mengimpor: ' + error.message);
-        }
+        } else alert('Gagal mengimpor: ' + error.message);
       };
       reader.readAsArrayBuffer(file);
     }
