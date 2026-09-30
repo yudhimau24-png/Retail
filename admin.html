@@ -185,7 +185,7 @@
             <input type="text" id="wineAbv" placeholder="Contoh: 13.5%">
           </div>
           <div class="form-group">
-            <label>Suhu Penyajian</label>
+            <label>Suhu Penyajikan</label>
             <input type="text" id="wineServingTemp" placeholder="Contoh: 16-18°C">
           </div>
           <div class="form-group">
@@ -395,6 +395,7 @@
       logBox.scrollTop = logBox.scrollHeight;
     }
 
+    /* FIX: IMPORT FOLDER DENGAN MIME DETECT & EXTENSION LENGKAP */
     async function importFolderImages() {
       const input = document.getElementById('batchFolderInput');
       const btn = document.getElementById('btnInjectFolder');
@@ -408,13 +409,20 @@
       addFolderLog('Memulai pemrosesan folder...', '#d8b255');
 
       const files = Array.from(input.files);
-      const imageFiles = files.filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f.name));
+      
+      const imageFiles = files.filter(f => {
+        const isImageMime = f.type && f.type.startsWith('image/');
+        const hasImageExt = /\.(jpg|jpeg|png|webp|jfif|avif|heic|heif|bmp|gif|svg)$/i.test(f.name);
+        return isImageMime || hasImageExt;
+      });
 
       if (imageFiles.length === 0) {
-        addFolderLog('Tidak ada file gambar (.jpg, .png, .webp) ditemukan.', '#ef5350');
+        addFolderLog(`Dari total ${files.length} file di folder, tidak ada satupun yang terdeteksi sebagai foto/gambar.`, '#ef5350');
         btn.disabled = false;
         return;
       }
+
+      addFolderLog(`Ditemukan ${imageFiles.length} file gambar. Memulai proses match & upload...`, '#4CAF50');
 
       let successCount = 0, failCount = 0;
 
@@ -430,28 +438,38 @@
         addFolderLog(`Mengunggah foto untuk produk: "${productName}"...`);
 
         try {
-          const fileExt = file.name.split('.').pop();
+          const fileExt = file.name.includes('.') ? file.name.split('.').pop().toLowerCase() : 'jpg';
           const fileName = `bottle_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
           const bucketName = 'bottle-images';
 
-          const { error: uploadErr } = await supabaseClient.storage.from(bucketName).upload(fileName, file, { upsert: true });
+          let mimeType = (file.type && file.type !== "") ? file.type : 'image/jpeg';
+
+          const { error: uploadErr } = await supabaseClient.storage.from(bucketName).upload(fileName, file, { 
+            contentType: mimeType,
+            upsert: true 
+          });
+
           if (uploadErr) throw uploadErr;
 
           const { data: publicUrlData } = supabaseClient.storage.from(bucketName).getPublicUrl(fileName);
           const publicUrl = publicUrlData.publicUrl;
 
-          const { error: dbErr } = await supabaseClient.from('wines').update({ imageUrl: publicUrl }).eq('name', productName);
+          const { error: dbErr } = await supabaseClient
+            .from('wines')
+            .update({ imageUrl: publicUrl })
+            .ilike('name', productName);
+
           if (dbErr) throw dbErr;
 
-          addFolderLog(`SUCCESS: Foto untuk "${productName}" berhasil di-match & update!`, '#4CAF50');
+          addFolderLog(`✅ SUCCESS: Foto untuk "${productName}" berhasil di-match & update!`, '#4CAF50');
           successCount++;
         } catch (err) {
-          addFolderLog(`ERROR [${productName}]: ${err.message}`, '#ef5350');
+          addFolderLog(`❌ ERROR [${productName}]: ${err.message}`, '#ef5350');
           failCount++;
         }
       }
 
-      addFolderLog(`Selesai! Berhasil: ${successCount}, Gagal: ${failCount}`, '#d8b255');
+      addFolderLog(`🎉 Selesai! Berhasil: ${successCount}, Gagal: ${failCount}`, '#d8b255');
       btn.disabled = false;
       loadAdminData();
     }
@@ -523,7 +541,6 @@
       document.getElementById('wineAcidity').value = w.acidityVal || w.acidity || 65;
       document.getElementById('wineSweetness').value = w.sweetnessVal || w.sweetness || 20;
 
-      // SET FIELD SENSORI (VISUAL, AROMA, PALATE)
       document.getElementById('wineVisual').value = w.visual || '';
       document.getElementById('wineAroma').value = w.aroma || '';
       document.getElementById('winePalate').value = w.palate || '';
@@ -579,7 +596,6 @@
         acidityVal: parseInt(document.getElementById('wineAcidity').value) || 65,
         sweetnessVal: parseInt(document.getElementById('wineSweetness').value) || 20,
         
-        // FIELD BARU SENSORI
         visual: document.getElementById('wineVisual').value,
         aroma: document.getElementById('wineAroma').value,
         palate: document.getElementById('winePalate').value,
@@ -654,6 +670,7 @@
       }
     }
 
+    /* FIX: EXPORT EXCEL DENGAN KOLOM NOTES */
     function exportDataToExcel() {
       if (!adminWines || adminWines.length === 0) return alert("Tidak ada data katalog yang bisa di-export!");
 
@@ -671,6 +688,7 @@
         "VISUAL": w.visual || '-',
         "AROMA": w.aroma || '-',
         "PALATE": w.palate || '-',
+        "NOTES": w.notes || '-',
         "VARIETAL": w.varietal || '-',
         "ABV": w.abv || '-',
         "SUHU PENYAJIAN": w.servingTemp || '-',
@@ -683,7 +701,7 @@
       worksheet['!cols'] = [
         { wch: 45 }, { wch: 35 }, { wch: 10 }, { wch: 18 }, { wch: 25 }, { wch: 15 }, 
         { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
-        { wch: 25 }, { wch: 30 }, { wch: 40 }, { wch: 25 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 35 }, { wch: 25 }
+        { wch: 25 }, { wch: 30 }, { wch: 40 }, { wch: 35 }, { wch: 25 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 35 }, { wch: 25 }
       ];
 
       applyStyles(worksheet);
@@ -692,34 +710,36 @@
       XLSX.writeFile(workbook, `Export_Katalog_Minuman_${new Date().toISOString().split('T')[0]}.xlsx`);
     }
 
+    /* FIX: DOWNLOAD TEMPLATE DENGAN KOLOM NOTES */
     function downloadTemplate() {
       const templateData = [{
         "FOTO": "",
-        "NAMA MINUMAN": "CHATEAU MARGAUX 2016",
-        "VINTAGE": "2016",
-        "KATEGORI": "Import Wine",
-        "WILAYAH": "Bordeaux, France",
+        "NAMA MINUMAN": "1800 REPOSADO 750 ML",
+        "VINTAGE": "NV",
+        "KATEGORI": "Import Tequila",
+        "WILAYAH": "Mexico",
         "KOLEKSI SHOP": "Best Seller", 
         "BODY (%)": 75,
         "TANNIN (%)": 80,
         "ACIDITY (%)": 65,
         "SWEETNESS (%)": 20,
-        "VISUAL": "Deep ruby red, garnet rim",
-        "AROMA": "Blackcurrant, violet, cedar, tobacco, spice bouquet",
-        "PALATE": "Full-bodied, structured, black cherry, licorice, velvety tannins, elegant finish",
-        "VARIETAL": "Cabernet Sauvignon & Merlot",
-        "ABV": "13.5%",
-        "SUHU PENYAJIAN": "16°C - 18°C",
+        "VISUAL": "Crystal clear, bright clarity",
+        "AROMA": "Clean, neutral, subtle rice grain sweetness",
+        "PALATE": "Smooth and crisp, light sweetness, clean subtle finish",
+        "NOTES": "Smooth 100% agave tequila aged in French and American oak barrels.",
+        "VARIETAL": "Blue Agave",
+        "ABV": "38%",
+        "SUHU PENYAJIAN": "Room Temperature",
         "STATUS STOK": "In Stock",
-        "FOOD PAIRING": "Ribeye, lamb, aged cheeses",
-        "STORAGE NOTE": "Simpan miring di tempat sejuk"
+        "FOOD PAIRING": "Grilled meats, tacos, Mexican cuisine",
+        "STORAGE NOTE": "Store upright, cool, dark"
       }];
 
       const worksheet = XLSX.utils.json_to_sheet(templateData);
       worksheet['!cols'] = [
         { wch: 15 }, { wch: 30 }, { wch: 10 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, 
         { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
-        { wch: 25 }, { wch: 30 }, { wch: 40 }, { wch: 25 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 35 }, { wch: 25 } 
+        { wch: 25 }, { wch: 30 }, { wch: 40 }, { wch: 35 }, { wch: 20 }, { wch: 10 }, { wch: 20 }, { wch: 15 }, { wch: 35 }, { wch: 25 } 
       ];
 
       applyStyles(worksheet);
@@ -728,6 +748,7 @@
       XLSX.writeFile(workbook, "Template_Import_Minuman.xlsx");
     }
 
+    /* FIX: IMPORT EXCEL DENGAN DETEKSI LENGKAP VARIASI NAMA KOLOM NOTES */
     async function importExcelFile() {
       const file = document.getElementById('excelFileInput').files[0];
       if (!file) return alert('Pilih file dulu!');
@@ -739,7 +760,7 @@
         const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
 
         const formatted = jsonData.map(row => ({
-          imageUrl: row["FOTO"] || '', 
+          imageUrl: row["FOTO"] || row.FOTO || '', 
           name: row["NAMA MINUMAN"] || row.Name || row.name || '',
           vintage: row["VINTAGE"] || row.Vintage || row.vintage || 'NV',
           type: row["KATEGORI"] || row.Type || row.type || 'Import Wine',
@@ -752,11 +773,13 @@
           visual: row["VISUAL"] || row.Visual || row.visual || '-',
           aroma: row["AROMA"] || row.Aroma || row.aroma || '-',
           palate: row["PALATE"] || row.Palate || row.palate || '-',
+          
+          notes: row["NOTES"] || row["TASTING NOTES"] || row["GENERAL NOTES"] || row["CATATAN"] || row.Notes || row.notes || '-',
+          
           varietal: row["VARIETAL"] || row.Varietal || row.varietal || '-',
           abv: row["ABV"] || row.ABV || row.abv || '-',
           servingTemp: row["SUHU PENYAJIAN"] || row.ServingTemp || row.servingTemp || '-',
           stockStatus: row["STATUS STOK"] || row.StockStatus || row.stockStatus || 'In Stock',
-          notes: row["TASTING NOTES"] || row.Notes || row.notes || '-',
           pairing: row["FOOD PAIRING"] || row.Pairing || row.pairing || '-',
           storageNote: row["STORAGE NOTE"] || row.StorageNote || row.storageNote || '-'
         }));
