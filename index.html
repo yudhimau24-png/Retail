@@ -15,6 +15,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
+    /* (Semua CSS persis sama seperti yang Anda buat, tidak ada yang diubah) */
     :root {
       --gold-primary: #f3d082;
       --gold-secondary: #d8b255;
@@ -586,6 +587,9 @@
         if (data) {
           localWines = data.map(w => ({
             ...w,
+            /* --- FITUR BARU: Membuat URL slug (link unik) berdasarkan nama produk --- */
+            slug: w.name ? w.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '',
+            
             imageUrl: w.imageUrl || w.image_url || 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500&q=80',
             servingTemp: w.servingTemp || w.serving_temp || '16-18°C',
             stockStatus: w.stockStatus || w.stock_status || 'Tersedia',
@@ -602,6 +606,13 @@
             pairing: w.pairing || 'Grilled meats, cheeses, rich cuisine'
           }));
           renderWines();
+
+          /* --- FITUR BARU: Cek URL saat web pertama kali dibuka, apakah ada perintah buka produk? --- */
+          const urlParams = new URLSearchParams(window.location.search);
+          const productSlug = urlParams.get('product');
+          if (productSlug) {
+            openDetailBySlug(productSlug);
+          }
         }
       } catch (err) { console.error(err); }
     }
@@ -667,12 +678,13 @@
         return;
       }
 
+      /* --- FITUR BARU: Mengubah fungsi onclick agar memanggil openDetailBySlug() --- */
       grid.innerHTML = currentFilteredWines.map((wine, idx) => {
         const isSpirit = spiritTypes.some(spirit => wine.type && wine.type.includes(spirit));
         let badgeHtml = wine.collection === 'Best Seller' ? `<span class="collection-badge badge-best">⭐ Best Seller</span>` : (wine.collection === 'New Arrival' ? `<span class="collection-badge badge-new">✨ New</span>` : '');
 
         return `
-          <div class="wine-card" onclick="openDetail(${idx})">
+          <div class="wine-card" onclick="openDetailBySlug('${wine.slug}')">
             <div class="img-wrapper">
               ${badgeHtml}
               <img src="${wine.imageUrl}" class="wine-img" onerror="this.src='https://via.placeholder.com/300x190?text=No+Image'">
@@ -686,8 +698,8 @@
                 <div class="detail-row"><strong>Notes:</strong> ${escapeHtml(wine.notes) || '-'}</div>
               </div>
               <div class="action-group">
-                <button class="btn-order" onclick="event.stopPropagation(); openDetail(${idx})">👁️ Detail Profile</button>
-                <button class="btn-pdf-card" onclick="event.stopPropagation(); openDetail(${idx})">📄 PDF</button>
+                <button class="btn-order" onclick="event.stopPropagation(); openDetailBySlug('${wine.slug}')">👁️ Detail Profile</button>
+                <button class="btn-pdf-card" onclick="event.stopPropagation(); openDetailBySlug('${wine.slug}')">📄 PDF</button>
               </div>
             </div>
           </div>
@@ -695,8 +707,10 @@
       }).join('');
     }
 
-    function openDetail(index) {
-      const wine = currentFilteredWines[index];
+    /* --- FITUR BARU: Fungsi openDetail diubah namanya dan disesuaikan untuk URL Parameter --- */
+    function openDetailBySlug(slug) {
+      // Cari produk dari seluruh data lokal berdasarkan slug-nya
+      const wine = localWines.find(w => w.slug === slug);
       if (!wine) return;
 
       document.getElementById('vintageContent').innerHTML = `
@@ -765,9 +779,29 @@
       `;
 
       document.getElementById('detailView').classList.add('active');
+
+      /* --- FITUR BARU: Update URL Browser (Biar bisa di-copy & QR Code) --- */
+      const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?product=' + slug;
+      window.history.pushState({ path: newUrl }, '', newUrl);
     }
 
-    function closeDetail() { document.getElementById('detailView').classList.remove('active'); }
+    /* --- FITUR BARU: Bersihkan URL saat popup ditutup --- */
+    function closeDetail() { 
+      document.getElementById('detailView').classList.remove('active'); 
+      const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+      window.history.pushState({ path: cleanUrl }, '', cleanUrl);
+    }
+
+    /* --- FITUR BARU: Deteksi tombol Back/Forward Browser --- */
+    window.addEventListener('popstate', (event) => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const productSlug = urlParams.get('product');
+      if (productSlug) {
+        openDetailBySlug(productSlug);
+      } else {
+        document.getElementById('detailView').classList.remove('active');
+      }
+    });
 
     function inquireWine(name) {
       window.open(`https://wa.me/6285691563814?text=Halo,%20saya%20tertarik%20dengan%20${encodeURIComponent(name)}`, '_blank');
