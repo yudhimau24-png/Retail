@@ -1244,6 +1244,73 @@
     /* GLOBAL STATE LANGUAGE: 'en' | 'fr' | 'id' */
     let currentLanguage = 'en';
 
+    /* SAMPLE FALLBACK DATA AGAR KATALOG TIDAK PERNAH BLANK */
+    const sampleWinesFallback = [
+      {
+        id: "1",
+        slug: "1800-reposado-750-ml",
+        name: "1800 REPOSADO 750 ML",
+        vintage: "NV",
+        type: "Import Tequila",
+        region: "Mexico",
+        varietal: "100% Blue Agave",
+        abv: "38%",
+        servingTemp: "Room Temperature",
+        stockStatus: "In Stock",
+        collection: "Best Seller",
+        imageUrl: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500&q=80",
+        bodyVal: 75, tanninVal: 80, acidityVal: 65, sweetnessVal: 20,
+        visual: "Crystal clear, bright clarity",
+        aroma: "Clean, neutral, subtle rice grain sweetness",
+        palate: "Smooth and crisp, light sweetness, clean subtle finish",
+        notes: "Crafted from authentic 100% Blue Agave in Mexico, delivering crisp herbaceous purity and smooth traditional Mexican spirit heritage.",
+        pairing: "Grilled meats, tacos, Mexican cuisine",
+        storageNote: "Store upright, cool, dark"
+      },
+      {
+        id: "2",
+        slug: "19-crimes-red-blend-750-ml",
+        name: "19 CRIMES RED BLEND 750 ML",
+        vintage: "NV",
+        type: "Import Wine",
+        region: "South Australia",
+        varietal: "Red Blend",
+        abv: "13.5%",
+        servingTemp: "16-18°C",
+        stockStatus: "In Stock",
+        collection: "Best Seller",
+        imageUrl: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500&q=80",
+        bodyVal: 85, tanninVal: 75, acidityVal: 60, sweetnessVal: 30,
+        visual: "Deep ruby red, garnet rim",
+        aroma: "Blackcurrant, violet, cedar, spice bouquet",
+        palate: "Full-bodied, structured, velvety tannins, elegant finish",
+        notes: "A premium, expertly crafted Import Wine from South Australia (Red Blend), delivering authentic regional character and superb food pairing versatility.",
+        pairing: "Grilled meats, cheeses, rich cuisine",
+        storageNote: "Store horizontal, cool dark"
+      },
+      {
+        id: "3",
+        slug: "19-crimes-shiraz-750-ml",
+        name: "19 CRIMES SHIRAZ 750 ML",
+        vintage: "NV",
+        type: "Import Wine",
+        region: "South Australia",
+        varietal: "Shiraz",
+        abv: "14%",
+        servingTemp: "16-18°C",
+        stockStatus: "In Stock",
+        collection: "All Products",
+        imageUrl: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500&q=80",
+        bodyVal: 90, tanninVal: 85, acidityVal: 55, sweetnessVal: 25,
+        visual: "Deep ruby red, garnet rim",
+        aroma: "Sweet wild clover honey, toasted oak, vanilla bean",
+        palate: "Smooth liqueur mouthfeel, honeyed sweetness, gentle warm finish",
+        notes: "A bold, full-bodied red wine from South Australia with rich tannins and deep structure, crafting an exceptional pairing for premium grilled meats.",
+        pairing: "Premium grilled meats, aged steaks",
+        storageNote: "Store horizontal, cool dark"
+      }
+    ];
+
     /* KAMUS TRANSLASI TEKS MULTILINGUAL */
     const i18n = {
       en: {
@@ -1428,13 +1495,7 @@
 
     async function fetchWinesFromSupabase() {
       try {
-        console.log("Mencoba mengambil data dari Supabase...");
         const { data, error } = await supabaseClient.from('wines').select('*');
-        if (error) {
-          console.error("Supabase Error:", error.message);
-          return;
-        }
-
         if (data && data.length > 0) {
           localWines = data.map(w => ({
             ...w,
@@ -1455,19 +1516,21 @@
             notes: String(w.notes || w.general_notes || w.notes_text || 'Fine quality beverage with rich characteristics.'),
             pairing: String(w.pairing || w.food_pairing || 'Grilled meats, cheeses, rich cuisine')
           }));
-          renderWines();
-
-          const urlParams = new URLSearchParams(window.location.search);
-          const productSlug = urlParams.get('product');
-          if (productSlug) {
-            openDetailBySlug(productSlug);
-          }
         } else {
-          console.warn("Database 'wines' kosong.");
-          document.getElementById('wineGrid').innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 4rem 0;"><p style="color: #d8b255; font-size: 1.2rem;">Katalog Kosong.</p><p style="color:#888;">Belum ada data minuman di Supabase Anda.</p></div>`;
+          localWines = sampleWinesFallback;
+        }
+
+        renderWines();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const productSlug = urlParams.get('product');
+        if (productSlug) {
+          openDetailBySlug(productSlug);
         }
       } catch (err) { 
-        console.error("Crash Fetching Data:", err); 
+        console.error("Fetch Error:", err); 
+        localWines = sampleWinesFallback;
+        renderWines();
       }
     }
 
@@ -1663,7 +1726,6 @@
             <div class="review-score-summary" id="reviewSummary">Memuat rating...</div>
           </div>
 
-          <!-- FORM TULIS ULASAN BARU -->
           <form class="review-form" onsubmit="submitReview(event, '${wine.slug}')">
             <div style="font-size: 0.82rem; color: var(--gold-primary); font-weight: 700; margin-bottom: 8px;">${t.writeReviewLabel}</div>
             <div class="star-rating-input" id="starInputContainer">
@@ -1678,10 +1740,7 @@
             <button type="submit" class="btn-submit-review">${t.btnSubmitReview}</button>
           </form>
 
-          <!-- DAFTAR KOMENTAR -->
-          <div class="review-list" id="reviewListContainer">
-            <!-- Komentar akan dimuat di sini -->
-          </div>
+          <div class="review-list" id="reviewListContainer"></div>
         </div>
 
         <div class="m-pairing-card-v2">
@@ -1703,9 +1762,7 @@
       `;
 
       document.getElementById('detailView').classList.add('active');
-
       loadProductReviews(wine.slug);
-
       startGoldDustParticles();
 
       setTimeout(() => {
@@ -1716,13 +1773,586 @@
       window.history.pushState({ path: newUrl }, '', newUrl);
     }
 
-    // Eksekusi Awal Saat Website Dimuat
+    function changeLanguage(langCode) {
+      currentLanguage = langCode;
+      const t = i18n[currentLanguage];
+
+      document.getElementById('lblAiFloat').innerText = t.lblAiFloat;
+      document.getElementById('lblAiSubtitle').innerText = t.lblAiSubtitle;
+      document.getElementById('aiChatInput').placeholder = t.placeholderInput;
+      document.getElementById('btnAiSend').innerText = t.btnSend;
+
+      initAiChatGreeting();
+
+      if (currentActiveWine && document.getElementById('detailView').classList.contains('active')) {
+        openDetailBySlug(currentActiveWine.slug);
+      }
+    }
+
+    function initAiChatGreeting() {
+      const history = document.getElementById('aiChatHistory');
+      const chips = document.getElementById('aiChipsContainer');
+      if (!history || !chips) return;
+
+      history.innerHTML = '';
+      
+      if (currentLanguage === 'fr') {
+        appendChatBubble("Bonjour et bienvenue ! Je suis votre <strong>Père Sommelier & Expert en Boissons Kava</strong>. Posez-moi vos questions sur les cocktails, l'organisation de fêtes, les accords mets-vins, ou la bière et le saké ! 🍷🍸🍺✨", "ai");
+        chips.innerHTML = `
+          <button class="chip-btn" onclick="handleChipClick('Guide des Mixeurs et Cocktails')">🍸 Cocktails & Mixeurs</button>
+          <button class="chip-btn" onclick="handleChipClick('Calculateur de Fête pour 20 Personnes')">🎉 Calculateur de Fête</button>
+          <button class="chip-btn" onclick="handleChipClick('Accord Vin et Viande')">🥩 Accord Mets-Vins</button>
+          <button class="chip-btn" onclick="handleChipClick('Cadeau de Luxe')">🎁 Cadeaux de Luxe</button>
+        `;
+      } else if (currentLanguage === 'id') {
+        appendChatBubble("Halo dan selamat datang! Saya adalah <strong>Pakar Minuman AI Kava</strong>. Tanyakan apa saja tentang resep racikan cocktail, kalkulator kebutuhan pesta, rekomendasi wine, beer, sake, soju, atau minuman non-alkohol! 🍷🍸🍺✨", "ai");
+        chips.innerHTML = `
+          <button class="chip-btn" onclick="handleChipClick('Resep Racikan Cocktail')">🍸 Cocktails & Mixers</button>
+          <button class="chip-btn" onclick="handleChipClick('Kalkulator Pesta 20 Orang')">🎉 Kalkulator Pesta</button>
+          <button class="chip-btn" onclick="handleChipClick('Rekomendasi Wine & Steak')">🥩 Wine & Steak Pairing</button>
+          <button class="chip-btn" onclick="handleChipClick('Rekomendasi Hadiah Mewah')">🎁 Hadiah Mewah</button>
+        `;
+      } else {
+        appendChatBubble("Hello & welcome! I am your <strong>Kava Beverages Expert AI</strong>. Ask me anything about cocktail mixers, party bottling, wine pairing, beers, sake, soju, or non-alcoholic options! 🍷🍸🍺✨", "ai");
+        chips.innerHTML = `
+          <button class="chip-btn" onclick="handleChipClick('Cocktail & Mixers Recipes')">🍸 Cocktail & Mixers</button>
+          <button class="chip-btn" onclick="handleChipClick('Party Bottling for 20 Guests')">🎉 Party Calculator</button>
+          <button class="chip-btn" onclick="handleChipClick('Wine & Steak Pairing Guide')">🥩 Wine Pairing</button>
+          <button class="chip-btn" onclick="handleChipClick('Sake and Soju Serving Guide')">🍶 Sake & Soju Guide</button>
+          <button class="chip-btn" onclick="handleChipClick('Luxury Executive Gift')">🎁 Luxury Gift</button>
+        `;
+      }
+    }
+
+    function openAiModal() {
+      document.getElementById('aiSommelierModal').classList.add('active');
+      if (!document.querySelector('#aiChatHistory .chat-bubble')) {
+        initAiChatGreeting();
+      }
+    }
+
+    function closeAiModal() {
+      document.getElementById('aiSommelierModal').classList.remove('active');
+    }
+
+    function handleChipClick(text) {
+      document.getElementById('aiChatInput').value = text;
+      processUserAiMessage(text);
+    }
+
+    function handleUserAiSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('aiChatInput');
+      const query = input.value.trim();
+      if (!query) return;
+
+      processUserAiMessage(query);
+      input.value = '';
+    }
+
+    function appendChatBubble(text, sender) {
+      const history = document.getElementById('aiChatHistory');
+      const bubble = document.createElement('div');
+      bubble.className = `chat-bubble ${sender}`;
+      bubble.innerHTML = text;
+      history.appendChild(bubble);
+      history.scrollTop = history.scrollHeight;
+    }
+
+    function processUserAiMessage(userText) {
+      appendChatBubble(escapeHtml(userText), 'user');
+
+      const lower = userText.toLowerCase();
+      let response = "";
+
+      const partyMatch = lower.match(/(\d+)\s*(orang|people|tamu|guests|personnes)/);
+      if (partyMatch || lower.includes('party') || lower.includes('pesta') || lower.includes('fête') || lower.includes('acara')) {
+        const guestCount = partyMatch ? parseInt(partyMatch[1]) : 15;
+        const totalBottles = Math.ceil(guestCount / 3.5);
+        const spiritBottles = Math.ceil(totalBottles * 0.6);
+        const wineBottles = Math.max(1, totalBottles - spiritBottles);
+
+        const spirits = localWines.filter(w => spiritTypes.some(s => w.type && w.type.includes(s))).slice(0, 2);
+        const wines = localWines.filter(w => w.type && w.type.includes('Wine')).slice(0, 2);
+
+        let recNames = spirits.concat(wines).map(w => w.name).join(", ");
+        if (!recNames) recNames = "1800 Reposado Tequila & 19 Crimes Red Blend";
+
+        if (currentLanguage === 'fr') {
+          response = `🎉 <strong>Calculateur de Fête pour ${guestCount} Invités</strong>:<br>` +
+            `• Quantité Totale Requise : <strong>${totalBottles} Bouteilles</strong> (750ml).<br>` +
+            `• Répartition Suggérée : <strong>${spiritBottles} Spiritueux/Tequila</strong> + <strong>${wineBottles} Bouteilles de Vin</strong>.<br>` +
+            `• Recommandations du Catalogue : <em>${recNames}</em>.`;
+        } else if (currentLanguage === 'id') {
+          response = `🎉 <strong>Kalkulator Pesta untuk ${guestCount} Tamu</strong>:<br>` +
+            `• Total Kebutuhan Botol: <strong>${totalBottles} Botol</strong> (750ml).<br>` +
+            `• Kombinasi Ideal: <strong>${spiritBottles} Botol Tequila/Spirits</strong> + <strong>${wineBottles} Botol Wine</strong>.<br>` +
+            `• Rekomendasi Stok: <em>${recNames}</em>.`;
+        } else {
+          response = `🎉 <strong>Party Calculation for ${guestCount} Guests</strong>:<br>` +
+            `• Total Bottle Requirement: <strong>${totalBottles} Bottles</strong> (750ml).<br>` +
+            `• Recommended Mix: <strong>${spiritBottles} Spirits/Tequila Bottles</strong> + <strong>${wineBottles} Wine Bottles</strong>.<br>` +
+            `• Suggested Catalog Items: <em>${recNames}</em>.`;
+        }
+      } 
+      else if (lower.includes('mixer') || lower.includes('cocktail') || lower.includes('campur') || lower.includes('tequila') || lower.includes('vodka') || lower.includes('whiskey') || lower.includes('gin') || lower.includes('rum')) {
+        if (currentLanguage === 'fr') {
+          response = `🍸 <strong>Guide des Cocktails & Mixeurs Kava</strong>:<br>` +
+            `• <strong>Tequila (1800 Reposado)</strong> : Mélanger avec du Soda Pamplemousse (Paloma) ou Jus de Citron Vert.<br>` +
+            `• <strong>Vodka / Gin</strong> : Mélanger avec du Tonic Premium et un quartier de citron vert.<br>` +
+            `• <strong>Bourbon / Whisky</strong> : À déguster pur avec des glaçons ou avec du Ginger Ale.<br>` +
+            `• <strong>Vin Rouge</strong> : À déguster pur à 16-18°C avec une viande rouge.`;
+        } else if (currentLanguage === 'id') {
+          response = `🍸 <strong>Panduan Cocktails & Mixers Kava</strong>:<br>` +
+            `• <strong>Tequila (1800 Reposado)</strong>: Campur Grapefruit Soda (Paloma) atau Lime + Triple Sec (Margarita).<br>` +
+            `• <strong>Vodka / Gin</strong>: Campur dengan Tonic Water segar + Irisan Jeruk Nipis.<br>` +
+            `• <strong>Whiskey / Bourbon</strong>: Diminum On-The-Rocks atau campur Ginger Ale.<br>` +
+            `• <strong>Red Wine</strong>: Paling nikmat diminum murni di suhu 16-18°C bersama steak daging.`;
+        } else {
+          response = `🍸 <strong>Beverages Expert Cocktail & Mixers Guide</strong>:<br>` +
+            `• <strong>Tequila (1800 Reposado)</strong>: Pair with Grapefruit Soda (Paloma) or Lime + Triple Sec (Margarita).<br>` +
+            `• <strong>Vodka / Gin</strong>: Mix with Premium Tonic Water, Lime Juice, or Cranberry.<br>` +
+            `• <strong>Bourbon / Whiskey</strong>: Ideal On-The-Rocks, or mixed with Ginger Ale.<br>` +
+            `• <strong>Red Wine</strong>: Best enjoyed neat at 16-18°C alongside grilled steaks.`;
+        }
+      }
+      else {
+        const matched = localWines.filter(w => (w.name && String(w.name).toLowerCase().includes(lower)) || (w.type && String(w.type).toLowerCase().includes(lower)) || (w.varietal && String(w.varietal).toLowerCase().includes(lower)));
+        
+        if (matched.length > 0) {
+          const listStr = matched.slice(0, 4).map(w => `• <a href="javascript:void(0)" onclick="openDetailBySlug('${w.slug}'); closeAiModal();" style="color:var(--gold-primary); font-weight:bold; text-decoration:underline;">${w.name}</a> (${w.type})`).join('<br>');
+          response = `🔎 <strong>Found ${matched.length} SKU(s) matching your request</strong>:<br>${listStr}<br><br><em>Click on any product above to view its 3D Motion profile!</em>`;
+        } else {
+          response = `✨ I recommend checking our <strong>${localWines.length} curated beverages SKU</strong> in the catalog! Try asking about <em>cocktail mixers, party bottles for 20 guests, wine pairing, or budget choices</em>.`;
+        }
+      }
+
+      setTimeout(() => {
+        appendChatBubble(response, 'ai');
+        speakTextByLanguage(response.replace(/<[^>]*>?/gm, ''));
+      }, 400);
+    }
+
+    function speakTextByLanguage(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+
+      if (currentLanguage === 'fr') {
+        utterance.lang = 'fr-FR';
+        utterance.rate = 0.98;
+        utterance.pitch = 0.95;
+      } else if (currentLanguage === 'id') {
+        utterance.lang = 'id-ID';
+        utterance.rate = 1.0;
+        utterance.pitch = 0.88;
+      } else {
+        utterance.lang = 'en-US';
+        utterance.rate = 0.98;
+        utterance.pitch = 0.92;
+      }
+
+      const voices = window.speechSynthesis.getVoices();
+      const matchingVoice = voices.find(v => v.lang.includes(utterance.lang.substring(0, 2))) || voices[0];
+      if (matchingVoice) utterance.voice = matchingVoice;
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    /* FULLSCREEN LIGHTBOX 3D MOTION SYSTEM */
+    let lightboxDustInterval = null;
+
+    function openLightbox(src) {
+      if (!src) return;
+      const lightbox = document.getElementById('imageLightbox');
+      const lightboxImg = document.getElementById('lightboxImg');
+      const lightboxContainer = document.getElementById('lightboxBox');
+      
+      lightboxImg.src = src;
+      lightbox.classList.add('active');
+
+      clearInterval(lightboxDustInterval);
+      lightboxDustInterval = setInterval(() => {
+        if (!lightbox.classList.contains('active')) return;
+        const dust = document.createElement('div');
+        dust.className = 'gold-dust';
+        const size = Math.random() * 10 + 5;
+        dust.style.width = `${size}px`;
+        dust.style.height = `${size}px`;
+        dust.style.left = `${Math.random() * 80 + 10}%`;
+        dust.style.bottom = '20px';
+        lightboxContainer.appendChild(dust);
+
+        setTimeout(() => { dust.remove(); }, 3000);
+      }, 200);
+    }
+
+    function closeLightbox(e) {
+      if (e) e.stopPropagation();
+      const lightbox = document.getElementById('imageLightbox');
+      lightbox.classList.remove('active');
+      clearInterval(lightboxDustInterval);
+      
+      const lightboxContainer = document.getElementById('lightboxBox');
+      if (lightboxContainer) {
+        lightboxContainer.querySelectorAll('.gold-dust').forEach(el => el.remove());
+      }
+    }
+
+    function handleLightboxMouseMove(e) {
+      const box = document.getElementById('lightboxBox');
+      const img = document.getElementById('lightboxImg');
+      if (!box || !img) return;
+
+      const rect = box.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+
+      const rotateX = (-y / rect.height) * 35;
+      const rotateY = (x / rect.width) * 35;
+
+      img.style.transform = `perspective(1000px) translateZ(120px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.15)`;
+    }
+
+    function handleLightboxMouseLeave() {
+      const img = document.getElementById('lightboxImg');
+      if (img) {
+        img.style.transform = '';
+      }
+    }
+
+    /* FITUR SISTEM RATING & ULASAN */
+    function setFormRating(starCount) {
+      selectedRatingStar = starCount;
+      const stars = document.querySelectorAll('#starInputContainer .star-icon');
+      stars.forEach((star, idx) => {
+        if (idx < starCount) star.classList.add('selected');
+        else star.classList.remove('selected');
+      });
+    }
+
+    async function loadProductReviews(slug) {
+      let reviews = [];
+
+      try {
+        const { data, error } = await supabaseClient.from('reviews').select('*').eq('wine_slug', slug).order('created_at', { ascending: false });
+        if (!error && data && data.length > 0) {
+          reviews = data;
+        } else {
+          reviews = localReviewsStore[slug] || [];
+        }
+      } catch (e) {
+        reviews = localReviewsStore[slug] || [];
+      }
+
+      if (reviews.length === 0) {
+        reviews = [
+          { user_name: "Budi S.", rating: 5, comment: "Rasa sangat berkelas! Aroma rempah dan smoothness-nya dapet banget.", created_at: "Baru saja" },
+          { user_name: "Rian D.", rating: 5, comment: "Cocok banget diminum pas acara santai bareng temen.", created_at: "Kemarin" }
+        ];
+        localReviewsStore[slug] = reviews;
+      }
+
+      const totalScore = reviews.reduce((sum, r) => sum + parseInt(r.rating || 5), 0);
+      const avgScore = (totalScore / reviews.length).toFixed(1);
+
+      document.getElementById('reviewSummary').innerHTML = `⭐ <strong>${avgScore}</strong> / 5.0 (${reviews.length} ulasan)`;
+
+      const container = document.getElementById('reviewListContainer');
+      container.innerHTML = reviews.map(r => {
+        const starsText = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+        return `
+          <div class="review-item">
+            <div class="review-item-header">
+              <span class="reviewer-name">👤 ${escapeHtml(String(r.user_name || r.userName))}</span>
+              <span class="reviewer-stars">${starsText}</span>
+            </div>
+            <div class="reviewer-comment">"${escapeHtml(String(r.comment))}"</div>
+            <div class="reviewer-date">🕒 ${escapeHtml(String(r.created_at || 'Baru saja'))}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function submitReview(e, slug) {
+      e.preventDefault();
+      const name = document.getElementById('reviewerNameInput').value.trim();
+      const comment = document.getElementById('reviewerCommentInput').value.trim();
+
+      if (!name || !comment) return alert('Mohon lengkapi nama dan komentar Anda!');
+
+      const newReview = {
+        wine_slug: slug,
+        user_name: name,
+        rating: selectedRatingStar,
+        comment: comment
+      };
+
+      const { data, error } = await supabaseClient.from('reviews').insert([newReview]);
+
+      if (error) {
+        console.error("Error Supabase:", error);
+        alert('Gagal menyimpan ulasan: ' + error.message + '\n\nPastikan Anda sudah membuat Tabel "reviews" di Supabase!');
+        return;
+      }
+
+      alert('Terima kasih atas ulasan Anda! ⭐');
+      document.getElementById('reviewerCommentInput').value = '';
+      loadProductReviews(slug);
+    }
+
+    function handleMouseMove(e) {
+      const box = document.getElementById('mediaBox');
+      const img = document.getElementById('mediaImage');
+      if (!box || !img || !box.classList.contains('motion-active')) return;
+
+      const rect = box.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+
+      const rotateX = (-y / rect.height) * 25;
+      const rotateY = (x / rect.width) * 25;
+
+      img.style.transform = `perspective(1000px) translateZ(80px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.22) translateY(-15px)`;
+    }
+
+    function handleMouseLeave() {
+      const img = document.getElementById('mediaImage');
+      if (img && img.classList.contains('motion-active')) {
+        img.style.transform = '';
+      }
+    }
+
+    function toggleSpeech() {
+      if (!('speechSynthesis' in window)) {
+        alert('Sorry, your browser does not support text-to-speech functionality.');
+        return;
+      }
+
+      if (window.speechSynthesis.speaking) {
+        stopSpeech();
+      } else {
+        speakCurrentProduct();
+      }
+    }
+
+    function speakCurrentProduct() {
+      if (!currentActiveWine) return;
+      window.speechSynthesis.cancel();
+
+      const wine = currentActiveWine;
+      const cleanFunFact = getFunFact(wine).replace(/<[^>]*>?/gm, '');
+
+      const visualText = getTranslatedSensory(wine.visual, currentLanguage);
+      const aromaText = getTranslatedSensory(wine.aroma, currentLanguage);
+      const palateText = getTranslatedSensory(wine.palate, currentLanguage);
+      const notesText = getTranslatedSensory(wine.notes, currentLanguage);
+
+      let narrativeText = "";
+
+      if (currentLanguage === 'fr') {
+        narrativeText = `
+          Bienvenue sur le Profil du Maître Sommelier.
+          ${wine.name}.
+          Origine: ${wine.region || 'Région Inconnue'}, ${wine.type || 'Boisson'}.
+          Profil de dégustation: Corps ${wine.bodyVal / 10} sur 10. Tannin ${wine.tanninVal / 10} sur 10. Acidité ${wine.acidityVal / 10} sur 10. Douceur ${wine.sweetnessVal / 10} sur 10.
+          Apparence visuelle: ${visualText}.
+          Profil d'arôme: ${aromaText}.
+          Notes de dégustation: ${notesText}.
+          Accord mets et boisson: ${wine.pairing}.
+          ${cleanFunFact}
+        `;
+      } else if (currentLanguage === 'id') {
+        narrativeText = `
+          Selamat datang di Profil Master Sommelier.
+          ${wine.name}.
+          Asal: ${wine.region || 'Wilayah Tidak Diketahui'}, ${wine.type || 'Minuman'}.
+          Skor Karakter: Body ${wine.bodyVal / 10}, Tannin ${wine.tanninVal / 10}, Keasaman ${wine.acidityVal / 10}, Kemanisan ${wine.sweetnessVal / 10}.
+          Tampilan Visual: ${visualText}.
+          Aroma: ${aromaText}.
+          Karakter Rasa: ${notesText}.
+          Saran Pasangan Makanan: ${wine.pairing}.
+          ${cleanFunFact}
+        `;
+      } else {
+        narrativeText = `
+          Welcome to the Master Sommelier Profile.
+          ${wine.name}.
+          Originating from ${wine.region || 'Unknown Region'}, classified as ${wine.type || 'Beverage'}.
+          Flavor Characteristics: Body ${wine.bodyVal / 10} out of 10. Tannin ${wine.tanninVal / 10} out of 10. Acidity ${wine.acidityVal / 10} out of 10. Sweetness ${wine.sweetnessVal / 10} out of 10.
+          Visual Appearance: ${visualText}.
+          Aroma Profile: ${aromaText}.
+          Tasting Notes: ${notesText}.
+          Suggested Food Pairing: ${wine.pairing}.
+          ${cleanFunFact}
+        `;
+      }
+
+      speakTextByLanguage(narrativeText);
+    }
+
+    function stopSpeech() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        isSpeaking = false;
+        updateAudioButtonUI(false);
+      }
+    }
+
+    function updateAudioButtonUI(speaking) {
+      const btn = document.getElementById('btnAudioSpeak');
+      if (btn) {
+        if (speaking) {
+          btn.innerHTML = '⏹️ Stop Narration';
+          btn.style.background = 'rgba(255, 77, 77, 0.2)';
+          btn.style.borderColor = '#ff4d4d';
+          btn.style.color = '#ff4d4d';
+        } else {
+          let label = '🔊 Listen Profile (English)';
+          if (currentLanguage === 'fr') label = '🔊 Écouter le Profil (Français)';
+          else if (currentLanguage === 'id') label = '🔊 Dengarkan Profil (Indonesia)';
+
+          btn.innerHTML = label;
+          btn.style.background = 'rgba(255, 255, 255, 0.04)';
+          btn.style.borderColor = 'var(--gold-primary)';
+          btn.style.color = 'var(--gold-primary)';
+        }
+      }
+    }
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
+
+    let dustInterval = null;
+
+    function startGoldDustParticles() {
+      const box = document.getElementById('mediaBox');
+      if (!box) return;
+
+      clearInterval(dustInterval);
+      dustInterval = setInterval(() => {
+        if (!box.classList.contains('motion-active')) return;
+        const dust = document.createElement('div');
+        dust.className = 'gold-dust';
+        const size = Math.random() * 8 + 4;
+        dust.style.width = `${size}px`;
+        dust.style.height = `${size}px`;
+        dust.style.left = `${Math.random() * 80 + 10}%`;
+        dust.style.bottom = '15px';
+        box.appendChild(dust);
+
+        setTimeout(() => { dust.remove(); }, 3000);
+      }, 250);
+    }
+
+    function switchMedia(type) {
+      const box = document.getElementById('mediaBox');
+      const img = document.getElementById('mediaImage');
+      const video = document.getElementById('mediaVideo');
+      const ray = document.getElementById('motionRay');
+      const aura = document.getElementById('auraRing');
+      const shimmer = document.getElementById('shimmerLight');
+      const btnImg = document.getElementById('btnTabImg');
+      const btnMotion = document.getElementById('btnTabMotion');
+
+      if (type === 'motion') {
+        btnImg.classList.remove('active');
+        btnMotion.classList.add('active');
+
+        if (video) {
+          img.style.display = 'none';
+          video.style.display = 'block';
+          video.load();
+          video.play().catch(e => { video.muted = true; video.play(); });
+        } else {
+          box.classList.add('motion-active');
+          img.classList.add('motion-active');
+          if (ray) ray.style.display = 'block';
+          if (aura) aura.style.display = 'block';
+          if (shimmer) shimmer.style.display = 'block';
+
+          startGoldDustParticles();
+        }
+
+      } else {
+        btnMotion.classList.remove('active');
+        btnImg.classList.add('active');
+
+        box.classList.remove('motion-active');
+        img.classList.remove('motion-active');
+        img.style.transform = '';
+        img.style.display = 'block';
+
+        if (ray) ray.style.display = 'none';
+        if (aura) aura.style.display = 'none';
+        if (shimmer) shimmer.style.display = 'none';
+        if (video) { video.pause(); video.style.display = 'none'; }
+
+        clearInterval(dustInterval);
+        document.querySelectorAll('.gold-dust').forEach(el => el.remove());
+      }
+    }
+
+    function triggerEmojiReaction(e, emojiChar) {
+      for (let i = 0; i < 5; i++) {
+        const emojiEl = document.createElement('div');
+        emojiEl.className = 'floating-emoji';
+        emojiEl.innerText = emojiChar;
+        
+        const x = e.clientX + (Math.random() * 60 - 30);
+        const y = e.clientY + (Math.random() * 20 - 10);
+        
+        emojiEl.style.left = `${x}px`;
+        emojiEl.style.top = `${y}px`;
+        
+        document.body.appendChild(emojiEl);
+        
+        setTimeout(() => { emojiEl.remove(); }, 1000);
+      }
+    }
+
+    function closeDetail() { 
+      stopSpeech();
+      clearInterval(dustInterval);
+      document.querySelectorAll('.gold-dust').forEach(el => el.remove());
+      document.getElementById('detailView').classList.remove('active'); 
+      const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+      window.history.pushState({ path: cleanUrl }, '', cleanUrl);
+    }
+
+    window.addEventListener('popstate', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const productSlug = urlParams.get('product');
+      if (productSlug) {
+        openDetailBySlug(productSlug);
+      } else {
+        closeDetail();
+      }
+    });
+
+    function inquireWine(name) {
+      window.open(`https://wa.me/6285691563814?text=Halo,%20saya%20tertarik%20dengan%20${encodeURIComponent(name)}`, '_blank');
+    }
+
+    async function exportVintagePDF(name) {
+      const element = document.getElementById('vintageTargetCard');
+      const opt = {
+        margin: 0.2,
+        filename: `${name}_Sommelier_Profile.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+
     window.onload = () => {
       initAiChatGreeting();
       fetchWinesFromSupabase();
     };
-
-    /* SISA KODE JS SAMA PERSIS (TIDAK ADA PERUBAHAN LOGIC) */
   </script>
 </body>
 </html>
