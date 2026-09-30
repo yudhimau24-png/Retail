@@ -322,18 +322,10 @@
     }
 
     @keyframes dynamicBgShift {
-      0% {
-        background: radial-gradient(circle at 30% 30%, rgba(243, 208, 130, 0.55) 0%, rgba(140, 20, 45, 0.7) 55%, rgba(5, 2, 4, 0.98) 100%);
-      }
-      33% {
-        background: radial-gradient(circle at 70% 60%, rgba(255, 180, 80, 0.55) 0%, rgba(100, 15, 60, 0.8) 60%, rgba(5, 2, 4, 0.98) 100%);
-      }
-      66% {
-        background: radial-gradient(circle at 40% 80%, rgba(216, 178, 85, 0.6) 0%, rgba(80, 10, 50, 0.75) 55%, rgba(5, 2, 4, 0.98) 100%);
-      }
-      100% {
-        background: radial-gradient(circle at 30% 30%, rgba(243, 208, 130, 0.55) 0%, rgba(140, 20, 45, 0.7) 55%, rgba(5, 2, 4, 0.98) 100%);
-      }
+      0% { background: radial-gradient(circle at 30% 30%, rgba(243, 208, 130, 0.55) 0%, rgba(140, 20, 45, 0.7) 55%, rgba(5, 2, 4, 0.98) 100%); }
+      33% { background: radial-gradient(circle at 70% 60%, rgba(255, 180, 80, 0.55) 0%, rgba(100, 15, 60, 0.8) 60%, rgba(5, 2, 4, 0.98) 100%); }
+      66% { background: radial-gradient(circle at 40% 80%, rgba(216, 178, 85, 0.6) 0%, rgba(80, 10, 50, 0.75) 55%, rgba(5, 2, 4, 0.98) 100%); }
+      100% { background: radial-gradient(circle at 30% 30%, rgba(243, 208, 130, 0.55) 0%, rgba(140, 20, 45, 0.7) 55%, rgba(5, 2, 4, 0.98) 100%); }
     }
 
     .aura-ring {
@@ -417,15 +409,9 @@
       filter: drop-shadow(0 30px 50px rgba(243, 208, 130, 0.9)) drop-shadow(0 0 35px rgba(255, 255, 255, 0.95));
     }
     @keyframes popForward3D {
-      0% {
-        transform: translateZ(10px) translateY(5px) scale(1.02) rotate(0deg);
-      }
-      50% {
-        transform: translateZ(100px) translateY(-22px) scale(1.24) rotate(3deg);
-      }
-      100% {
-        transform: translateZ(60px) translateY(-10px) scale(1.15) rotate(-2deg);
-      }
+      0% { transform: translateZ(10px) translateY(5px) scale(1.02) rotate(0deg); }
+      50% { transform: translateZ(100px) translateY(-22px) scale(1.24) rotate(3deg); }
+      100% { transform: translateZ(60px) translateY(-10px) scale(1.15) rotate(-2deg); }
     }
 
     .m-bottle-video {
@@ -971,7 +957,7 @@
     let currentSortOrder = 'ASC';
     let currentActiveWine = null;
     let isSpeaking = false;
-    let localReviewsStore = {}; // Memory fallback jika tabel Supabase 'reviews' belum disiapkan
+    let localReviewsStore = {}; 
     let selectedRatingStar = 5;
 
     const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whisky", "Cognac", "Soju", "Sake", "Traditional and Grain", "Baijiu", "Alcopops"];
@@ -1270,7 +1256,6 @@
 
       document.getElementById('detailView').classList.add('active');
 
-      // Muat daftar ulasan pelanggan
       loadProductReviews(wine.slug);
 
       const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?product=' + slug;
@@ -1291,9 +1276,8 @@
       let reviews = [];
 
       try {
-        // Coba ambil dari Supabase
         const { data, error } = await supabaseClient.from('reviews').select('*').eq('wine_slug', slug).order('created_at', { ascending: false });
-        if (!error && data) {
+        if (!error && data && data.length > 0) {
           reviews = data;
         } else {
           reviews = localReviewsStore[slug] || [];
@@ -1302,7 +1286,6 @@
         reviews = localReviewsStore[slug] || [];
       }
 
-      // Jika belum ada ulasan sama sekali, beri default ulasan manis
       if (reviews.length === 0) {
         reviews = [
           { user_name: "Budi S.", rating: 5, comment: "Rasa sangat berkelas! Aroma rempah dan smoothness-nya dapet banget.", created_at: "Baru saja" },
@@ -1311,13 +1294,11 @@
         localReviewsStore[slug] = reviews;
       }
 
-      // Hitung Rata-rata
       const totalScore = reviews.reduce((sum, r) => sum + parseInt(r.rating || 5), 0);
       const avgScore = (totalScore / reviews.length).toFixed(1);
 
       document.getElementById('reviewSummary').innerHTML = `⭐ <strong>${avgScore}</strong> / 5.0 (${reviews.length} ulasan)`;
 
-      // Render List
       const container = document.getElementById('reviewListContainer');
       container.innerHTML = reviews.map(r => {
         const starsText = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
@@ -1345,18 +1326,16 @@
         wine_slug: slug,
         user_name: name,
         rating: selectedRatingStar,
-        comment: comment,
-        created_at: new Date().toLocaleDateString('id-ID')
+        comment: comment
       };
 
-      try {
-        await supabaseClient.from('reviews').insert([newReview]);
-      } catch (err) {
-        console.log('Supabase review insert fallback to memory store');
-      }
+      const { data, error } = await supabaseClient.from('reviews').insert([newReview]);
 
-      if (!localReviewsStore[slug]) localReviewsStore[slug] = [];
-      localReviewsStore[slug].unshift(newReview);
+      if (error) {
+        console.error("Error Supabase:", error);
+        alert('Gagal menyimpan ulasan: ' + error.message + '\n\nPastikan Anda sudah membuat Tabel "reviews" di Supabase!');
+        return;
+      }
 
       alert('Terima kasih atas ulasan Anda! ⭐');
       document.getElementById('reviewerCommentInput').value = '';
