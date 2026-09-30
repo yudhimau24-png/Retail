@@ -366,6 +366,7 @@
       margin-bottom: 14px;
     }
 
+    /* CHAT MESSAGES AREA */
     .ai-chat-history {
       flex: 1;
       overflow-y: auto;
@@ -988,6 +989,85 @@
     /* GLOBAL STATE LANGUAGE: 'en' | 'fr' | 'id' */
     let currentLanguage = 'en';
 
+    /* KAMUS TRANSLASI TEKS MULTILINGUAL */
+    const i18n = {
+      en: {
+        headerTitle: "MASTER SOMMELIER PROFILE",
+        flavorTitle: "FLAVOR MATRIX CHARTS",
+        pairingTitle: "SUGGESTED FOOD PAIRINGS",
+        reviewsTitle: "CUSTOMER REVIEWS",
+        writeReviewLabel: "Write Your Review:",
+        btnSubmitReview: "💬 Submit Review",
+        btnWa: "💬 WhatsApp Order / Inquire",
+        btnAudio: "🔊 Listen Profile (English)",
+        btnPdf: "📄 Download PDF",
+        btnFoto: "📸 Bottle Photo",
+        btnMotion: "🎥 Motion Mode 3D",
+        labelAbv: "ALCOHOL (ABV)",
+        labelServing: "SERVING TEMP",
+        labelStock: "STOCK STATUS",
+        labelVisual: "VISUAL",
+        labelAroma: "AROMA",
+        labelPalate: "PALATE",
+        labelNotes: "NOTES",
+        labelStorage: "STORAGE",
+        lblAiFloat: "Ask Beverages Expert AI",
+        lblAiSubtitle: "Interactive Assistant for All Beverages: Mixers, Cocktails, Pairing, Beer, Sake, Soju & Party Planning",
+        placeholderInput: "Ask anything (e.g. Tequila mixers, party 20 guests)...",
+        btnSend: "Send 🚀"
+      },
+      fr: {
+        headerTitle: "PROFIL DU MAÎTRE SOMMELIER",
+        flavorTitle: "GRAPHIQUE DE LA MATRICE DES SAVEURS",
+        pairingTitle: "ACCORDS METS ET BOISSONS SUGGÉRÉS",
+        reviewsTitle: "AVIS DES CLIENTS",
+        writeReviewLabel: "Écrivez Votre Avis :",
+        btnSubmitReview: "💬 Soumettre l'Avis",
+        btnWa: "💬 Commander via WhatsApp",
+        btnAudio: "🔊 Écouter le Profil (Français)",
+        btnPdf: "📄 Télécharger le PDF",
+        btnFoto: "📸 Photo de Bouteille",
+        btnMotion: "🎥 Mode Motion 3D",
+        labelAbv: "ALCOOL (ABV)",
+        labelServing: "TEMP. DE SERVICE",
+        labelStock: "STATUT DU STOCK",
+        labelVisual: "VISUEL",
+        labelAroma: "ARÔME",
+        labelPalate: "PALAIS",
+        labelNotes: "NOTES",
+        labelStorage: "CONSERVATION",
+        lblAiFloat: "Demander à l'IA Sommelier",
+        lblAiSubtitle: "Assistant Interactif : Cocktails, Accords, Bières, Saké, Soju & Fêtes",
+        placeholderInput: "Posez votre question (ex. Mixeurs Tequila, fête 20 personnes)...",
+        btnSend: "Envoyer 🚀"
+      },
+      id: {
+        headerTitle: "PROFIL MASTER SOMMELIER",
+        flavorTitle: "DIAGRAM MATRIKS RASA",
+        pairingTitle: "SARAN PADUAN MAKANAN",
+        reviewsTitle: "ULASAN PELANGGAN",
+        writeReviewLabel: "Tulis Ulasan Anda:",
+        btnSubmitReview: "💬 Kirim Ulasan",
+        btnWa: "💬 WhatsApp Order / Inquire",
+        btnAudio: "🔊 Dengarkan Profil (Indonesia)",
+        btnPdf: "📄 Unduh PDF",
+        btnFoto: "📸 Foto Botol",
+        btnMotion: "🎥 Motion Mode 3D",
+        labelAbv: "ALKOHOL (ABV)",
+        labelServing: "SUHU PENYAJIAN",
+        labelStock: "STATUS STOK",
+        labelVisual: "VISUAL",
+        labelAroma: "AROMA",
+        labelPalate: "PALATE",
+        labelNotes: "NOTES",
+        labelStorage: "PENYIMPANAN",
+        lblAiFloat: "Tanya AI Sommelier",
+        lblAiSubtitle: "Asisten Interaktif : Mixers, Cocktail, Pairing, Bir, Sake, Soju & Pesta",
+        placeholderInput: "Tanyakan apa saja (contoh: racikan Tequila, pesta 20 tamu)...",
+        btnSend: "Kirim 🚀"
+      }
+    };
+
     /* Background Canvas Particle */
     const canvas = document.getElementById('bgCanvas');
     const ctx = canvas.getContext('2d');
@@ -1033,11 +1113,17 @@
     /* FUNGSI PERUBAHAN BAHASA GLOBAL */
     function changeLanguage(langCode) {
       currentLanguage = langCode;
+      const t = i18n[currentLanguage];
+
+      document.getElementById('lblAiFloat').innerText = t.lblAiFloat;
+      document.getElementById('lblAiSubtitle').innerText = t.lblAiSubtitle;
+      document.getElementById('aiChatInput').placeholder = t.placeholderInput;
+      document.getElementById('btnAiSend').innerText = t.btnSend;
+
       initAiChatGreeting();
 
-      // Jika modal detail sedang aktif, perbarui narasi suara & UI-nya
       if (currentActiveWine && document.getElementById('detailView').classList.contains('active')) {
-        speakCurrentProduct();
+        openDetailBySlug(currentActiveWine.slug);
       }
     }
 
@@ -1213,14 +1299,11 @@
 
       const videoSrc = wine.videoUrl;
       const funFactText = getFunFact(wine);
-
-      let audioBtnLabel = "🔊 Listen Profile (English)";
-      if (currentLanguage === 'fr') audioBtnLabel = "🔊 Écouter le Profil (Français)";
-      else if (currentLanguage === 'id') audioBtnLabel = "🔊 Dengarkan Profil (Indonesia)";
+      const t = i18n[currentLanguage];
 
       document.getElementById('vintageContent').innerHTML = `
         <header class="m-header-v2">
-          <h2>MASTER SOMMELIER PROFILE</h2>
+          <h2>${t.headerTitle}</h2>
           <div class="m-sub-v2">VINTAGE: ${escapeHtml(wine.vintage) || 'NV'} &nbsp;•&nbsp; VARIETAL: ${escapeHtml(wine.varietal) || 'Red Blend'}</div>
         </header>
 
@@ -1238,8 +1321,8 @@
             </div>
 
             <div class="media-tab-group">
-              <button class="media-tab-btn active" id="btnTabImg" onclick="switchMedia('image')">📸 Foto Botol</button>
-              <button class="media-tab-btn" id="btnTabMotion" onclick="switchMedia('motion')">🎥 Motion Mode 3D</button>
+              <button class="media-tab-btn active" id="btnTabImg" onclick="switchMedia('image')">${t.btnFoto}</button>
+              <button class="media-tab-btn" id="btnTabMotion" onclick="switchMedia('motion')">${t.btnMotion}</button>
             </div>
 
             <div class="fun-fact-card">
@@ -1249,7 +1332,7 @@
           </div>
 
           <div>
-            <div class="m-matrix-title-v2">FLAVOR MATRIX CHARTS</div>
+            <div class="m-matrix-title-v2">${t.flavorTitle}</div>
 
             <div class="m-meter-card">
               <div class="m-bar-label-v2"><span>BODY</span><span class="score-badge">${wine.bodyVal / 10} / 10 🏋️‍♂️</span></div>
@@ -1272,11 +1355,11 @@
             </div>
 
             <div class="m-sensory-grid-v2">
-              <div class="m-sensory-item-v2"><strong>👁️ VISUAL</strong><span>${escapeHtml(wine.visual)}</span></div>
-              <div class="m-sensory-item-v2"><strong>🍇 AROMA</strong><span>${escapeHtml(wine.aroma)}</span></div>
-              <div class="m-sensory-item-v2"><strong>🍷 PALATE</strong><span>${escapeHtml(wine.palate)}</span></div>
-              <div class="m-sensory-item-v2"><strong>📝 NOTES</strong><span>${escapeHtml(wine.notes)}</span></div>
-              <div class="m-sensory-item-v2"><strong>🍾 STORAGE</strong><span>${escapeHtml(wine.storageNote)}</span></div>
+              <div class="m-sensory-item-v2"><strong>👁️ ${t.labelVisual}</strong><span>${escapeHtml(wine.visual)}</span></div>
+              <div class="m-sensory-item-v2"><strong>🍇 ${t.labelAroma}</strong><span>${escapeHtml(wine.aroma)}</span></div>
+              <div class="m-sensory-item-v2"><strong>🍷 ${t.labelPalate}</strong><span>${escapeHtml(wine.palate)}</span></div>
+              <div class="m-sensory-item-v2"><strong>📝 ${t.labelNotes}</strong><span>${escapeHtml(wine.notes)}</span></div>
+              <div class="m-sensory-item-v2"><strong>🍾 ${t.labelStorage}</strong><span>${escapeHtml(wine.storageNote)}</span></div>
             </div>
 
             <div class="emoji-reaction-box">
@@ -1294,13 +1377,13 @@
         <!-- SEKSI RATING & ULASAN PELANGGAN -->
         <div class="review-section">
           <div class="review-header">
-            <div class="review-title">⭐ ULASAN PELANGGAN</div>
+            <div class="review-title">⭐ ${t.reviewsTitle}</div>
             <div class="review-score-summary" id="reviewSummary">Memuat rating...</div>
           </div>
 
           <!-- FORM TULIS ULASAN BARU -->
           <form class="review-form" onsubmit="submitReview(event, '${wine.slug}')">
-            <div style="font-size: 0.78rem; color: var(--gold-primary); font-weight: 700;">Tulis Ulasan Anda:</div>
+            <div style="font-size: 0.78rem; color: var(--gold-primary); font-weight: 700;">${t.writeReviewLabel}</div>
             <div class="star-rating-input" id="starInputContainer">
               <span class="star-icon selected" onclick="setFormRating(1)">★</span>
               <span class="star-icon selected" onclick="setFormRating(2)">★</span>
@@ -1310,7 +1393,7 @@
             </div>
             <input type="text" id="reviewerNameInput" placeholder="Nama Anda (Contoh: Alex S.)" required>
             <textarea id="reviewerCommentInput" placeholder="Tulis pendapat kamu tentang minuman ini..." required></textarea>
-            <button type="submit" class="btn-submit-review">💬 Kirim Ulasan</button>
+            <button type="submit" class="btn-submit-review">${t.btnSubmitReview}</button>
           </form>
 
           <!-- DAFTAR KOMENTAR -->
@@ -1320,20 +1403,20 @@
         </div>
 
         <div class="m-pairing-card-v2">
-          <h5>SUGGESTED FOOD PAIRINGS</h5>
-          <p>🍽️️ ${escapeHtml(wine.pairing)}</p>
+          <h5>${t.pairingTitle}</h5>
+          <p>🍽️ ${escapeHtml(wine.pairing)}</p>
         </div>
 
         <div class="m-specs-grid-v2">
-          <div class="m-spec-card-v2"><span>ALCOHOL (ABV)</span><strong>${escapeHtml(wine.abv) || '-'}</strong></div>
-          <div class="m-spec-card-v2"><span>SUHU PENYAJIAN</span><strong>${escapeHtml(wine.servingTemp) || '-'}</strong></div>
-          <div class="m-spec-card-v2"><span>STATUS STOK</span><strong>${escapeHtml(wine.stockStatus) || 'Tersedia'}</strong></div>
+          <div class="m-spec-card-v2"><span>${t.labelAbv}</span><strong>${escapeHtml(wine.abv) || '-'}</strong></div>
+          <div class="m-spec-card-v2"><span>${t.labelServing}</span><strong>${escapeHtml(wine.servingTemp) || '-'}</strong></div>
+          <div class="m-spec-card-v2"><span>${t.labelStock}</span><strong>${escapeHtml(wine.stockStatus) || 'Tersedia'}</strong></div>
         </div>
 
         <div class="m-btn-group-v2">
-          <button class="m-btn-wa-v2" onclick="inquireWine('${escapeHtml(wine.name)}')">💬 WhatsApp Order / Inquire</button>
-          <button class="m-btn-audio-v2" id="btnAudioSpeak" onclick="toggleSpeech()">${audioBtnLabel}</button>
-          <button class="m-btn-pdf-v2" onclick="exportVintagePDF('${escapeHtml(wine.name)}')">📄 Download PDF</button>
+          <button class="m-btn-wa-v2" onclick="inquireWine('${escapeHtml(wine.name)}')">${t.btnWa}</button>
+          <button class="m-btn-audio-v2" id="btnAudioSpeak" onclick="toggleSpeech()">${t.btnAudio}</button>
+          <button class="m-btn-pdf-v2" onclick="exportVintagePDF('${escapeHtml(wine.name)}')">${t.btnPdf}</button>
         </div>
       `;
 
