@@ -106,7 +106,34 @@
     <div class="hero">
       <button class="btn-logout" onclick="handleLogout()">🔒 Logout</button>
       <h1>⚙️ Admin Dashboard - Retail Shop</h1>
-      <p>Management Beverages Inventory</p>
+      <p>Management Beverages Inventory & Moderasi Ulasan</p>
+    </div>
+
+    <!-- MODERASI KOMENTAR & RATING (FITUR BARU) -->
+    <div class="admin-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap: 1rem;">
+        <h2>💬 Moderasi Ulasan & Komentar Pelanggan</h2>
+        <div style="display:flex; gap: 1rem; align-items:center;">
+          <input type="text" id="reviewSearch" style="width:250px;" placeholder="Cari ulasan / pengulas..." oninput="renderAdminReviews()">
+          <button class="btn-secondary" onclick="loadAdminReviews()">🔄 Refresh Ulasan</button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Produk (Slug)</th>
+              <th>Pengulas</th>
+              <th>Rating</th>
+              <th>Komentar / Ulasan</th>
+              <th>Tanggal</th>
+              <th>Aksi Moderasi</th>
+            </tr>
+          </thead>
+          <tbody id="adminReviewTableBody"></tbody>
+        </table>
+      </div>
     </div>
 
     <!-- IMPORT EXCEL -->
@@ -226,7 +253,7 @@
             <input type="number" id="wineSweetness" min="0" max="100" value="20" placeholder="0 - 100">
           </div>
 
-          <!-- SECTION BARU: VISUAL, AROMA, PALATE SENSORI -->
+          <!-- SECTION: VISUAL, AROMA, PALATE SENSORI -->
           <div class="section-divider">🍷 SENSORY TASTING NOTES (VISUAL, AROMA, PALATE)</div>
 
           <div class="form-group full-width">
@@ -286,7 +313,7 @@
         <div style="display:flex; gap: 1rem; align-items:center; flex-wrap: wrap;">
           <input type="text" id="adminSearch" style="width:250px;" placeholder="Cari nama / wilayah..." oninput="renderAdminTable()">
           <button class="btn-success" onclick="exportDataToExcel()">📊 Export To Excel</button>
-          <button class="btn-danger" onclick="deleteAllWines()">🗑️ Hapus Semua</button>
+          <button class="btn-danger" onclick="deleteAllWines()">🗑️ Hapus Semua SKU</button>
         </div>
       </div>
 
@@ -328,6 +355,7 @@
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('adminPage').style.display = 'block';
         loadAdminData();
+        loadAdminReviews();
       } else {
         document.getElementById('loginOverlay').style.display = 'flex';
         document.getElementById('adminPage').style.display = 'none';
@@ -353,6 +381,69 @@
     function escapeHtml(str) {
       if (!str) return '';
       return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    /* ================= FITUR MODERASI REVIEWS & KOMENTAR ================= */
+    let adminReviews = [];
+
+    async function loadAdminReviews() {
+      try {
+        const { data, error } = await supabaseClient.from('reviews').select('*').order('created_at', { ascending: false });
+        if (!error && data) {
+          adminReviews = data;
+          renderAdminReviews();
+        } else {
+          adminReviews = [];
+          renderAdminReviews();
+        }
+      } catch (e) {
+        console.warn("Table reviews belum disiapkan di Supabase atau kosong.");
+      }
+    }
+
+    function renderAdminReviews() {
+      const tbody = document.getElementById('adminReviewTableBody');
+      const search = document.getElementById('reviewSearch').value.toLowerCase();
+      const filtered = adminReviews.filter(r => 
+        (r.user_name && r.user_name.toLowerCase().includes(search)) ||
+        (r.comment && r.comment.toLowerCase().includes(search)) ||
+        (r.wine_slug && r.wine_slug.toLowerCase().includes(search))
+      );
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#888; padding:2rem;">Belum ada ulasan / komentar pelanggan.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(r => {
+        const stars = '⭐'.repeat(r.rating || 5);
+        return `
+          <tr>
+            <td><strong style="color: #d8b255;">${escapeHtml(r.wine_slug)}</strong></td>
+            <td>${escapeHtml(r.user_name || r.userName)}</td>
+            <td>${stars} (${r.rating})</td>
+            <td><div style="max-width: 320px; font-style: italic;">"${escapeHtml(r.comment)}"</div></td>
+            <td>${escapeHtml(r.created_at || 'Baru saja')}</td>
+            <td>
+              <button class="btn-sm-del" onclick="deleteReview('${r.id}')">🗑️ Hapus Ulasan</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function deleteReview(id) {
+      if (!confirm('Apakah Anda yakin ingin MENGHAPUS komentar ini? Komentar yang tidak pantas akan terhapus secara permanen.')) return;
+
+      try {
+        const { error } = await supabaseClient.from('reviews').delete().eq('id', id);
+        if (error) throw error;
+
+        alert('Ulasan berhasil dihapus!');
+        loadAdminReviews();
+      } catch (err) {
+        alert('Gagal menghapus ulasan: ' + err.message);
+      }
     }
 
     let selectedFileForUpload = null;
@@ -395,7 +486,6 @@
       logBox.scrollTop = logBox.scrollHeight;
     }
 
-    /* FIX: IMPORT FOLDER DENGAN MIME DETECT & EXTENSION LENGKAP */
     async function importFolderImages() {
       const input = document.getElementById('batchFolderInput');
       const btn = document.getElementById('btnInjectFolder');
@@ -670,7 +760,6 @@
       }
     }
 
-    /* FIX: EXPORT EXCEL DENGAN KOLOM NOTES */
     function exportDataToExcel() {
       if (!adminWines || adminWines.length === 0) return alert("Tidak ada data katalog yang bisa di-export!");
 
@@ -710,7 +799,6 @@
       XLSX.writeFile(workbook, `Export_Katalog_Minuman_${new Date().toISOString().split('T')[0]}.xlsx`);
     }
 
-    /* FIX: DOWNLOAD TEMPLATE DENGAN KOLOM NOTES */
     function downloadTemplate() {
       const templateData = [{
         "FOTO": "",
@@ -748,7 +836,6 @@
       XLSX.writeFile(workbook, "Template_Import_Minuman.xlsx");
     }
 
-    /* FIX: IMPORT EXCEL DENGAN DETEKSI LENGKAP VARIASI NAMA KOLOM NOTES */
     async function importExcelFile() {
       const file = document.getElementById('excelFileInput').files[0];
       if (!file) return alert('Pilih file dulu!');
@@ -773,9 +860,7 @@
           visual: row["VISUAL"] || row.Visual || row.visual || '-',
           aroma: row["AROMA"] || row.Aroma || row.aroma || '-',
           palate: row["PALATE"] || row.Palate || row.palate || '-',
-          
           notes: row["NOTES"] || row["TASTING NOTES"] || row["GENERAL NOTES"] || row["CATATAN"] || row.Notes || row.notes || '-',
-          
           varietal: row["VARIETAL"] || row.Varietal || row.varietal || '-',
           abv: row["ABV"] || row.ABV || row.abv || '-',
           servingTemp: row["SUHU PENYAJIAN"] || row.ServingTemp || row.servingTemp || '-',
