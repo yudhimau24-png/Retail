@@ -346,7 +346,7 @@
       box-shadow: 0 0 12px rgba(243, 208, 130, 0.5);
     }
 
-    /* ELEMEN FUN FACT & SOMMELIER WARNING */
+    /* ELEMEN FUN FACT & SOMMELIER WARNING (DYNAMICT 24h ROTATION) */
     .fun-fact-card {
       margin-top: 18px;
       background: linear-gradient(135deg, rgba(255, 77, 77, 0.1) 0%, rgba(243, 208, 130, 0.08) 100%);
@@ -697,19 +697,53 @@
     
     const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whisky", "Cognac", "Soju", "Sake", "Traditional and Grain", "Baijiu", "Alcopops"];
 
-    /* GENERASI FUN FACT SOMMELIER SESUAI NAMA PRODUK */
-    function getFunFact(wineName) {
-      const name = wineName ? wineName.toLowerCase() : '';
-      if (name.includes('19 crimes')) {
-        return "🚨 <strong>Sommelier's Secret:</strong> Dulu 19 jenis kejahatan di Inggris bisa bikin orang dibuang ke Australia. Tapi tenang, ketagihan nikmatnya wine ini 100% legal kok! 😉🍷";
-      } else if (name.includes('tequila') || name.includes('1800')) {
-        return "⚡ <strong>Sommelier's Warning:</strong> Tequila ini bisa mendadak bikin Anda jago bahasa Spanyol dan tiba-tiba pengen joget pas midnight! 💃🇲🇽";
-      } else if (name.includes('whisky') || name.includes('whiskey')) {
-        return "💼 <strong>Gentleman Note:</strong> Minum 1 sloki berasa jadi Peaky Blinders, minum 3 sloki berasa pengen borong saham. 🥃🎩";
-      } else if (name.includes('vodka')) {
-        return "❄️ <strong>Cold Fact:</strong> Diminum dingin lebih mantap. Bisa menghilangkan stres sejenak dari dinamika dunia kerja! 🧊🍸";
+    /* KOLEKSI FUN FACT LENGKAP */
+    const funFactPools = {
+      '19 crimes': [
+        "🚨 <strong>Daily Quote:</strong> Ketagihan nikmatnya 19 Crimes 100% legal kok, ga bakal dibuang ke Australia! 😉🍷",
+        "📜 <strong>History Fact:</strong> Karakter di label botol ini adalah narapidana nyata abad ke-18. Angkat gelas untuk para 'rebel'! 🥂",
+        "🍷 <strong>Sommelier Tip:</strong> Rasa red blend ini makin bold kalau ditemenin steak daging panggang empuk.",
+        "🤫 <strong>Secret Note:</strong> Coba scan label botolnya pakai aplikasi AR, fotonya bisa ngomong sendiri lho!"
+      ],
+      'tequila': [
+        "⚡ <strong>Sommelier Warning:</strong> Tequila ini bisa bikin kamu mendadak lancar bahasa Spanyol pas midnight! 💃🇲🇽",
+        "🌵 <strong>Agave Fact:</strong> Butuh waktu 8-12 tahun buat panen tanaman Blue Agave terbaik demi botol ini.",
+        "🍹 <strong>Mixologist Tip:</strong> Bikin Margarita pakai 1800 Reposado tingkat kelezatannya naik 200%!",
+        "🧊 <strong>Chill Note:</strong> Diminum straight on-the-rocks di gelas dingin adalah cara terbaik menikmati malam."
+      ],
+      'general': [
+        "✨ <strong>Pro Tip:</strong> 1 gelas bikin santai, 2 gelas bikin puitis, 3 gelas... mending kunci HP biar ga typo chat mantan! 🤫🍷",
+        "🥂 <strong>Sommelier Fact:</strong> Pegang tangkai gelas wine (stem) ya, bukan badannya, biar suhu wine tetep terjaga sempurna!",
+        "💡 <strong>Daily Mood:</strong> Apapun masalah harimu, tuangkan sedikit kegembiraan ke dalam gelas malam ini.",
+        "🍽️ <strong>Pairing Hack:</strong> Minuman yang tepat selalu bikin rasa makanan di piringmu 2x lebih lezat.",
+        "🌙 <strong>Night Note:</strong> Kesuksesan hari ini patut dirayakan dengan tegukan yang elegan."
+      ]
+    };
+
+    /* FUNGSI ROTASI OTOMATIS BERGANTI SETIAP 24 JAM (JAM 00:00) & UNIK PER PRODUK */
+    function getFunFact(wine) {
+      if (!wine || !wine.name) return "";
+
+      // Seed Hari (Bertambah +1 setiap 24 jam)
+      const dateSeed = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+
+      // Hash Unik Berdasarkan Slug / Nama Produk
+      let productHash = 0;
+      const slug = wine.slug || wine.name;
+      for (let i = 0; i < slug.length; i++) {
+        productHash += slug.charCodeAt(i);
       }
-      return "✨ <strong>Pro Tip:</strong> 1 gelas bikin santai, 2 gelas bikin puitis, 3 gelas... mending kunci HP biar nggak salah kirim chat ke mantan! 🤫🍷";
+
+      // Kategori Pool Teks
+      const name = wine.name.toLowerCase();
+      let pool = funFactPools['general'];
+      if (name.includes('19 crimes')) pool = funFactPools['19 crimes'];
+      else if (name.includes('tequila') || name.includes('1800')) pool = funFactPools['tequila'];
+
+      // Hitung Pilihan
+      const chosenIndex = Math.abs(productHash + dateSeed) % pool.length;
+
+      return pool[chosenIndex];
     }
 
     async function fetchWinesFromSupabase() {
@@ -737,7 +771,7 @@
           }));
           renderWines();
 
-          /* CEK URL APABILA DIBUKA DENGAN QUERY PARAMETER (?product=slug) */
+          /* CEK QUERY PARAMETER URL (?product=slug) */
           const urlParams = new URLSearchParams(window.location.search);
           const productSlug = urlParams.get('product');
           if (productSlug) {
@@ -841,7 +875,7 @@
       if (!wine) return;
 
       const videoSrc = wine.videoUrl || DEFAULT_PRODUCT_VIDEO;
-      const funFactText = getFunFact(wine.name);
+      const funFactText = getFunFact(wine);
 
       document.getElementById('vintageContent').innerHTML = `
         <header class="m-header-v2">
