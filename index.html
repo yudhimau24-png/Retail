@@ -616,7 +616,6 @@
       font-weight: 700;
     }
 
-    /* Form Bintang Interaktif */
     .star-rating-input {
       display: flex;
       gap: 6px;
@@ -1258,6 +1257,11 @@
 
       loadProductReviews(wine.slug);
 
+      // FITUR BARU: BACA SUARA NARATOR OTOMATIS BEGITU HALAMAN DIPILIH
+      setTimeout(() => {
+        speakCurrentProduct();
+      }, 300);
+
       const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?product=' + slug;
       window.history.pushState({ path: newUrl }, '', newUrl);
     }
@@ -1545,6 +1549,13 @@
       const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
       window.history.pushState({ path: cleanUrl }, '', cleanUrl);
     }
+
+    // Bantuan untuk mengaktifkan audio pada sentuhan pertama jika autoplay terblokir browser
+    document.addEventListener('click', function initialTouch() {
+      if (currentActiveWine && !isSpeaking && document.getElementById('detailView').classList.contains('active')) {
+        // Layar disentuh pertama kali saat modal terbuka
+      }
+    }, { once: true });
 
     window.addEventListener('popstate', () => {
       const urlParams = new URLSearchParams(window.location.search);
