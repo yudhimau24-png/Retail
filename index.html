@@ -346,7 +346,7 @@
       box-shadow: 0 0 12px rgba(243, 208, 130, 0.5);
     }
 
-    /* ELEMEN FUN FACT & SOMMELIER WARNING (DYNAMICT 24h ROTATION) */
+    /* ELEMEN FUN FACT & SOMMELIER WARNING */
     .fun-fact-card {
       margin-top: 18px;
       background: linear-gradient(135deg, rgba(255, 77, 77, 0.1) 0%, rgba(243, 208, 130, 0.08) 100%);
@@ -656,7 +656,7 @@
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eW93dmppYW54aW9icHplam5jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4ODkyMjUyOCwiZXhwIjoyMTA0NDk4NTI4fQ.-aeTfpvoGy3ICP2LMxa0vGfYggXlldnj5vtouzRm7bg";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    /* DEFAULT MOTION VIDEO (JIKA BELUM ADA URL VIDEO SPESIFIK DI DATABASE) */
+    /* CDN VIDEO SAMPLE TERUJI BEBAS BLOKIR CORS */
     const DEFAULT_PRODUCT_VIDEO = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
 
     /* Background Canvas Particle */
@@ -724,23 +724,19 @@
     function getFunFact(wine) {
       if (!wine || !wine.name) return "";
 
-      // Seed Hari (Bertambah +1 setiap 24 jam)
       const dateSeed = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
 
-      // Hash Unik Berdasarkan Slug / Nama Produk
       let productHash = 0;
       const slug = wine.slug || wine.name;
       for (let i = 0; i < slug.length; i++) {
         productHash += slug.charCodeAt(i);
       }
 
-      // Kategori Pool Teks
       const name = wine.name.toLowerCase();
       let pool = funFactPools['general'];
       if (name.includes('19 crimes')) pool = funFactPools['19 crimes'];
       else if (name.includes('tequila') || name.includes('1800')) pool = funFactPools['tequila'];
 
-      // Hitung Pilihan
       const chosenIndex = Math.abs(productHash + dateSeed) % pool.length;
 
       return pool[chosenIndex];
@@ -771,7 +767,6 @@
           }));
           renderWines();
 
-          /* CEK QUERY PARAMETER URL (?product=slug) */
           const urlParams = new URLSearchParams(window.location.search);
           const productSlug = urlParams.get('product');
           if (productSlug) {
@@ -890,9 +885,7 @@
             
             <div class="m-media-box" id="mediaBox">
               <img src="${wine.imageUrl}" id="mediaImage" class="m-bottle-img-v2" style="display: block;">
-              <video id="mediaVideo" class="m-bottle-video" loop muted playsinline style="display: none;">
-                <source src="${videoSrc}" type="video/mp4">
-              </video>
+              <video id="mediaVideo" class="m-bottle-video" src="${videoSrc}" loop muted playsinline style="display: none;" preload="auto"></video>
             </div>
 
             <div class="media-tab-group">
@@ -972,6 +965,7 @@
       window.history.pushState({ path: newUrl }, '', newUrl);
     }
 
+    /* FUNGSI SWITCH MEDIA YANG SUDAH DIPERBAIKI TOTAL */
     function switchMedia(type) {
       const img = document.getElementById('mediaImage');
       const video = document.getElementById('mediaVideo');
@@ -980,7 +974,18 @@
       if (type === 'video') {
         img.style.display = 'none';
         video.style.display = 'block';
-        video.play();
+        
+        video.load();
+        const playPromise = video.play();
+
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.warn("Autoplay terhalang izin browser:", error);
+            video.muted = true;
+            video.play();
+          });
+        }
+
         btns[0].classList.remove('active');
         btns[1].classList.add('active');
       } else {
