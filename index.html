@@ -1344,6 +1344,62 @@
       }
     };
 
+    /* PENERJEMAH OTOMATIS TEKS SENSORI DINAMIS DATABASE */
+    function getTranslatedSensory(text, lang) {
+      if (!text || text === '-') return '-';
+      if (lang === 'en') return text;
+
+      const lower = text.toLowerCase().trim();
+
+      // Mappings Visual
+      if (lower.includes('crystal clear') || lower.includes('bright clarity')) {
+        if (lang === 'fr') return "Limpide et cristal, clarté brillante";
+        if (lang === 'id') return "Sangat jernih, kejernihan berkilau";
+      }
+      if (lower.includes('deep ruby red') || lower.includes('garnet rim')) {
+        if (lang === 'fr') return "Rouge rubis profond, reflet grenat";
+        if (lang === 'id') return "Merah rubi pekat, kilau garnet";
+      }
+      if (lower.includes('golden amber') || lower.includes('warm glow')) {
+        if (lang === 'fr') return "Ambre doré avec un éclat chaleureux";
+        if (lang === 'id') return "Kuning amber keemasan dengan pendaran hangat";
+      }
+
+      // Mappings Aroma
+      if (lower.includes('clean, neutral, subtle rice grain sweetness')) {
+        if (lang === 'fr') return "Propre, neutre, douceur subtile de grain de riz";
+        if (lang === 'id') return "Bersih, netral, keharuman manis bulir beras yang lembut";
+      }
+      if (lower.includes('blackcurrant') || lower.includes('violet') || lower.includes('cedar')) {
+        if (lang === 'fr') return "Cassis, violette, cèdre, bouquet d'épices";
+        if (lang === 'id') return "Aroma blackcurrant, bunga violet, kayu cedar, dan rempah";
+      }
+
+      // Mappings Palate
+      if (lower.includes('smooth and crisp, light sweetness, clean subtle finish')) {
+        if (lang === 'fr') return "Doux et frais, légère douceur, finale propre et subtile";
+        if (lang === 'id') return "Halus dan segar, rasa manis ringan, sentuhan akhir bersih";
+      }
+
+      // Mappings Notes
+      if (lower.includes('crafted from authentic 100% blue agave')) {
+        if (lang === 'fr') return "Fabriqué à partir d'authentique 100% Agave Bleu du Mexique, offrant une pureté herbacée fraîche et la douceur du patrimoine mexicain.";
+        if (lang === 'id') return "Dibuat dari 100% Blue Agave asli Meksiko, menghadirkan kemurnian herba yang segar dan kehalusan warisan alkohol tradisional Meksiko.";
+      }
+
+      // Mappings Storage Note
+      if (lower.includes('store upright, cool, dark') || lower.includes('store upright, cool dark place')) {
+        if (lang === 'fr') return "Conserver debout, dans un endroit frais et sombre";
+        if (lang === 'id') return "Simpan berdiri tegak, di tempat sejuk dan gelap";
+      }
+      if (lower.includes('store horizontal, cool dark')) {
+        if (lang === 'fr') return "Conserver horizontalement, au frais et à l'abri de la lumière";
+        if (lang === 'id') return "Simpan mendatar/miring, di tempat sejuk dan gelap";
+      }
+
+      return text;
+    }
+
     /* Background Canvas Particle */
     const canvas = document.getElementById('bgCanvas');
     const ctx = canvas.getContext('2d');
@@ -1368,25 +1424,6 @@
     }
     drawInteractiveBG();
 
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-    }
-
-    let localWines = [];
-    let currentFilteredWines = [];
-    let currentMainCategory = null; 
-    let currentSubCategory = null; 
-    let currentShopCollection = null; 
-    let currentSortOrder = 'ASC';
-    let currentActiveWine = null;
-    let isSpeaking = false;
-    let localReviewsStore = {}; 
-    let selectedRatingStar = 5;
-
-    const spiritTypes = ["Vodka", "Gin", "Rum", "Tequila", "Liqueur", "Whisky", "Cognac", "Soju", "Sake", "Traditional and Grain", "Baijiu", "Alcopops"];
-
-    /* FUNGSI PERUBAHAN BAHASA GLOBAL */
     function changeLanguage(langCode) {
       currentLanguage = langCode;
       const t = i18n[currentLanguage];
@@ -1403,7 +1440,6 @@
       }
     }
 
-    /* KOLEKSI FUN FACT LENGKAP */
     const funFactPools = {
       '19 crimes': [
         "🚨 Daily Quote: Ketagihan nikmatnya 19 Crimes seratus persen legal kok, ga bakal dibuang ke Australia!",
@@ -1577,6 +1613,13 @@
       const funFactText = getFunFact(wine);
       const t = i18n[currentLanguage];
 
+      // Terjemahkan Teks Sensori sesuai Bahasa Terpilih
+      const visualText = getTranslatedSensory(wine.visual, currentLanguage);
+      const aromaText = getTranslatedSensory(wine.aroma, currentLanguage);
+      const palateText = getTranslatedSensory(wine.palate, currentLanguage);
+      const notesText = getTranslatedSensory(wine.notes, currentLanguage);
+      const storageText = getTranslatedSensory(wine.storageNote, currentLanguage);
+
       document.getElementById('vintageContent').innerHTML = `
         <header class="m-header-v2">
           <h2>${t.headerTitle}</h2>
@@ -1631,11 +1674,11 @@
             </div>
 
             <div class="m-sensory-grid-v2">
-              <div class="m-sensory-item-v2"><strong>👁️ ${t.labelVisual}</strong><span>${escapeHtml(wine.visual)}</span></div>
-              <div class="m-sensory-item-v2"><strong>🍇 ${t.labelAroma}</strong><span>${escapeHtml(wine.aroma)}</span></div>
-              <div class="m-sensory-item-v2"><strong>🍷 ${t.labelPalate}</strong><span>${escapeHtml(wine.palate)}</span></div>
-              <div class="m-sensory-item-v2"><strong>📝 ${t.labelNotes}</strong><span>${escapeHtml(wine.notes)}</span></div>
-              <div class="m-sensory-item-v2"><strong>🍾 ${t.labelStorage}</strong><span>${escapeHtml(wine.storageNote)}</span></div>
+              <div class="m-sensory-item-v2"><strong>👁️ ${t.labelVisual}</strong><span>${escapeHtml(visualText)}</span></div>
+              <div class="m-sensory-item-v2"><strong>🍇 ${t.labelAroma}</strong><span>${escapeHtml(aromaText)}</span></div>
+              <div class="m-sensory-item-v2"><strong>🍷 ${t.labelPalate}</strong><span>${escapeHtml(palateText)}</span></div>
+              <div class="m-sensory-item-v2"><strong>📝 ${t.labelNotes}</strong><span>${escapeHtml(notesText)}</span></div>
+              <div class="m-sensory-item-v2"><strong>🍾 ${t.labelStorage}</strong><span>${escapeHtml(storageText)}</span></div>
             </div>
 
             <div class="emoji-reaction-box">
@@ -1700,10 +1743,8 @@
 
       loadProductReviews(wine.slug);
 
-      // PARTIKEL DEBU EMAS
       startGoldDustParticles();
 
-      // BACA SUARA OTOMATIS SESUAI BAHASA TERPILIH
       setTimeout(() => {
         speakCurrentProduct();
       }, 250);
@@ -1712,7 +1753,6 @@
       window.history.pushState({ path: newUrl }, '', newUrl);
     }
 
-    /* ================= FITUR COMPREHENSIVE BEVERAGES EXPERT AI ================= */
     function initAiChatGreeting() {
       const history = document.getElementById('aiChatHistory');
       const chips = document.getElementById('aiChipsContainer');
@@ -1789,7 +1829,6 @@
       const lower = userText.toLowerCase();
       let response = "";
 
-      // 1. PARTY CALCULATOR LOGIC
       const partyMatch = lower.match(/(\d+)\s*(orang|people|tamu|guests|personnes)/);
       if (partyMatch || lower.includes('party') || lower.includes('pesta') || lower.includes('fête') || lower.includes('acara')) {
         const guestCount = partyMatch ? parseInt(partyMatch[1]) : 15;
@@ -1820,7 +1859,6 @@
             `• Suggested Catalog Items: <em>${recNames}</em>.`;
         }
       } 
-      // 2. MIXER / COCKTAIL RECIPES
       else if (lower.includes('mixer') || lower.includes('cocktail') || lower.includes('campur') || lower.includes('tequila') || lower.includes('vodka') || lower.includes('whiskey') || lower.includes('gin') || lower.includes('rum')) {
         if (currentLanguage === 'fr') {
           response = `🍸 <strong>Guide des Cocktails & Mixeurs Kava</strong>:<br>` +
@@ -1842,7 +1880,6 @@
             `• <strong>Red Wine</strong>: Best enjoyed neat at 16-18°C alongside grilled steaks.`;
         }
       }
-      // 3. DIRECT DATABASE SEARCH FOR PRODUCT
       else {
         const matched = localWines.filter(w => (w.name && w.name.toLowerCase().includes(lower)) || (w.type && w.type.toLowerCase().includes(lower)) || (w.varietal && w.varietal.toLowerCase().includes(lower)));
         
@@ -2072,6 +2109,12 @@
       const wine = currentActiveWine;
       const cleanFunFact = getFunFact(wine).replace(/<[^>]*>?/gm, '');
 
+      // Terjemahkan Teks Sensori sesuai Bahasa Terpilih
+      const visualText = getTranslatedSensory(wine.visual, currentLanguage);
+      const aromaText = getTranslatedSensory(wine.aroma, currentLanguage);
+      const palateText = getTranslatedSensory(wine.palate, currentLanguage);
+      const notesText = getTranslatedSensory(wine.notes, currentLanguage);
+
       let narrativeText = "";
 
       if (currentLanguage === 'fr') {
@@ -2080,9 +2123,9 @@
           ${wine.name}.
           Origine: ${wine.region || 'Région Inconnue'}, ${wine.type || 'Boisson'}.
           Profil de dégustation: Corps ${wine.bodyVal / 10} sur 10. Tannin ${wine.tanninVal / 10} sur 10. Acidité ${wine.acidityVal / 10} sur 10. Douceur ${wine.sweetnessVal / 10} sur 10.
-          Apparence visuelle: ${wine.visual}.
-          Profil d'arôme: ${wine.aroma}.
-          Notes de dégustation: ${wine.notes}.
+          Apparence visuelle: ${visualText}.
+          Profil d'arôme: ${aromaText}.
+          Notes de dégustation: ${notesText}.
           Accord mets et boisson: ${wine.pairing}.
           ${cleanFunFact}
         `;
@@ -2092,9 +2135,9 @@
           ${wine.name}.
           Asal: ${wine.region || 'Wilayah Tidak Diketahui'}, ${wine.type || 'Minuman'}.
           Skor Karakter: Body ${wine.bodyVal / 10}, Tannin ${wine.tanninVal / 10}, Keasaman ${wine.acidityVal / 10}, Kemanisan ${wine.sweetnessVal / 10}.
-          Tampilan Visual: ${wine.visual}.
-          Aroma: ${wine.aroma}.
-          Karakter Rasa: ${wine.notes}.
+          Tampilan Visual: ${visualText}.
+          Aroma: ${aromaText}.
+          Karakter Rasa: ${notesText}.
           Saran Pasangan Makanan: ${wine.pairing}.
           ${cleanFunFact}
         `;
@@ -2104,9 +2147,9 @@
           ${wine.name}.
           Originating from ${wine.region || 'Unknown Region'}, classified as ${wine.type || 'Beverage'}.
           Flavor Characteristics: Body ${wine.bodyVal / 10} out of 10. Tannin ${wine.tanninVal / 10} out of 10. Acidity ${wine.acidityVal / 10} out of 10. Sweetness ${wine.sweetnessVal / 10} out of 10.
-          Visual Appearance: ${wine.visual}.
-          Aroma Profile: ${wine.aroma}.
-          Tasting Notes: ${wine.notes}.
+          Visual Appearance: ${visualText}.
+          Aroma Profile: ${aromaText}.
+          Tasting Notes: ${notesText}.
           Suggested Food Pairing: ${wine.pairing}.
           ${cleanFunFact}
         `;
