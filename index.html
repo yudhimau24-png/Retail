@@ -255,7 +255,7 @@
     footer strong { color: var(--gold-primary); }
 
     /* ========================================================= */
-    /* FLOATING AI SOMMELIER WIDGET                              */
+    /* INTERACTIVE FLOATING AI SOMMELIER CHATBOT                 */
     /* ========================================================= */
     .ai-float-btn {
       position: fixed;
@@ -296,7 +296,7 @@
       z-index: 10000;
       justify-content: center;
       align-items: center;
-      padding: 1.5rem;
+      padding: 1rem;
     }
     .ai-modal-overlay.active {
       display: flex;
@@ -308,93 +308,133 @@
       border: 1px solid var(--gold-primary);
       border-radius: 26px;
       width: 100%;
-      max-width: 650px;
-      padding: 30px;
+      max-width: 620px;
+      height: 85vh;
+      max-height: 720px;
+      padding: 24px;
       box-shadow: 0 25px 70px rgba(0,0,0,0.95), 0 0 35px rgba(243, 208, 130, 0.25);
       position: relative;
-      max-height: 90vh;
-      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
     }
 
     .ai-card h3 {
       font-family: 'Cinzel Decorative', serif;
       color: var(--gold-primary);
-      font-size: 1.5rem;
+      font-size: 1.35rem;
       text-align: center;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       letter-spacing: 2px;
     }
 
     .ai-card p.subtitle {
       text-align: center;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: #a1a1aa;
-      margin-bottom: 22px;
+      margin-bottom: 14px;
     }
 
-    .ai-presets-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-bottom: 20px;
+    /* CHAT MESSAGES AREA */
+    .ai-chat-history {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: rgba(10, 5, 8, 0.7);
+      border: 1px solid rgba(243, 208, 130, 0.18);
+      border-radius: 18px;
+      margin-bottom: 12px;
     }
-    @media (max-width: 500px) { .ai-presets-grid { grid-template-columns: 1fr; } }
+    .ai-chat-history::-webkit-scrollbar { width: 5px; }
+    .ai-chat-history::-webkit-scrollbar-thumb { background: var(--gold-secondary); border-radius: 3px; }
 
-    .ai-btn-preset {
-      background: rgba(255, 255, 255, 0.04);
+    .chat-bubble {
+      max-width: 82%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      animation: fadeIn 0.25s ease;
+    }
+    .chat-bubble.ai {
+      align-self: flex-start;
+      background: rgba(243, 208, 130, 0.12);
+      border: 1px solid rgba(243, 208, 130, 0.3);
+      color: #f3f4f6;
+      border-bottom-left-radius: 2px;
+    }
+    .chat-bubble.user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-secondary) 100%);
+      color: #000;
+      font-weight: 700;
+      border-bottom-right-radius: 2px;
+    }
+
+    .ai-quick-chips {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+    .ai-quick-chips::-webkit-scrollbar { height: 3px; }
+    .ai-quick-chips::-webkit-scrollbar-thumb { background: var(--gold-dark); }
+
+    .chip-btn {
+      white-space: nowrap;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(243, 208, 130, 0.25);
+      color: var(--gold-primary);
+      padding: 6px 12px;
+      border-radius: 18px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .chip-btn:hover {
+      background: var(--gold-primary);
+      color: #000;
+    }
+
+    .ai-input-bar {
+      display: flex;
+      gap: 8px;
+    }
+    .ai-input-bar input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.06);
       border: 1px solid rgba(243, 208, 130, 0.3);
       border-radius: 14px;
-      padding: 12px 14px;
+      padding: 10px 14px;
       color: #fff;
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-align: left;
-      cursor: pointer;
-      transition: all 0.25s;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      font-size: 0.82rem;
+      outline: none;
     }
-    .ai-btn-preset:hover {
-      background: rgba(243, 208, 130, 0.18);
+    .ai-input-bar input:focus {
       border-color: var(--gold-primary);
+      box-shadow: 0 0 12px rgba(243, 208, 130, 0.25);
+    }
+    .btn-ai-send {
+      background: var(--gold-primary);
+      color: #000;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-ai-send:hover {
+      background: var(--gold-secondary);
       transform: translateY(-2px);
     }
 
-    .ai-response-box {
-      background: rgba(10, 5, 8, 0.85);
-      border: 1px solid rgba(243, 208, 130, 0.25);
-      border-radius: 16px;
-      padding: 18px;
-      min-height: 140px;
-      font-size: 0.85rem;
-      line-height: 1.55;
-      color: #e4e4e7;
-      margin-bottom: 18px;
-    }
-
-    .ai-party-calc {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 15px;
-      background: rgba(255, 255, 255, 0.03);
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .ai-party-calc input {
-      width: 80px;
-      background: rgba(0, 0, 0, 0.6);
-      border: 1px solid var(--gold-primary);
-      border-radius: 8px;
-      padding: 6px 10px;
-      color: #fff;
-      font-weight: 700;
-      text-align: center;
-    }
-
-    /* MODAL SOMMELIER */
+    /* MODAL SOMMELIER DETAIL */
     .fullpage-detail { display: none; position: fixed; inset: 0; background: rgba(3, 1, 2, 0.94); z-index: 9999; overflow-y: auto; padding: 2.5rem 1rem; backdrop-filter: blur(20px); }
     .fullpage-detail.active { display: block; animation: fadeIn 0.35s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: scale(0.97) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
@@ -661,7 +701,7 @@
       color: #ff4d4d;
     }
 
-    /* SPECS GRID (ABV, TEMP, STOK) */
+    /* SPECS GRID */
     .m-specs-grid-v2 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 22px; }
     .m-spec-card-v2 {
       background: rgba(243, 208, 130, 0.04);
@@ -687,7 +727,7 @@
     .m-pairing-card-v2 h5 { font-family: 'Cinzel', serif; font-size: 0.85rem; color: var(--gold-primary); letter-spacing: 2px; margin-bottom: 6px; font-weight: 700; }
     .m-pairing-card-v2 p { font-size: 0.85rem; color: #f3f4f6; font-style: italic; }
 
-    /* BUTTON ACTION GROUP DENGAN AUDIO VOICE READER */
+    /* BUTTON ACTION GROUP */
     .m-btn-group-v2 { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
     .m-btn-wa-v2 {
       flex: 2;
@@ -848,40 +888,38 @@
     </footer>
   </div>
 
-  <!-- FLOATING AI SOMMELIER BUTTON -->
+  <!-- FLOATING INTERACTIVE AI SOMMELIER BUTTON -->
   <button class="ai-float-btn" onclick="openAiModal()">
-    🤖 <span>AI Sommelier Assistant</span>
+    🤖 <span>Ask Kava AI Sommelier</span>
   </button>
 
-  <!-- MODAL KAVA AI SOMMELIER -->
+  <!-- INTERACTIVE CHAT AI SOMMELIER MODAL -->
   <div id="aiSommelierModal" class="ai-modal-overlay">
     <div class="ai-card">
       <button class="m-btn-close-v2" onclick="closeAiModal()">✕</button>
       <h3>🤖 KAVA AI SOMMELIER</h3>
-      <p class="subtitle">Virtual Assistant for Cocktail Mixers, Vibe Matching, & Party Planning</p>
+      <p class="subtitle">Interactive Assistant for Mixers, Party Recommendations, & Product Matcher</p>
 
-      <div class="ai-party-calc">
-        <span style="font-size: 0.8rem; color:#d8b255; font-weight:700;">🎉 Party Bottle Calculator:</span>
-        <input type="number" id="aiGuestCount" value="10" min="1" max="500">
-        <span style="font-size: 0.78rem; color:#bbb;">Tamu</span>
-        <button class="btn-submit-review" onclick="askAiSommelier('party')">Hitung SKU</button>
+      <!-- CHAT MESSAGES HISTORY CONTAINER -->
+      <div class="ai-chat-history" id="aiChatHistory">
+        <div class="chat-bubble ai">
+          Welcome! I am your <strong>Kava AI Sommelier Assistant</strong>. How can I assist your tasting journey today? Feel free to ask about mixers, party Planning, budget recommendations, or special occasions! 🍷✨
+        </div>
       </div>
 
-      <div class="ai-presets-grid">
-        <button class="ai-btn-preset" onclick="askAiSommelier('mixer')">🍹 Mixers & Cocktail Guide</button>
-        <button class="ai-btn-preset" onclick="askAiSommelier('mood_chill')">🍷 Vibe: Chill & Relaxing</button>
-        <button class="ai-btn-preset" onclick="askAiSommelier('mood_party')">🔥 Vibe: Wild Night Party</button>
-        <button class="ai-btn-preset" onclick="askAiSommelier('gift')">🎁 Luxury Gift & Special Occasion</button>
+      <!-- QUICK SUGGESTION CHIPS -->
+      <div class="ai-quick-chips">
+        <button class="chip-btn" onclick="handleChipClick('Cocktail Mixers Guide')">🍸 Best Mixers Guide</button>
+        <button class="chip-btn" onclick="handleChipClick('Party Bottling for 15 People')">🎉 Party for 15 People</button>
+        <button class="chip-btn" onclick="handleChipClick('Luxury Special Gift')">🎁 Luxury Gift Recommendation</button>
+        <button class="chip-btn" onclick="handleChipClick('Chill Evening Wine')">🍷 Relaxing Evening Wine</button>
       </div>
 
-      <div class="ai-response-box" id="aiResponseText">
-        Halo! Saya **AI Sommelier Kava**. Pilih salah satu opsi di atas atau hitung kebutuhan party botol kamu! 🍷✨
-      </div>
-
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <button class="btn-secondary" onclick="speakAiResponse()">🔊 Dengarkan AI (Voice)</button>
-        <button class="btn-gold" onclick="closeAiModal()">Selesai & Jelajah Katalog</button>
-      </div>
+      <!-- INPUT BAR FOR CUSTOM USER MESSAGES -->
+      <form class="ai-input-bar" onsubmit="handleUserAiSubmit(event)">
+        <input type="text" id="aiChatInput" placeholder="Ask anything (e.g. Tequila mixers, party 20 people, wine under 500k)..." autocomplete="off">
+        <button type="submit" class="btn-ai-send">Send 🚀</button>
+      </form>
     </div>
   </div>
 
@@ -1230,7 +1268,7 @@
 
         <div class="m-pairing-card-v2">
           <h5>SUGGESTED FOOD PAIRINGS</h5>
-          <p>🍽️ ${escapeHtml(wine.pairing)}</p>
+          <p>🍽️️ ${escapeHtml(wine.pairing)}</p>
         </div>
 
         <div class="m-specs-grid-v2">
@@ -1262,7 +1300,7 @@
       window.history.pushState({ path: newUrl }, '', newUrl);
     }
 
-    /* ================= FITUR KAVA AI SOMMELIER ENGINE ================= */
+    /* ================= FITUR INTERACTIVE KAVA AI SOMMELIER CHAT ================= */
     function openAiModal() {
       document.getElementById('aiSommelierModal').classList.add('active');
     }
@@ -1271,66 +1309,102 @@
       document.getElementById('aiSommelierModal').classList.remove('active');
     }
 
-    let lastAiResponseText = "";
-
-    function askAiSommelier(type) {
-      const responseBox = document.getElementById('aiResponseText');
-      let text = "";
-
-      if (type === 'mixer') {
-        text = `
-          🍹 **COCKTAIL & MIXER GUIDE**:
-          • **Tequila (1800 Reposado)**: Mix dengan Grapefruit Soda (Paloma) atau Fresh Lime + Triple Sec (Margarita).
-          • **Whiskey / Bourbon**: Enak diminum Straight On-The-Rocks, atau mix dengan Ginger Ale + Dash Bitters.
-          • **Vodka / Gin**: Pair dengan Tonic Water + Slice Lime, atau Cranberry Juice untuk rasa fruity menyegarkan.
-          • **Red Wine**: Paling nikmat dinikmati murni di suhu 16-18°C bersama Dark Chocolate atau Steak.
-        `;
-      } else if (type === 'mood_chill') {
-        text = `
-          🍷 **VIBE: CHILL & RELAXING EVENING**:
-          Rekomendasi terbaik untuk bersantai selepas kerja:
-          1. **19 Crimes Red Blend / Shiraz**: Bikin suasana malam tenang & penuh obrolan hangat.
-          2. **1924 Bourbon Barrel Cabernet**: Rasa manis vanila & kayu oak yang lembut di tenggorokan.
-        `;
-      } else if (type === 'mood_party') {
-        text = `
-          🔥 **VIBE: WILD NIGHT & PARTY MODE**:
-          Pilihan terbaik untuk party rame-rame:
-          1. **1800 Reposado Tequila**: Wajib untuk Tequila Shots bareng teman-teman!
-          2. **Import Spirits / Soju**: Bikin atmosfer selebrasi semakin meriah.
-        `;
-      } else if (type === 'gift') {
-        text = `
-          🎁 **SPECIAL OCCASION & EXECUTIVE GIFT**:
-          Pilihan eksklusif dengan botol mewah untuk hadiah / ulang tahun:
-          • **1924 Bourbon Barrel Aged Series**: Tampilan botol premium & vintage vintage yang sangat bergengsi.
-          • **1800 Reposado Tequila**: Simbol kemewahan 100% Blue Agave khas Meksiko.
-        `;
-      } else if (type === 'party') {
-        const guests = parseInt(document.getElementById('aiGuestCount').value) || 10;
-        const estimatedBottles = Math.ceil(guests / 3.5); 
-        text = `
-          🎉 **PARTY CALCULATOR FOR ${guests} TAMU**:
-          • **Estimasi Kebutuhan**: Minimal **${estimatedBottles} Botol** (Ukuran 750ml).
-          • **Saran Kombinasi**: 
-            - ${Math.ceil(estimatedBottles * 0.6)} Botol Spirits/Tequila (Untuk Shots & Cocktails)
-            - ${Math.floor(estimatedBottles * 0.4)} Botol Red Wine / Chilled Wine (Untuk Welcome Drink)
-        `;
-      }
-
-      responseBox.innerHTML = text.replace(/\n/g, '<br>');
-      lastAiResponseText = text.replace(/[*•#]/g, ''); 
+    function handleChipClick(text) {
+      document.getElementById('aiChatInput').value = text;
+      processUserAiMessage(text);
     }
 
-    function speakAiResponse() {
-      if (!lastAiResponseText) {
-        lastAiResponseText = "Hello! I am Kava AI Sommelier. Please choose a option to start.";
+    function handleUserAiSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('aiChatInput');
+      const query = input.value.trim();
+      if (!query) return;
+
+      processUserAiMessage(query);
+      input.value = '';
+    }
+
+    function appendChatBubble(text, sender) {
+      const history = document.getElementById('aiChatHistory');
+      const bubble = document.createElement('div');
+      bubble.className = `chat-bubble ${sender}`;
+      bubble.innerHTML = text;
+      history.appendChild(bubble);
+      history.scrollTop = history.scrollHeight;
+    }
+
+    function processUserAiMessage(userText) {
+      appendChatBubble(escapeHtml(userText), 'user');
+
+      const lower = userText.toLowerCase();
+      let response = "";
+
+      // 1. PARTY CALCULATOR LOGIC
+      const partyMatch = lower.match(/(\d+)\s*(orang|people|tamu|guests)/);
+      if (partyMatch || lower.includes('party') || lower.includes('pesta')) {
+        const guestCount = partyMatch ? parseInt(partyMatch[1]) : 10;
+        const totalBottles = Math.ceil(guestCount / 3.5);
+        const spiritBottles = Math.ceil(totalBottles * 0.6);
+        const wineBottles = Math.max(1, totalBottles - spiritBottles);
+
+        // Cari rekomendasi dari localWines
+        const spirits = localWines.filter(w => spiritTypes.some(s => w.type && w.type.includes(s))).slice(0, 2);
+        const wines = localWines.filter(w => w.type && w.type.includes('Wine')).slice(0, 2);
+
+        let recNames = spirits.concat(wines).map(w => w.name).join(", ");
+        if (!recNames) recNames = "1800 Reposado Tequila & 19 Crimes Red Blend";
+
+        response = `🎉 <strong>Party Calculation for ${guestCount} Guests</strong>:<br>` +
+          `• Estimated Bottling: <strong>${totalBottles} Bottles</strong> (750ml).<br>` +
+          `• Recommended Split: <strong>${spiritBottles} Spirits/Tequila</strong> (for Shots & Cocktails) + <strong>${wineBottles} Wine Bottles</strong> (for welcome drinks).<br>` +
+          `• Top SKU Recommendations: <em>${recNames}</em>.`;
+      } 
+      // 2. MIXER / COCKTAIL LOGIC
+      else if (lower.includes('mixer') || lower.includes('campur') || lower.includes('cocktail') || lower.includes('tequila') || lower.includes('vodka') || lower.includes('whiskey')) {
+        response = `🍹 <strong>Sommelier Mixers & Cocktail Guide</strong>:<br>` +
+          `• <strong>Tequila (e.g. 1800 Reposado)</strong>: Pair with Fresh Lime + Triple Sec (Margarita) or Grapefruit Soda (Paloma).<br>` +
+          `• <strong>Vodka / Gin</strong>: Mix with Premium Tonic Water + Slice of Lime or Cranberry juice for fruity notes.<br>` +
+          `• <strong>Bourbon / Whiskey</strong>: Enjoy On-the-Rocks or mix with Ginger Ale and a dash of Angostura bitters.<br>` +
+          `• <strong>Red Wine</strong>: Best served neat at 16-18°C alongside grilled steaks or dark chocolate.`;
       }
-      
+      // 3. BUDGET / PRICE SEARCH
+      else if (lower.includes('cheap') || lower.includes('murah') || lower.includes('budget') || lower.includes('500') || lower.includes('terjangkau')) {
+        const affordable = localWines.slice(0, 3).map(w => `• <strong>${w.name}</strong> (${w.type})`).join('<br>');
+        response = `💰 <strong>Affordable & Value Collection</strong>:<br>` + 
+          (affordable || "• 19 Crimes Red Blend<br>• Local Craft Spirits<br>• Premium Soju") + 
+          `<br><em>These selections deliver exceptional quality with maximum taste satisfaction.</em>`;
+      }
+      // 4. SPECIAL OCCASION / GIFT / LUXURY
+      else if (lower.includes('gift') || lower.includes('kado') || lower.includes('special') || lower.includes('mewah') || lower.includes('luxury') || lower.includes('dinner')) {
+        const luxury = localWines.filter(w => w.collection === 'Best Seller' || (w.vintage && w.vintage !== 'NV')).slice(0, 3).map(w => `• <strong>${w.name}</strong> - ${w.region || 'Reserve'}`).join('<br>');
+        response = `🎁 <strong>Luxury Reserve & Special Occasion</strong>:<br>` +
+          (luxury || "• 1924 Bourbon Barrel Aged Cabernet<br>• 1800 Reposado Tequila<br>• Chateau Margaux Reserve") +
+          `<br><em>Perfect for executive gifts, romantic celebrations, or high-end dinner pairings.</em>`;
+      }
+      // 5. DIRECT PRODUCT SEARCH IN DATABASE
+      else {
+        const matched = localWines.filter(w => (w.name && w.name.toLowerCase().includes(lower)) || (w.type && w.type.toLowerCase().includes(lower)) || (w.varietal && w.varietal.toLowerCase().includes(lower)));
+        
+        if (matched.length > 0) {
+          const listStr = matched.slice(0, 3).map(w => `• <a href="javascript:void(0)" onclick="openDetailBySlug('${w.slug}'); closeAiModal();" style="color:var(--gold-primary); font-weight:bold; text-decoration:underline;">${w.name}</a> (${w.type})`).join('<br>');
+          response = `🔎 <strong>Found ${matched.length} SKU(s) matching your request</strong>:<br>${listStr}<br><br><em>Click on any product above to view its 3D Motion profile!</em>`;
+        } else {
+          response = `✨ I recommend exploring our <strong>${localWines.length} curated SKU items</strong> in the catalog! Try asking about <em>mixers, party bottles for 15 guests, tequila recommendations, or budget options</em>.`;
+        }
+      }
+
+      setTimeout(() => {
+        appendChatBubble(response, 'ai');
+        speakTextToEnglish(response.replace(/<[^>]*>?/gm, ''));
+      }, 400);
+    }
+
+    function speakTextToEnglish(text) {
+      if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(lastAiResponseText);
+      const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'en-US';
-      utterance.rate = 0.98;
+      utterance.rate = 1.0;
       utterance.pitch = 0.92;
 
       const voices = window.speechSynthesis.getVoices();
@@ -1538,31 +1612,7 @@
         ${cleanFunFact}
       `;
 
-      const utterance = new SpeechSynthesisUtterance(narrativeText);
-      utterance.lang = 'en-US';
-      utterance.rate = 0.98;
-      utterance.pitch = 0.92;
-
-      const voices = window.speechSynthesis.getVoices();
-      const englishVoice = voices.find(v => (v.lang.includes('en-US') || v.lang.includes('en-GB') || v.lang.includes('en')) && (v.name.includes('Male') || v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Daniel') || v.name.includes('George'))) || voices.find(v => v.lang.includes('en'));
-      if (englishVoice) utterance.voice = englishVoice;
-
-      utterance.onstart = () => {
-        isSpeaking = true;
-        updateAudioButtonUI(true);
-      };
-
-      utterance.onend = () => {
-        isSpeaking = false;
-        updateAudioButtonUI(false);
-      };
-
-      utterance.onerror = () => {
-        isSpeaking = false;
-        updateAudioButtonUI(false);
-      };
-
-      window.speechSynthesis.speak(utterance);
+      speakTextToEnglish(narrativeText);
     }
 
     function stopSpeech() {
