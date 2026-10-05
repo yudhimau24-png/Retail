@@ -1624,7 +1624,7 @@
             <div class="m-matrix-title-v2">${t.flavorTitle}</div>
 
             <div class="m-meter-card">
-              <div class="m-bar-label-v2"><span>BODY</span><span class="score-badge">${wine.bodyVal / 10} / 10 🏋️‍♂️</span></div>
+              <div class="m-bar-label-v2"><span>BODY</span><span class="score-badge">${wine.bodyVal / 10} / 10 🏋️️‍♂️</span></div>
               <div class="m-bar-track-v2"><div class="m-bar-fill-v2" style="width: ${wine.bodyVal}%;"></div></div>
             </div>
 
@@ -1796,13 +1796,13 @@
     }
 
     /* ========================================================================= */
-    /* 🤖 SOLUSI 1: GEMINI LLM CONSULTANT ENGINE (SMART, LUWES & SERBA TAHU)     */
+    /* 🤖 GEMINI LLM CONSULTANT ENGINE (INTEGRASI GOOGLE GEMINI 1.5 FLASH)        */
     /* ========================================================================= */
     
-    // MASUKKAN GEMINI API KEY KAMU DI SINI (Bisa didapat GRATIS di Google AI Studio)
-    const GEMINI_API_KEY = "AQ.Ab8RN6Io6EU18afKFb9F8UgEgWDuH9_zjWVmPmMcQD31bMwHOw"; 
+    // MASUKKAN API KEY GEMINI RESMI ANDA DI SINI (Dapatkan gratis di https://aistudio.google.com/)
+    const GEMINI_API_KEY = "MASUKKAN_GEMINI_API_KEY_ANDA_DI_SINI"; 
     
-    let conversationHistory = []; // Memori riwayat obrolan agar AI tidak "pikun"
+    let conversationHistory = []; // Memori riwayat obrolan
 
     async function processUserAiMessage(userText) {
       appendChatBubble(escapeHtml(userText), 'user');
@@ -1811,21 +1811,21 @@
       const typingBubble = document.createElement('div');
       typingBubble.className = 'chat-bubble ai';
       typingBubble.id = 'aiTypingIndicator';
-      typingBubble.innerHTML = '⏳ <em>Konsultan AI sedang berpikir...</em>';
+      typingBubble.innerHTML = '⏳ <em>Sommelier AI sedang berpikir...</em>';
       history.appendChild(typingBubble);
       history.scrollTop = history.scrollHeight;
 
-      // Jika API Key belum diisi, jalankan engine lokal pintar sebagai fallback
-      if (!GEMINI_API_KEY || GEMINI_API_KEY === "AQ.Ab8RN6Io6EU18afKFb9F8UgEgWDuH9_zjWVmPmMcQD31bMwHOw") {
+      // Jika API Key belum diisi atau menggunakan placeholder, alihkan ke engine fallback lokal
+      if (!GEMINI_API_KEY || GEMINI_API_KEY.includes("MASUKKAN_GEMINI_API_KEY")) {
         setTimeout(() => {
           document.getElementById('aiTypingIndicator')?.remove();
           processLocalFallbackAi(userText);
-        }, 350);
+        }, 400);
         return;
       }
 
       try {
-        // Ekstraksi konteks katalog produk untuk diberikan ke AI
+        // Ekstraksi konteks katalog produk aktif
         const catalogContext = localWines.map(w => ({
           nama: w.name,
           kategori: w.type,
@@ -1836,28 +1836,28 @@
         }));
 
         const systemPrompt = `Kamu adalah Konsultan Minuman & Master Sommelier AI dari "Kava Retail". 
-Tugasmu adalah menjadi asisten konsultan yang sangat cerdas, ramah, luwes, dan serba tahu.
-Kamu bisa menjawab pertanyaan APAPUN dari konsumen (suasana acara santai/formal, racikan cocktail, rekomendasi wine, food pairing, hingga percakapan umum) tanpa dibatasi aturan kaku.
+Tugasmu adalah menjadi asisten konsultan yang sangat cerdas, ramah, luwes, dan ahli di bidang wine, spirits, cocktail, mixers, serta perencanaan acara.
+Jawablah pertanyaan konsumen dengan ramah dan informatif.
 
-Berikut adalah Katalog Produk Kava yang sedang tersedia:
+Berikut adalah Katalog Produk Kava yang sedang tersedia secara real-time:
 ${JSON.stringify(catalogContext)}
 
 Instruksi Penting Respons:
-1. Jawab pertanyaan konsumen secara natural, responsif, dan fleksibel seperti konsultan asli.
-2. Jika konsumen bertanya rekomendasi minuman untuk acara/suasana (misal: party santai, dinner, dll), berikan saran jenis minuman yang pas dan rekomendasikan produk dari katalog.
-3. Setiap kali merekomendasikan produk dari katalog, WAJIB sertakan link dengan format HTML persis seperti ini:
+1. Jawab pertanyaan konsumen dalam Bahasa Indonesia secara natural dan lugas.
+2. Jika memberikan rekomendasi produk dari katalog Kava, WAJIB sertakan tautan HTML dengan format persis seperti ini:
    <a href="javascript:void(0)" onclick="openDetailBySlug('SLUG_PRODUK'); closeAiModal();" style="color:var(--gold-primary); font-weight:bold; text-decoration:underline;">NAMA PRODUK</a>
-4. Gunakan bahasa Indonesia yang santai, sopan, dan hangat.
-5. Jaga percakapan tetap mengalir dan tidak mengulang-ulang pertanyaan kaku.`;
+3. Kamu dapat menghitung estimasi jumlah botol untuk pesta, merekomendasikan resep racikan cocktail, atau memasangkan minuman dengan hidangan makanan.`;
 
+        // Format Payload Google Gemini API
         const contents = [
-          { role: 'user', parts: [{ text: systemPrompt }] },
-          { role: 'model', parts: [{ text: "Siap! Saya adalah Konsultan AI Kava Retail yang ramah, siap membantu menjawab pertanyaan apapun dari konsumen secara luwes dan akurat." }] },
-          ...conversationHistory,
-          { role: 'user', parts: [{ text: userText }] }
+          {
+            role: 'user',
+            parts: [{ text: `${systemPrompt}\n\nPertanyaan Konsumen: ${userText}` }]
+          }
         ];
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${GEMINI_API_KEY}`, {
+        // Menggunakan Endpoint Resmi Gemini 1.5 Flash
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ contents })
@@ -1869,7 +1869,7 @@ Instruksi Penting Respons:
         if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
           let aiText = data.candidates[0].content.parts[0].text;
 
-          // Simpan memori riwayat percakapan (max 10 pesan terakhir)
+          // Simpan memori riwayat percakapan sederhana
           conversationHistory.push({ role: 'user', parts: [{ text: userText }] });
           conversationHistory.push({ role: 'model', parts: [{ text: aiText }] });
           if (conversationHistory.length > 10) conversationHistory = conversationHistory.slice(-10);
