@@ -1644,7 +1644,7 @@
             </div>
 
             <div class="m-sensory-grid-v2">
-              <div class="m-sensory-item-v2"><strong>👁️ ${t.labelVisual}</strong><span>${escapeHtml(visualText)}</span></div>
+              <div class="m-sensory-item-v2"><strong>👁️️ ${t.labelVisual}</strong><span>${escapeHtml(visualText)}</span></div>
               <div class="m-sensory-item-v2"><strong>🍇 ${t.labelAroma}</strong><span>${escapeHtml(aromaText)}</span></div>
               <div class="m-sensory-item-v2"><strong>🍷 ${t.labelPalate}</strong><span>${escapeHtml(palateText)}</span></div>
               <div class="m-sensory-item-v2"><strong>📝 ${t.labelNotes}</strong><span>${escapeHtml(notesText)}</span></div>
@@ -1796,11 +1796,11 @@
     }
 
     /* ========================================================================= */
-    /* 🤖 GEMINI LLM CONSULTANT ENGINE (DENGAN PENANGANAN ERROR DEBUG DILAYAR)     */
+    /* 🤖 GEMINI LLM CONSULTANT ENGINE (KUNCI DARI SCREENSHOT AI STUDIO)          */
     /* ========================================================================= */
     
-    // KUNCI GEMINI API DENGAN DUKUNGAN DEBUG VISUAL ERROR
-    const GEMINI_API_KEY = "AQ.Ab8RN6JJ1kwGVfeukUSOdGkX4OL89DwPMr5qHzlpvWLXbA3k0w"; 
+    // KUNCI ASLI DARI SCREENSHOT GOOGLE AI STUDIO MILIKMU
+    const GEMINI_API_KEY = "AQ.Ab8RN6Lm7jhcV5Hd7czGdJ736JbR9iipsPgm8dQY2DyBX3bKhg"; 
     
     let conversationHistory = []; // Memori riwayat obrolan
 
@@ -1816,7 +1816,7 @@
       history.scrollTop = history.scrollHeight;
 
       // Cek ketersediaan API key
-      if (!GEMINI_API_KEY || GEMINI_API_KEY.includes("MASUKKAN_GEMINI_API_KEY")) {
+      if (!GEMINI_API_KEY || GEMINI_API_KEY.includes("MASUKKAN_KEY_AIzaSy_ANDA_DI_SINI")) {
         document.getElementById('aiTypingIndicator')?.remove();
         appendChatBubble("⚠️ <strong>Peringatan:</strong> API Key belum diisi di kodingan!", 'ai');
         return;
@@ -1858,20 +1858,12 @@ ATURAN WAJIB RESPONS:
           }
         };
 
-        // Otomatis tentukan mode URL atau Header berdasarkan tipe key
-        const isStandardKey = GEMINI_API_KEY.startsWith("AIzaSy");
-        const apiUrl = isStandardKey 
-          ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`
-          : `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
-
-        const headers = { 'Content-Type': 'application/json' };
-        if (!isStandardKey) {
-          headers['x-goog-api-key'] = GEMINI_API_KEY;
-        }
+        // Kunci dikirim MURNI lewat URL ?key= (TIDAK BOLEH pakai Header Authorization: Bearer agar tidak memicu error 401)
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
 
         const response = await fetch(apiUrl, {
           method: 'POST',
-          headers: headers,
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(requestBody)
         });
 
