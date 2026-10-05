@@ -1796,11 +1796,10 @@
     }
 
     /* ========================================================================= */
-    /* 🤖 GEMINI LLM CONSULTANT ENGINE                                           */
+    /* 🤖 GEMINI LLM CONSULTANT ENGINE (DENGAN PENANGANAN TAUTAN MARKDOWN RELEVAN) */
     /* ========================================================================= */
     
-    // MASUKKAN API KEY BERAWALAN AIzaSy... DI BAWAH INI SETELAH DIAKTIFKAN DI GOOGLE CLOUD
-    const GEMINI_API_KEY = "AQ.Ab8RN6ICaoA7cYjGk9hpztnkTdKnE2J8Nzv4yk0HFiYCaBWOOg"; 
+    const GEMINI_API_KEY = "AQ.Ab8RN6Lm7jhcV5Hd7czGdJ736JbR9iipsPgm8dQY2DyBX3bKhg"; 
     
     let conversationHistory = []; // Memori riwayat obrolan
 
@@ -1815,34 +1814,31 @@
       history.appendChild(typingBubble);
       history.scrollTop = history.scrollHeight;
 
-      // Cek ketersediaan API key
-      if (!GEMINI_API_KEY || GEMINI_API_KEY.includes("MASUKKAN_KEY_AIzaSy_ANDA_DI_SINI")) {
+      if (!GEMINI_API_KEY || GEMINI_API_KEY.includes("MASUKKAN_KEY")) {
         document.getElementById('aiTypingIndicator')?.remove();
         appendChatBubble("⚠️ <strong>Peringatan:</strong> API Key belum diisi di kodingan!", 'ai');
         return;
       }
 
       try {
-        const catalogContext = localWines.map(w => ({
-          nama: w.name,
-          kategori: w.type,
-          wilayah: w.region || '-',
-          rasa: w.notes || '-',
-          pairing: w.pairing || '-',
-          slug: w.slug
-        }));
+        // Ekstraksi katalog menjadi teks daftar yang mudah dipahami AI
+        const catalogListText = localWines.map(w => 
+          `- Nama: ${w.name} | Kategori: ${w.type} | Region: ${w.region || '-'} | Notes/Rasa: ${w.notes || '-'} | Slug: ${w.slug}`
+        ).join('\n');
 
-        const systemInstruction = `Kamu adalah Kava Master Sommelier & Nightlife Consultant berpengalaman.
-Gaya bicaramu ramah, luwes, kasual tapi elegan, dan sangat paham tentang dunia beverage (wine, liquor, cocktail mixers, party planning, hingga pairing makanan).
+        const systemInstruction = `Kamu adalah Kava Master Sommelier & Nightlife Consultant yang ramah, santai, cerdas, dan berkelas.
+Tugasmu adalah membantu pelanggan memilih minuman, memberikan saran racikan cocktail, kalkulasi botol untuk pesta, atau paduan makanan (food pairing).
 
-KATALOG PRODUK KAVA RETAIL SAAT INI:
-${JSON.stringify(catalogContext)}
+DAFTAR PRODUK KATALOG KAVA RETAIL TERSEDIA:
+${catalogListText}
 
-ATURAN WAJIB RESPONS:
-1. Jawab pertanyaan konsumen secara cerdas, alami, dan tidak kaku dalam Bahasa Indonesia.
-2. Jika rekomendasi minuman ada di katalog Kava di atas, WAJIB sertakan tautan langsung dengan format HTML ini:
-   <a href="javascript:void(0)" onclick="openDetailBySlug('SLUG_PRODUK'); closeAiModal();" style="color:var(--gold-primary); font-weight:bold; text-decoration:underline;">NAMA_PRODUK</a>
-3. Bebas berikan resep cocktail, saran campuran (mixer), rekomendasi acara pesta, atau pilihan wine terbaik sesuai bajet/suasana hati konsumen.`;
+PETUNJUK BALASAN DENGAN FORMAT MARKDOWN:
+1. Berikan jawaban yang ramah, sopan, luwes, dan profesional dalam Bahasa Indonesia.
+2. Setiap kali kamu merekomendasikan produk dari daftar katalog di atas, kamu WAJIB menuliskan namanya menggunakan format tautan Markdown seperti ini:
+   [NAMA PRODUK](SLUG_PRODUK)
+   Contoh: Untuk cita rasa tequila murni yang mulus, kamu bisa mencoba [1800 REPOSADO 750 ML](1800-reposado-750-ml).
+3. JANGAN PERNAH menuliskan tag HTML manual seperti <a href="...">. Cukup gunakan format Markdown [Nama Produk](slug).
+4. Berikan saran yang jelas, lengkap, dan enak dibaca.`;
 
         const requestBody = {
           system_instruction: {
@@ -1854,41 +1850,62 @@ ATURAN WAJIB RESPONS:
           ],
           generationConfig: {
             temperature: 0.7,
-            maxOutputTokens: 800
+            maxOutputTokens: 1000
           }
         };
 
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
+        // Otomatis mencoba endpoint resmi Google yang aktif
+        const modelEndpoints = [
+          'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent',
+          'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+          'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent',
+          'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent'
+        ];
 
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestBody)
-        });
+        let data = null;
+        let lastErrorDetail = '';
 
-        const data = await response.json();
+        for (const endpoint of modelEndpoints) {
+          const url = `${endpoint}?key=${encodeURIComponent(GEMINI_API_KEY)}`;
+          try {
+            const res = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(requestBody)
+            });
+            const resData = await res.json();
+            if (res.ok && resData.candidates && resData.candidates[0]?.content?.parts[0]?.text) {
+              data = resData;
+              break;
+            } else {
+              lastErrorDetail = resData.error ? `${resData.error.message} (Code: ${resData.error.code})` : JSON.stringify(resData);
+            }
+          } catch (e) {
+            lastErrorDetail = e.message;
+          }
+        }
+
         document.getElementById('aiTypingIndicator')?.remove();
 
-        if (response.ok && data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+        if (data && data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
           let aiText = data.candidates[0].content.parts[0].text;
 
+          // Simpan memori percakapan
           conversationHistory.push({ role: 'user', parts: [{ text: userText }] });
           conversationHistory.push({ role: 'model', parts: [{ text: aiText }] });
           if (conversationHistory.length > 8) conversationHistory = conversationHistory.slice(-8);
 
+          // PARSER CERDAS: Mengubah Markdown [Nama Produk](slug) menjadi Link HTML Interaktif
           let formattedText = aiText
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="javascript:void(0)" onclick="openDetailBySlug(\'$2\'); closeAiModal();" style="color:var(--gold-primary); font-weight:bold; text-decoration:underline;">$1</a>')
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\*(.*?)\*/g, '<em>$1</em>')
             .replace(/\n/g, '<br>');
 
           appendChatBubble(formattedText, 'ai');
         } else {
-          // Menampilkan pesan error asli dari Google di ruang chat untuk debugging langsung
-          const errorDetail = data.error ? `${data.error.message} (Code: ${data.error.code})` : JSON.stringify(data);
-          console.error("Google API Error Detail:", data);
-          
-          appendChatBubble(`❌ <strong>Gagal Terhubung ke Gemini AI:</strong><br><span style="color:#ff6b6b; font-size:0.75rem;">${escapeHtml(errorDetail)}</span><br><br>💡 <em>Solusi: Aktifkan "Generative Language API" di Google Cloud Console untuk proyek 57301034379, atau buat API Key baru dengan "Create API key in new project".</em>`, 'ai');
-          
+          console.error("Google API Error Detail:", lastErrorDetail);
+          appendChatBubble(`❌ <strong>Gagal Terhubung ke Gemini AI:</strong><br><span style="color:#ff6b6b; font-size:0.75rem;">${escapeHtml(lastErrorDetail)}</span><br><br><em>Sistem sementara beralih ke logika lokal.</em>`, 'ai');
           processLocalFallbackAi(userText);
         }
       } catch (err) {
@@ -1900,7 +1917,7 @@ ATURAN WAJIB RESPONS:
     }
 
     /* ========================================================================= */
-    /* 🛠️ LOCAL FALLBACK ENGINE                                                  */
+    /* 🛠️️ LOCAL FALLBACK ENGINE                                                  */
     /* ========================================================================= */
     let aiChatState = { step: null, lastIntent: null };
 
