@@ -1796,10 +1796,10 @@
     }
 
     /* ========================================================================= */
-    /* 🤖 GEMINI LLM CONSULTANT ENGINE (UNIVERSAL KEY COMPATIBLE: x-goog-api-key) */
+    /* 🤖 GEMINI LLM CONSULTANT ENGINE (DENGAN PENANGANAN ERROR DEBUG DILAYAR)     */
     /* ========================================================================= */
     
-    // KUNCI GEMINI API KAMU SUDAH TERPASANG DI SINI
+    // KUNCI GEMINI API DENGAN DUKUNGAN DEBUG VISUAL ERROR
     const GEMINI_API_KEY = "AQ.Ab8RN6JJ1kwGVfeukUSOdGkX4OL89DwPMr5qHzlpvWLXbA3k0w"; 
     
     let conversationHistory = []; // Memori riwayat obrolan
@@ -1817,10 +1817,8 @@
 
       // Cek ketersediaan API key
       if (!GEMINI_API_KEY || GEMINI_API_KEY.includes("MASUKKAN_GEMINI_API_KEY")) {
-        setTimeout(() => {
-          document.getElementById('aiTypingIndicator')?.remove();
-          processLocalFallbackAi(userText);
-        }, 400);
+        document.getElementById('aiTypingIndicator')?.remove();
+        appendChatBubble("⚠️ <strong>Peringatan:</strong> API Key belum diisi di kodingan!", 'ai');
         return;
       }
 
@@ -1860,20 +1858,27 @@ ATURAN WAJIB RESPONS:
           }
         };
 
-        // Header x-goog-api-key mendukung kunci AQ. maupun AIzaSy. secara bawaan
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`, {
+        // Otomatis tentukan mode URL atau Header berdasarkan tipe key
+        const isStandardKey = GEMINI_API_KEY.startsWith("AIzaSy");
+        const apiUrl = isStandardKey 
+          ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`
+          : `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
+
+        const headers = { 'Content-Type': 'application/json' };
+        if (!isStandardKey) {
+          headers['x-goog-api-key'] = GEMINI_API_KEY;
+        }
+
+        const response = await fetch(apiUrl, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-goog-api-key': GEMINI_API_KEY
-          },
+          headers: headers,
           body: JSON.stringify(requestBody)
         });
 
         const data = await response.json();
         document.getElementById('aiTypingIndicator')?.remove();
 
-        if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+        if (response.ok && data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
           let aiText = data.candidates[0].content.parts[0].text;
 
           conversationHistory.push({ role: 'user', parts: [{ text: userText }] });
@@ -1887,18 +1892,24 @@ ATURAN WAJIB RESPONS:
 
           appendChatBubble(formattedText, 'ai');
         } else {
-          console.warn("API Response Error/Warning:", data);
+          // Menampilkan pesan error asli dari Google di ruang chat untuk debugging langsung
+          const errorDetail = data.error ? `${data.error.message} (Code: ${data.error.code})` : JSON.stringify(data);
+          console.error("Google API Error Detail:", data);
+          
+          appendChatBubble(`❌ <strong>Gagal Terhubung ke Gemini AI:</strong><br><span style="color:#ff6b6b; font-size:0.75rem;">${escapeHtml(errorDetail)}</span><br><br><em>Sistem sementara beralih ke logika lokal.</em>`, 'ai');
+          
           processLocalFallbackAi(userText);
         }
       } catch (err) {
-        console.error("Gemini API Fetch Error:", err);
+        console.error("Network Error:", err);
         document.getElementById('aiTypingIndicator')?.remove();
+        appendChatBubble(`❌ <strong>Network Error:</strong> ${escapeHtml(err.message)}`, 'ai');
         processLocalFallbackAi(userText);
       }
     }
 
     /* ========================================================================= */
-    /* 🛠️ LOCAL FALLBACK ENGINE (JIKA GEMINI API KEY BELUM DIISI)               */
+    /* 🛠️ LOCAL FALLBACK ENGINE (JIKA KONEKSI GOOGLE TERHAMBAT)                  */
     /* ========================================================================= */
     let aiChatState = { step: null, lastIntent: null };
 
