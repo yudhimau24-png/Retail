@@ -1796,10 +1796,11 @@
     }
 
     /* ========================================================================= */
-    /* 🤖 GEMINI LLM CONSULTANT ENGINE (DENGAN PENANGANAN TAUTAN MARKDOWN RELEVAN) */
+    /* 🤖 GEMINI LLM CONSULTANT ENGINE (PARSER MARKDOWN TERKONTROL)               */
     /* ========================================================================= */
     
-    const GEMINI_API_KEY = "AQ.Ab8RN6ICaoA7cYjGk9hpztnkTdKnE2J8Nzv4yk0HFiYCaBWOOg"; 
+    // KUNCI GEMINI API KAMU
+    const GEMINI_API_KEY = "AQ.Ab8RN6Lm7jhcV5Hd7czGdJ736JbR9iipsPgm8dQY2DyBX3bKhg"; 
     
     let conversationHistory = []; // Memori riwayat obrolan
 
@@ -1821,24 +1822,22 @@
       }
 
       try {
-        // Ekstraksi katalog menjadi teks daftar yang mudah dipahami AI
+        // Ekstraksi katalog produk sederhana
         const catalogListText = localWines.map(w => 
-          `- Nama: ${w.name} | Kategori: ${w.type} | Region: ${w.region || '-'} | Notes/Rasa: ${w.notes || '-'} | Slug: ${w.slug}`
+          `- Nama: ${w.name} | Kategori: ${w.type} | Slug: ${w.slug}`
         ).join('\n');
 
-        const systemInstruction = `Kamu adalah Kava Master Sommelier & Nightlife Consultant yang ramah, santai, cerdas, dan berkelas.
-Tugasmu adalah membantu pelanggan memilih minuman, memberikan saran racikan cocktail, kalkulasi botol untuk pesta, atau paduan makanan (food pairing).
+        const systemInstruction = `Kamu adalah Kava Master Sommelier & Nightlife Consultant yang ramah, luwes, santai, dan berkelas.
+Kamu ahli memberikan saran minuman, resep cocktail, kalkulator pesta, dan pairing makanan.
 
-DAFTAR PRODUK KATALOG KAVA RETAIL TERSEDIA:
-${catalogListText}
+KATALOG PRODUK TERSEDIA:
+${catalogListListText = catalogListText}
 
-PETUNJUK BALASAN DENGAN FORMAT MARKDOWN:
-1. Berikan jawaban yang ramah, sopan, luwes, dan profesional dalam Bahasa Indonesia.
-2. Setiap kali kamu merekomendasikan produk dari daftar katalog di atas, kamu WAJIB menuliskan namanya menggunakan format tautan Markdown seperti ini:
-   [NAMA PRODUK](SLUG_PRODUK)
-   Contoh: Untuk cita rasa tequila murni yang mulus, kamu bisa mencoba [1800 REPOSADO 750 ML](1800-reposado-750-ml).
-3. JANGAN PERNAH menuliskan tag HTML manual seperti <a href="...">. Cukup gunakan format Markdown [Nama Produk](slug).
-4. Berikan saran yang jelas, lengkap, dan enak dibaca.`;
+ATURAN FORMAT BALASAN:
+1. Jawab dalam Bahasa Indonesia yang alami, menarik, cerdas, dan tidak kaku.
+2. JANGAN PERNAH MENULISKAN TAG HTML SEPERTI <a href="..."> ATAU SCRIPT DI BALASAN.
+3. Jika merekomendasikan produk dari katalog di atas, TULISKAN DALAM FORMAT MARKDOWN LINK [NAMA PRODUK](SLUG_PRODUK).
+   Contoh: "Buat santai yang segar, kamu bisa coba [1800 REPOSADO 750 ML](1800-reposado-750-ml)."`;
 
         const requestBody = {
           system_instruction: {
@@ -1850,16 +1849,14 @@ PETUNJUK BALASAN DENGAN FORMAT MARKDOWN:
           ],
           generationConfig: {
             temperature: 0.7,
-            maxOutputTokens: 1000
+            maxOutputTokens: 800
           }
         };
 
-        // Otomatis mencoba endpoint resmi Google yang aktif
         const modelEndpoints = [
-          'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-latest:generateContent',
-          'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent',
-          'https://generativelanguage.googleapis.com/v1/models/gemini-3.5-flash:generateContent',
-          'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent'
+          'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent',
+          'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+          'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent'
         ];
 
         let data = null;
@@ -1890,13 +1887,13 @@ PETUNJUK BALASAN DENGAN FORMAT MARKDOWN:
         if (data && data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
           let aiText = data.candidates[0].content.parts[0].text;
 
-          // Simpan memori percakapan
+          // Simpan memori obrolan
           conversationHistory.push({ role: 'user', parts: [{ text: userText }] });
           conversationHistory.push({ role: 'model', parts: [{ text: aiText }] });
           if (conversationHistory.length > 8) conversationHistory = conversationHistory.slice(-8);
 
-          // PARSER CERDAS: Mengubah Markdown [Nama Produk](slug) menjadi Link HTML Interaktif
-          let formattedText = aiText
+          // PERBAIKAN UTAMA: Parser mengubah Markdown [Nama](slug) menjadi Tautan HTML yang Rapih
+          let formattedText = escapeHtml(aiText)
             .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="javascript:void(0)" onclick="openDetailBySlug(\'$2\'); closeAiModal();" style="color:var(--gold-primary); font-weight:bold; text-decoration:underline;">$1</a>')
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\*(.*?)\*/g, '<em>$1</em>')
@@ -1905,7 +1902,7 @@ PETUNJUK BALASAN DENGAN FORMAT MARKDOWN:
           appendChatBubble(formattedText, 'ai');
         } else {
           console.error("Google API Error Detail:", lastErrorDetail);
-          appendChatBubble(`❌ <strong>Gagal Terhubung ke Gemini AI:</strong><br><span style="color:#ff6b6b; font-size:0.75rem;">${escapeHtml(lastErrorDetail)}</span><br><br><em>Sistem sementara beralih ke logika lokal.</em>`, 'ai');
+          appendChatBubble(`❌ <strong>Gagal Terhubung ke Gemini AI:</strong><br><span style="color:#ff6b6b; font-size:0.75rem;">${escapeHtml(lastErrorDetail)}</span>`, 'ai');
           processLocalFallbackAi(userText);
         }
       } catch (err) {
@@ -1917,7 +1914,7 @@ PETUNJUK BALASAN DENGAN FORMAT MARKDOWN:
     }
 
     /* ========================================================================= */
-    /* 🛠️️ LOCAL FALLBACK ENGINE                                                  */
+    /* 🛠 LOCAL FALLBACK ENGINE                                                  */
     /* ========================================================================= */
     let aiChatState = { step: null, lastIntent: null };
 
