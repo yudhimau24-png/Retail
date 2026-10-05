@@ -1644,7 +1644,7 @@
             </div>
 
             <div class="m-sensory-grid-v2">
-              <div class="m-sensory-item-v2"><strong>👁️️ ${t.labelVisual}</strong><span>${escapeHtml(visualText)}</span></div>
+              <div class="m-sensory-item-v2"><strong>👁 ${t.labelVisual}</strong><span>${escapeHtml(visualText)}</span></div>
               <div class="m-sensory-item-v2"><strong>🍇 ${t.labelAroma}</strong><span>${escapeHtml(aromaText)}</span></div>
               <div class="m-sensory-item-v2"><strong>🍷 ${t.labelPalate}</strong><span>${escapeHtml(palateText)}</span></div>
               <div class="m-sensory-item-v2"><strong>📝 ${t.labelNotes}</strong><span>${escapeHtml(notesText)}</span></div>
@@ -1796,11 +1796,11 @@
     }
 
     /* ========================================================================= */
-    /* 🤖 GEMINI LLM CONSULTANT ENGINE (KUNCI DARI SCREENSHOT AI STUDIO)          */
+    /* 🤖 GEMINI LLM CONSULTANT ENGINE                                           */
     /* ========================================================================= */
     
-    // KUNCI ASLI DARI SCREENSHOT GOOGLE AI STUDIO MILIKMU
-    const GEMINI_API_KEY = "AQ.Ab8RN6Lm7jhcV5Hd7czGdJ736JbR9iipsPgm8dQY2DyBX3bKhg"; 
+    // MASUKKAN API KEY BERAWALAN AIzaSy... DI BAWAH INI SETELAH DIAKTIFKAN DI GOOGLE CLOUD
+    const GEMINI_API_KEY = "AQ.Ab8RN6ICaoA7cYjGk9hpztnkTdKnE2J8Nzv4yk0HFiYCaBWOOg"; 
     
     let conversationHistory = []; // Memori riwayat obrolan
 
@@ -1858,7 +1858,6 @@ ATURAN WAJIB RESPONS:
           }
         };
 
-        // Kunci dikirim MURNI lewat URL ?key= (TIDAK BOLEH pakai Header Authorization: Bearer agar tidak memicu error 401)
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
 
         const response = await fetch(apiUrl, {
@@ -1888,7 +1887,7 @@ ATURAN WAJIB RESPONS:
           const errorDetail = data.error ? `${data.error.message} (Code: ${data.error.code})` : JSON.stringify(data);
           console.error("Google API Error Detail:", data);
           
-          appendChatBubble(`❌ <strong>Gagal Terhubung ke Gemini AI:</strong><br><span style="color:#ff6b6b; font-size:0.75rem;">${escapeHtml(errorDetail)}</span><br><br><em>Sistem sementara beralih ke logika lokal.</em>`, 'ai');
+          appendChatBubble(`❌ <strong>Gagal Terhubung ke Gemini AI:</strong><br><span style="color:#ff6b6b; font-size:0.75rem;">${escapeHtml(errorDetail)}</span><br><br>💡 <em>Solusi: Aktifkan "Generative Language API" di Google Cloud Console untuk proyek 57301034379, atau buat API Key baru dengan "Create API key in new project".</em>`, 'ai');
           
           processLocalFallbackAi(userText);
         }
@@ -1901,7 +1900,7 @@ ATURAN WAJIB RESPONS:
     }
 
     /* ========================================================================= */
-    /* 🛠️ LOCAL FALLBACK ENGINE (JIKA KONEKSI GOOGLE TERHAMBAT)                  */
+    /* 🛠️ LOCAL FALLBACK ENGINE                                                  */
     /* ========================================================================= */
     let aiChatState = { step: null, lastIntent: null };
 
